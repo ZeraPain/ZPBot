@@ -1,11 +1,67 @@
-﻿
- // ReSharper disable once CheckNamespace
-namespace ZPBot
+﻿using System.ComponentModel;
+using ZPBot.Annotations;
+using ZPBot.Common.Items;
+
+namespace ZPBot.Common.Resources
 {
-    public struct EGamePosition
+    public class GamePosition
     {
-        public int XPos;
-        public int YPos;
+        public int XPos { get; set; }
+        public int YPos { get; set; }
+
+        public GamePosition(int xpos, int ypos)
+        {
+            XPos = xpos;
+            YPos = ypos;
+        }
+    }
+
+    public class LoopOption : INotifyPropertyChanged
+    {
+        private bool _enabled;
+        public bool Enabled
+        {
+            get
+            {
+                return _enabled;
+            }
+            set
+            {
+                _enabled = value;
+                OnPropertyChanged(nameof(Enabled));
+            }
+        }
+
+        private Item _buyType;
+        public Item BuyType
+        {
+            get { return _buyType; }
+            set
+            {
+                _buyType = value;
+                OnPropertyChanged(nameof(BuyType));
+            }
+        }
+
+        private ushort _buyAmount;
+        public ushort BuyAmount
+        {
+            get { return _buyAmount; }
+            set
+            {
+                _buyAmount = value;
+                OnPropertyChanged(nameof(BuyAmount));
+            }
+        }
+
+        public LoopOption()
+        {
+            _buyType = new Item();
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        [NotifyPropertyChangedInvocator]
+        protected void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
     public struct EPosition

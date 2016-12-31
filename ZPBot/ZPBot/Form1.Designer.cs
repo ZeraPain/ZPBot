@@ -33,7 +33,7 @@
             this.richTextBox_events = new System.Windows.Forms.RichTextBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tab_main = new System.Windows.Forms.TabPage();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.checkBox_logpackets = new System.Windows.Forms.CheckBox();
             this.comboBox_profile = new System.Windows.Forms.ComboBox();
             this.button_searchclient = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
@@ -173,9 +173,12 @@
             this.tabPage5 = new System.Windows.Forms.TabPage();
             this.richTextBox_chat_academy = new System.Windows.Forms.RichTextBox();
             this.tab_players = new System.Windows.Forms.TabPage();
-            this.tabControl3 = new System.Windows.Forms.TabControl();
-            this.tab_party = new System.Windows.Forms.TabPage();
-            this.tab_charspy = new System.Windows.Forms.TabPage();
+            this.checkBox_partytype4 = new System.Windows.Forms.CheckBox();
+            this.checkBox_partytype3 = new System.Windows.Forms.CheckBox();
+            this.checkBox_partytype2 = new System.Windows.Forms.CheckBox();
+            this.checkBox_partytype1 = new System.Windows.Forms.CheckBox();
+            this.checkBox_partyautoaccept = new System.Windows.Forms.CheckBox();
+            this.tab_spy = new System.Windows.Forms.TabPage();
             this.listBox_players = new System.Windows.Forms.ListBox();
             this.listView_player = new System.Windows.Forms.ListView();
             this.columnHeader5 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -204,6 +207,7 @@
             this.button_startbot = new System.Windows.Forms.Button();
             this.button_stopbot = new System.Windows.Forms.Button();
             this.label_pm = new System.Windows.Forms.Label();
+            this.button_save = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tab_main.SuspendLayout();
             this.tab_pickup.SuspendLayout();
@@ -225,8 +229,7 @@
             this.tabPage4.SuspendLayout();
             this.tabPage5.SuspendLayout();
             this.tab_players.SuspendLayout();
-            this.tabControl3.SuspendLayout();
-            this.tab_charspy.SuspendLayout();
+            this.tab_spy.SuspendLayout();
             this.tab_alchemy.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -236,7 +239,7 @@
             this.richTextBox_events.Location = new System.Drawing.Point(19, 180);
             this.richTextBox_events.Name = "richTextBox_events";
             this.richTextBox_events.ReadOnly = true;
-            this.richTextBox_events.Size = new System.Drawing.Size(324, 96);
+            this.richTextBox_events.Size = new System.Drawing.Size(344, 96);
             this.richTextBox_events.TabIndex = 15;
             this.richTextBox_events.Text = "";
             // 
@@ -249,6 +252,7 @@
             this.tabControl1.Controls.Add(this.tab_loop);
             this.tabControl1.Controls.Add(this.tab_chat);
             this.tabControl1.Controls.Add(this.tab_players);
+            this.tabControl1.Controls.Add(this.tab_spy);
             this.tabControl1.Controls.Add(this.tab_alchemy);
             this.tabControl1.ImageList = this.imageList1;
             this.tabControl1.ItemSize = new System.Drawing.Size(10, 20);
@@ -256,13 +260,13 @@
             this.tabControl1.Multiline = true;
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(519, 317);
+            this.tabControl1.Size = new System.Drawing.Size(541, 317);
             this.tabControl1.TabIndex = 1;
             this.tabControl1.Click += new System.EventHandler(this.tabControl1_Click);
             // 
             // tab_main
             // 
-            this.tab_main.Controls.Add(this.checkBox1);
+            this.tab_main.Controls.Add(this.checkBox_logpackets);
             this.tab_main.Controls.Add(this.comboBox_profile);
             this.tab_main.Controls.Add(this.richTextBox_events);
             this.tab_main.Controls.Add(this.button_searchclient);
@@ -307,27 +311,26 @@
             this.tab_main.ImageIndex = 1;
             this.tab_main.Location = new System.Drawing.Point(4, 24);
             this.tab_main.Name = "tab_main";
-            this.tab_main.Size = new System.Drawing.Size(511, 289);
+            this.tab_main.Size = new System.Drawing.Size(533, 289);
             this.tab_main.TabIndex = 4;
             this.tab_main.Text = "Main";
             this.tab_main.UseVisualStyleBackColor = true;
             // 
-            // checkBox1
+            // checkBox_logpackets
             // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(186, 131);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(86, 17);
-            this.checkBox1.TabIndex = 61;
-            this.checkBox1.Text = "Log Packets";
-            this.checkBox1.UseVisualStyleBackColor = true;
-            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            this.checkBox_logpackets.AutoSize = true;
+            this.checkBox_logpackets.Location = new System.Drawing.Point(193, 128);
+            this.checkBox_logpackets.Name = "checkBox_logpackets";
+            this.checkBox_logpackets.Size = new System.Drawing.Size(86, 17);
+            this.checkBox_logpackets.TabIndex = 61;
+            this.checkBox_logpackets.Text = "Log Packets";
+            this.checkBox_logpackets.UseVisualStyleBackColor = true;
             // 
             // comboBox_profile
             // 
             this.comboBox_profile.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox_profile.FormattingEnabled = true;
-            this.comboBox_profile.Location = new System.Drawing.Point(364, 136);
+            this.comboBox_profile.Location = new System.Drawing.Point(382, 137);
             this.comboBox_profile.Name = "comboBox_profile";
             this.comboBox_profile.Size = new System.Drawing.Size(125, 21);
             this.comboBox_profile.TabIndex = 9;
@@ -335,13 +338,13 @@
             // 
             // button_searchclient
             // 
-            this.button_searchclient.Location = new System.Drawing.Point(271, 149);
+            this.button_searchclient.Location = new System.Drawing.Point(291, 149);
             this.button_searchclient.Name = "button_searchclient";
             this.button_searchclient.Size = new System.Drawing.Size(72, 23);
             this.button_searchclient.TabIndex = 6;
             this.button_searchclient.Text = "Search";
             this.button_searchclient.UseVisualStyleBackColor = true;
-            this.button_searchclient.Click += new System.EventHandler(this.button_Manager);
+            this.button_searchclient.Click += new System.EventHandler(this.button_searchclient_Click);
             // 
             // label3
             // 
@@ -357,7 +360,7 @@
             this.textBox_sropath.Location = new System.Drawing.Point(19, 151);
             this.textBox_sropath.Name = "textBox_sropath";
             this.textBox_sropath.ReadOnly = true;
-            this.textBox_sropath.Size = new System.Drawing.Size(246, 20);
+            this.textBox_sropath.Size = new System.Drawing.Size(260, 20);
             this.textBox_sropath.TabIndex = 5;
             // 
             // label_infospeed
@@ -371,20 +374,18 @@
             // 
             // textBox_loginpw
             // 
-            this.textBox_loginpw.Location = new System.Drawing.Point(392, 231);
+            this.textBox_loginpw.Location = new System.Drawing.Point(410, 232);
             this.textBox_loginpw.Name = "textBox_loginpw";
             this.textBox_loginpw.PasswordChar = '*';
             this.textBox_loginpw.Size = new System.Drawing.Size(97, 20);
             this.textBox_loginpw.TabIndex = 13;
-            this.textBox_loginpw.TextChanged += new System.EventHandler(this.textBox_Manager);
             // 
             // textBox_loginchar
             // 
-            this.textBox_loginchar.Location = new System.Drawing.Point(392, 254);
+            this.textBox_loginchar.Location = new System.Drawing.Point(410, 255);
             this.textBox_loginchar.Name = "textBox_loginchar";
             this.textBox_loginchar.Size = new System.Drawing.Size(97, 20);
             this.textBox_loginchar.TabIndex = 14;
-            this.textBox_loginchar.TextChanged += new System.EventHandler(this.textBox_Manager);
             // 
             // label33
             // 
@@ -398,7 +399,7 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(361, 234);
+            this.label8.Location = new System.Drawing.Point(379, 235);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(25, 13);
             this.label8.TabIndex = 48;
@@ -407,7 +408,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(361, 257);
+            this.label4.Location = new System.Drawing.Point(379, 258);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(29, 13);
             this.label4.TabIndex = 60;
@@ -424,27 +425,25 @@
             // 
             // textBox_loginid
             // 
-            this.textBox_loginid.Location = new System.Drawing.Point(392, 208);
+            this.textBox_loginid.Location = new System.Drawing.Point(410, 209);
             this.textBox_loginid.Name = "textBox_loginid";
             this.textBox_loginid.Size = new System.Drawing.Size(97, 20);
             this.textBox_loginid.TabIndex = 12;
-            this.textBox_loginid.TextChanged += new System.EventHandler(this.textBox_Manager);
             // 
             // checkBox_autologin
             // 
             this.checkBox_autologin.AutoSize = true;
-            this.checkBox_autologin.Location = new System.Drawing.Point(364, 186);
+            this.checkBox_autologin.Location = new System.Drawing.Point(382, 187);
             this.checkBox_autologin.Name = "checkBox_autologin";
             this.checkBox_autologin.Size = new System.Drawing.Size(92, 17);
             this.checkBox_autologin.TabIndex = 11;
             this.checkBox_autologin.Text = "Use Autologin";
             this.checkBox_autologin.UseVisualStyleBackColor = true;
-            this.checkBox_autologin.CheckedChanged += new System.EventHandler(this.checkBox_Manager);
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(361, 211);
+            this.label5.Location = new System.Drawing.Point(379, 212);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(18, 13);
             this.label5.TabIndex = 47;
@@ -581,9 +580,9 @@
             this.label18.AutoSize = true;
             this.label18.Location = new System.Drawing.Point(183, 19);
             this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(54, 13);
+            this.label18.Size = new System.Drawing.Size(47, 13);
             this.label18.TabIndex = 26;
-            this.label18.Text = "EPosition:";
+            this.label18.Text = "Position:";
             // 
             // label17
             // 
@@ -606,29 +605,28 @@
             // button_launch
             // 
             this.button_launch.Enabled = false;
-            this.button_launch.Location = new System.Drawing.Point(364, 109);
+            this.button_launch.Location = new System.Drawing.Point(382, 110);
             this.button_launch.Name = "button_launch";
             this.button_launch.Size = new System.Drawing.Size(125, 23);
             this.button_launch.TabIndex = 8;
             this.button_launch.Text = "Launch";
             this.button_launch.UseVisualStyleBackColor = true;
-            this.button_launch.Click += new System.EventHandler(this.button_Manager);
+            this.button_launch.Click += new System.EventHandler(this.button_launch_Click);
             // 
             // checkBox_launchclientless
             // 
             this.checkBox_launchclientless.AutoSize = true;
-            this.checkBox_launchclientless.Location = new System.Drawing.Point(364, 165);
+            this.checkBox_launchclientless.Location = new System.Drawing.Point(382, 166);
             this.checkBox_launchclientless.Name = "checkBox_launchclientless";
             this.checkBox_launchclientless.Size = new System.Drawing.Size(109, 17);
             this.checkBox_launchclientless.TabIndex = 10;
             this.checkBox_launchclientless.Text = "Launch Clientless";
             this.checkBox_launchclientless.UseVisualStyleBackColor = true;
-            this.checkBox_launchclientless.CheckedChanged += new System.EventHandler(this.checkBox_Manager);
             // 
             // label_clientless
             // 
             this.label_clientless.AutoSize = true;
-            this.label_clientless.Location = new System.Drawing.Point(426, 60);
+            this.label_clientless.Location = new System.Drawing.Point(444, 61);
             this.label_clientless.Name = "label_clientless";
             this.label_clientless.Size = new System.Drawing.Size(43, 13);
             this.label_clientless.TabIndex = 42;
@@ -637,7 +635,7 @@
             // label16
             // 
             this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(361, 60);
+            this.label16.Location = new System.Drawing.Point(379, 61);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(54, 13);
             this.label16.TabIndex = 41;
@@ -646,18 +644,18 @@
             // button_clientless
             // 
             this.button_clientless.Enabled = false;
-            this.button_clientless.Location = new System.Drawing.Point(364, 83);
+            this.button_clientless.Location = new System.Drawing.Point(382, 84);
             this.button_clientless.Name = "button_clientless";
             this.button_clientless.Size = new System.Drawing.Size(125, 23);
             this.button_clientless.TabIndex = 7;
             this.button_clientless.Text = "Go Clientless";
             this.button_clientless.UseVisualStyleBackColor = true;
-            this.button_clientless.Click += new System.EventHandler(this.button_Manager);
+            this.button_clientless.Click += new System.EventHandler(this.button_clientless_Click);
             // 
             // label_version
             // 
             this.label_version.AutoSize = true;
-            this.label_version.Location = new System.Drawing.Point(426, 39);
+            this.label_version.Location = new System.Drawing.Point(444, 40);
             this.label_version.Name = "label_version";
             this.label_version.Size = new System.Drawing.Size(43, 13);
             this.label_version.TabIndex = 40;
@@ -666,7 +664,7 @@
             // label_botstate
             // 
             this.label_botstate.AutoSize = true;
-            this.label_botstate.Location = new System.Drawing.Point(426, 19);
+            this.label_botstate.Location = new System.Drawing.Point(444, 20);
             this.label_botstate.Name = "label_botstate";
             this.label_botstate.Size = new System.Drawing.Size(43, 13);
             this.label_botstate.TabIndex = 38;
@@ -675,7 +673,7 @@
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(361, 39);
+            this.label10.Location = new System.Drawing.Point(379, 40);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(45, 13);
             this.label10.TabIndex = 39;
@@ -684,7 +682,7 @@
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(361, 19);
+            this.label9.Location = new System.Drawing.Point(379, 20);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(51, 13);
             this.label9.TabIndex = 37;
@@ -713,14 +711,14 @@
             this.tab_pickup.ImageIndex = 2;
             this.tab_pickup.Location = new System.Drawing.Point(4, 24);
             this.tab_pickup.Name = "tab_pickup";
-            this.tab_pickup.Size = new System.Drawing.Size(511, 289);
+            this.tab_pickup.Size = new System.Drawing.Size(533, 289);
             this.tab_pickup.TabIndex = 3;
-            this.tab_pickup.Text = "Pickup";
+            this.tab_pickup.Text = "Items";
             this.tab_pickup.UseVisualStyleBackColor = true;
             // 
             // button_resetitemfilter
             // 
-            this.button_resetitemfilter.Location = new System.Drawing.Point(398, 63);
+            this.button_resetitemfilter.Location = new System.Drawing.Point(409, 63);
             this.button_resetitemfilter.Name = "button_resetitemfilter";
             this.button_resetitemfilter.Size = new System.Drawing.Size(60, 23);
             this.button_resetitemfilter.TabIndex = 75;
@@ -745,7 +743,7 @@
             "",
             "CH",
             "EU"});
-            this.comboBox_itemrace.Location = new System.Drawing.Point(233, 65);
+            this.comboBox_itemrace.Location = new System.Drawing.Point(242, 65);
             this.comboBox_itemrace.Name = "comboBox_itemrace";
             this.comboBox_itemrace.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.comboBox_itemrace.Size = new System.Drawing.Size(38, 21);
@@ -754,7 +752,7 @@
             // label28
             // 
             this.label28.AutoSize = true;
-            this.label28.Location = new System.Drawing.Point(185, 68);
+            this.label28.Location = new System.Drawing.Point(194, 68);
             this.label28.Name = "label28";
             this.label28.Size = new System.Drawing.Size(33, 13);
             this.label28.TabIndex = 72;
@@ -789,7 +787,7 @@
             // label24
             // 
             this.label24.AutoSize = true;
-            this.label24.Location = new System.Drawing.Point(286, 68);
+            this.label24.Location = new System.Drawing.Point(297, 68);
             this.label24.Name = "label24";
             this.label24.Size = new System.Drawing.Size(42, 13);
             this.label24.TabIndex = 69;
@@ -804,7 +802,7 @@
             "None",
             "Male",
             "Female"});
-            this.comboBox_itemgender.Location = new System.Drawing.Point(334, 65);
+            this.comboBox_itemgender.Location = new System.Drawing.Point(345, 65);
             this.comboBox_itemgender.Name = "comboBox_itemgender";
             this.comboBox_itemgender.Size = new System.Drawing.Size(58, 21);
             this.comboBox_itemgender.TabIndex = 68;
@@ -812,7 +810,7 @@
             // label22
             // 
             this.label22.AutoSize = true;
-            this.label22.Location = new System.Drawing.Point(286, 42);
+            this.label22.Location = new System.Drawing.Point(297, 42);
             this.label22.Name = "label22";
             this.label22.Size = new System.Drawing.Size(34, 13);
             this.label22.TabIndex = 67;
@@ -827,7 +825,7 @@
             "Seal of Star",
             "Seal of Moon",
             "Seal of Sun"});
-            this.comboBox_itemrarity.Location = new System.Drawing.Point(334, 39);
+            this.comboBox_itemrarity.Location = new System.Drawing.Point(345, 39);
             this.comboBox_itemrarity.Name = "comboBox_itemrarity";
             this.comboBox_itemrarity.Size = new System.Drawing.Size(124, 21);
             this.comboBox_itemrarity.TabIndex = 66;
@@ -878,7 +876,7 @@
             "13",
             "14",
             "15"});
-            this.comboBox_itemdegree.Location = new System.Drawing.Point(233, 39);
+            this.comboBox_itemdegree.Location = new System.Drawing.Point(242, 39);
             this.comboBox_itemdegree.Name = "comboBox_itemdegree";
             this.comboBox_itemdegree.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.comboBox_itemdegree.Size = new System.Drawing.Size(38, 21);
@@ -887,7 +885,7 @@
             // label14
             // 
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(185, 42);
+            this.label14.Location = new System.Drawing.Point(194, 42);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(42, 13);
             this.label14.TabIndex = 62;
@@ -906,7 +904,7 @@
             this.listView_items.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.listView_items.Location = new System.Drawing.Point(19, 90);
             this.listView_items.Name = "listView_items";
-            this.listView_items.Size = new System.Drawing.Size(472, 190);
+            this.listView_items.Size = new System.Drawing.Size(488, 190);
             this.listView_items.TabIndex = 60;
             this.listView_items.UseCompatibleStateImageBehavior = false;
             this.listView_items.View = System.Windows.Forms.View.Details;
@@ -962,13 +960,12 @@
             // checkBox_pickfilter_myitems
             // 
             this.checkBox_pickfilter_myitems.AutoSize = true;
-            this.checkBox_pickfilter_myitems.Location = new System.Drawing.Point(334, 16);
+            this.checkBox_pickfilter_myitems.Location = new System.Drawing.Point(345, 16);
             this.checkBox_pickfilter_myitems.Name = "checkBox_pickfilter_myitems";
             this.checkBox_pickfilter_myitems.Size = new System.Drawing.Size(124, 17);
             this.checkBox_pickfilter_myitems.TabIndex = 44;
             this.checkBox_pickfilter_myitems.Text = "Pickup only my items";
             this.checkBox_pickfilter_myitems.UseVisualStyleBackColor = true;
-            this.checkBox_pickfilter_myitems.CheckedChanged += new System.EventHandler(this.checkBox_Manager);
             // 
             // textBox_searchitem
             // 
@@ -1003,7 +1000,7 @@
             this.tab_training.Location = new System.Drawing.Point(4, 24);
             this.tab_training.Name = "tab_training";
             this.tab_training.Padding = new System.Windows.Forms.Padding(3);
-            this.tab_training.Size = new System.Drawing.Size(511, 289);
+            this.tab_training.Size = new System.Drawing.Size(533, 289);
             this.tab_training.TabIndex = 0;
             this.tab_training.Text = "Training";
             this.tab_training.UseVisualStyleBackColor = true;
@@ -1015,11 +1012,10 @@
             this.comboBox_usezerktype.Items.AddRange(new object[] {
             "Full",
             "Giant"});
-            this.comboBox_usezerktype.Location = new System.Drawing.Point(439, 130);
+            this.comboBox_usezerktype.Location = new System.Drawing.Point(458, 130);
             this.comboBox_usezerktype.Name = "comboBox_usezerktype";
             this.comboBox_usezerktype.Size = new System.Drawing.Size(49, 21);
             this.comboBox_usezerktype.TabIndex = 75;
-            this.comboBox_usezerktype.SelectedIndexChanged += new System.EventHandler(this.comboBox_Manager);
             // 
             // groupBox2
             // 
@@ -1030,7 +1026,7 @@
             this.groupBox2.Controls.Add(this.trackBar_usemp);
             this.groupBox2.Controls.Add(this.checkBox_usemp);
             this.groupBox2.Controls.Add(this.trackBar_usehp);
-            this.groupBox2.Location = new System.Drawing.Point(18, 104);
+            this.groupBox2.Location = new System.Drawing.Point(26, 105);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(313, 114);
             this.groupBox2.TabIndex = 63;
@@ -1046,7 +1042,6 @@
             this.checkBox_useuni.TabIndex = 70;
             this.checkBox_useuni.Text = "Use Universal Pills";
             this.checkBox_useuni.UseVisualStyleBackColor = true;
-            this.checkBox_useuni.CheckedChanged += new System.EventHandler(this.checkBox_Manager);
             // 
             // checkBox_usehp
             // 
@@ -1057,7 +1052,6 @@
             this.checkBox_usehp.TabIndex = 64;
             this.checkBox_usehp.Text = "Use HP Potion";
             this.checkBox_usehp.UseVisualStyleBackColor = true;
-            this.checkBox_usehp.CheckedChanged += new System.EventHandler(this.checkBox_Manager);
             // 
             // textBox_usemp
             // 
@@ -1087,7 +1081,6 @@
             this.trackBar_usemp.TabIndex = 67;
             this.trackBar_usemp.TickFrequency = 0;
             this.trackBar_usemp.TickStyle = System.Windows.Forms.TickStyle.TopLeft;
-            this.trackBar_usemp.Scroll += new System.EventHandler(this.trackBar_Manager);
             // 
             // checkBox_usemp
             // 
@@ -1098,7 +1091,6 @@
             this.checkBox_usemp.TabIndex = 65;
             this.checkBox_usemp.Text = "Use MP Potion";
             this.checkBox_usemp.UseVisualStyleBackColor = true;
-            this.checkBox_usemp.CheckedChanged += new System.EventHandler(this.checkBox_Manager);
             // 
             // trackBar_usehp
             // 
@@ -1110,12 +1102,11 @@
             this.trackBar_usehp.TabIndex = 66;
             this.trackBar_usehp.TickFrequency = 0;
             this.trackBar_usehp.TickStyle = System.Windows.Forms.TickStyle.TopLeft;
-            this.trackBar_usehp.Scroll += new System.EventHandler(this.trackBar_Manager);
             // 
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(16, 30);
+            this.label12.Location = new System.Drawing.Point(23, 29);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(42, 13);
             this.label12.TabIndex = 58;
@@ -1124,43 +1115,40 @@
             // checkBox_usespeeddrug
             // 
             this.checkBox_usespeeddrug.AutoSize = true;
-            this.checkBox_usespeeddrug.Location = new System.Drawing.Point(361, 159);
+            this.checkBox_usespeeddrug.Location = new System.Drawing.Point(380, 159);
             this.checkBox_usespeeddrug.Name = "checkBox_usespeeddrug";
             this.checkBox_usespeeddrug.Size = new System.Drawing.Size(117, 17);
             this.checkBox_usespeeddrug.TabIndex = 76;
             this.checkBox_usespeeddrug.Text = "Use Speed Potions";
             this.checkBox_usespeeddrug.UseVisualStyleBackColor = true;
-            this.checkBox_usespeeddrug.CheckedChanged += new System.EventHandler(this.checkBox_Manager);
             // 
             // checkBox_usezerk
             // 
             this.checkBox_usezerk.AutoSize = true;
-            this.checkBox_usezerk.Location = new System.Drawing.Point(361, 132);
+            this.checkBox_usezerk.Location = new System.Drawing.Point(380, 132);
             this.checkBox_usezerk.Name = "checkBox_usezerk";
             this.checkBox_usezerk.Size = new System.Drawing.Size(70, 17);
             this.checkBox_usezerk.TabIndex = 74;
             this.checkBox_usezerk.Text = "Use Zerk";
             this.checkBox_usezerk.UseVisualStyleBackColor = true;
-            this.checkBox_usezerk.CheckedChanged += new System.EventHandler(this.checkBox_Manager);
             // 
             // trackBar_monsters_range
             // 
             this.trackBar_monsters_range.BackColor = System.Drawing.SystemColors.Window;
-            this.trackBar_monsters_range.Location = new System.Drawing.Point(62, 15);
+            this.trackBar_monsters_range.Location = new System.Drawing.Point(69, 14);
             this.trackBar_monsters_range.Maximum = 100;
             this.trackBar_monsters_range.Name = "trackBar_monsters_range";
             this.trackBar_monsters_range.Size = new System.Drawing.Size(211, 45);
             this.trackBar_monsters_range.TabIndex = 59;
             this.trackBar_monsters_range.TickFrequency = 0;
             this.trackBar_monsters_range.TickStyle = System.Windows.Forms.TickStyle.TopLeft;
-            this.trackBar_monsters_range.Scroll += new System.EventHandler(this.trackBar_Manager);
             // 
             // groupBox1
             // 
             this.groupBox1.Controls.Add(this.checkBox_returntown_no_ammo);
             this.groupBox1.Controls.Add(this.checkBox_returntown_no_potion);
             this.groupBox1.Controls.Add(this.checkBox_returntown_died);
-            this.groupBox1.Location = new System.Drawing.Point(361, 15);
+            this.groupBox1.Location = new System.Drawing.Point(380, 15);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(127, 100);
             this.groupBox1.TabIndex = 70;
@@ -1176,7 +1164,6 @@
             this.checkBox_returntown_no_ammo.TabIndex = 73;
             this.checkBox_returntown_no_ammo.Text = "Out of Ammo";
             this.checkBox_returntown_no_ammo.UseVisualStyleBackColor = true;
-            this.checkBox_returntown_no_ammo.CheckedChanged += new System.EventHandler(this.checkBox_Manager);
             // 
             // checkBox_returntown_no_potion
             // 
@@ -1187,7 +1174,6 @@
             this.checkBox_returntown_no_potion.TabIndex = 72;
             this.checkBox_returntown_no_potion.Text = "Out of Potions";
             this.checkBox_returntown_no_potion.UseVisualStyleBackColor = true;
-            this.checkBox_returntown_no_potion.CheckedChanged += new System.EventHandler(this.checkBox_Manager);
             // 
             // checkBox_returntown_died
             // 
@@ -1198,22 +1184,21 @@
             this.checkBox_returntown_died.TabIndex = 71;
             this.checkBox_returntown_died.Text = "character died";
             this.checkBox_returntown_died.UseVisualStyleBackColor = true;
-            this.checkBox_returntown_died.CheckedChanged += new System.EventHandler(this.checkBox_Manager);
             // 
             // button_monsters_setpos
             // 
-            this.button_monsters_setpos.Location = new System.Drawing.Point(16, 59);
+            this.button_monsters_setpos.Location = new System.Drawing.Point(23, 58);
             this.button_monsters_setpos.Name = "button_monsters_setpos";
             this.button_monsters_setpos.Size = new System.Drawing.Size(109, 23);
             this.button_monsters_setpos.TabIndex = 61;
             this.button_monsters_setpos.Text = "Get current EPosition";
             this.button_monsters_setpos.UseVisualStyleBackColor = true;
-            this.button_monsters_setpos.Click += new System.EventHandler(this.button_Manager);
+            this.button_monsters_setpos.Click += new System.EventHandler(this.button_monsters_setpos_Click);
             // 
             // label_monster_rangepos
             // 
             this.label_monster_rangepos.AutoSize = true;
-            this.label_monster_rangepos.Location = new System.Drawing.Point(129, 64);
+            this.label_monster_rangepos.Location = new System.Drawing.Point(136, 63);
             this.label_monster_rangepos.Name = "label_monster_rangepos";
             this.label_monster_rangepos.Size = new System.Drawing.Size(43, 13);
             this.label_monster_rangepos.TabIndex = 62;
@@ -1221,7 +1206,7 @@
             // 
             // textBox_monsters_range
             // 
-            this.textBox_monsters_range.Location = new System.Drawing.Point(279, 27);
+            this.textBox_monsters_range.Location = new System.Drawing.Point(286, 26);
             this.textBox_monsters_range.Name = "textBox_monsters_range";
             this.textBox_monsters_range.ReadOnly = true;
             this.textBox_monsters_range.Size = new System.Drawing.Size(33, 20);
@@ -1246,7 +1231,7 @@
             this.tab_skills.ImageIndex = 4;
             this.tab_skills.Location = new System.Drawing.Point(4, 24);
             this.tab_skills.Name = "tab_skills";
-            this.tab_skills.Size = new System.Drawing.Size(511, 289);
+            this.tab_skills.Size = new System.Drawing.Size(533, 289);
             this.tab_skills.TabIndex = 5;
             this.tab_skills.Text = "Skills";
             this.tab_skills.UseVisualStyleBackColor = true;
@@ -1254,7 +1239,7 @@
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(224, 228);
+            this.label11.Location = new System.Drawing.Point(226, 228);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(58, 13);
             this.label11.TabIndex = 12;
@@ -1263,7 +1248,7 @@
             // button_skills_imbue_add
             // 
             this.button_skills_imbue_add.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button_skills_imbue_add.Location = new System.Drawing.Point(257, 245);
+            this.button_skills_imbue_add.Location = new System.Drawing.Point(259, 245);
             this.button_skills_imbue_add.Name = "button_skills_imbue_add";
             this.button_skills_imbue_add.Size = new System.Drawing.Size(35, 23);
             this.button_skills_imbue_add.TabIndex = 11;
@@ -1274,7 +1259,7 @@
             // listBox_skills_imbue
             // 
             this.listBox_skills_imbue.FormattingEnabled = true;
-            this.listBox_skills_imbue.Location = new System.Drawing.Point(315, 249);
+            this.listBox_skills_imbue.Location = new System.Drawing.Point(332, 251);
             this.listBox_skills_imbue.Name = "listBox_skills_imbue";
             this.listBox_skills_imbue.Size = new System.Drawing.Size(175, 17);
             this.listBox_skills_imbue.TabIndex = 10;
@@ -1282,7 +1267,7 @@
             // button_skills_imbue_remove
             // 
             this.button_skills_imbue_remove.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button_skills_imbue_remove.Location = new System.Drawing.Point(216, 245);
+            this.button_skills_imbue_remove.Location = new System.Drawing.Point(218, 245);
             this.button_skills_imbue_remove.Name = "button_skills_imbue_remove";
             this.button_skills_imbue_remove.Size = new System.Drawing.Size(35, 23);
             this.button_skills_imbue_remove.TabIndex = 9;
@@ -1293,7 +1278,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(226, 161);
+            this.label2.Location = new System.Drawing.Point(228, 161);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(53, 13);
             this.label2.TabIndex = 8;
@@ -1302,7 +1287,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(220, 43);
+            this.label1.Location = new System.Drawing.Point(222, 43);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(65, 13);
             this.label1.TabIndex = 80;
@@ -1311,7 +1296,7 @@
             // button_skills_buff_remove
             // 
             this.button_skills_buff_remove.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button_skills_buff_remove.Location = new System.Drawing.Point(215, 177);
+            this.button_skills_buff_remove.Location = new System.Drawing.Point(217, 177);
             this.button_skills_buff_remove.Name = "button_skills_buff_remove";
             this.button_skills_buff_remove.Size = new System.Drawing.Size(35, 23);
             this.button_skills_buff_remove.TabIndex = 6;
@@ -1322,7 +1307,7 @@
             // button_skills_buff_add
             // 
             this.button_skills_buff_add.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button_skills_buff_add.Location = new System.Drawing.Point(257, 177);
+            this.button_skills_buff_add.Location = new System.Drawing.Point(259, 177);
             this.button_skills_buff_add.Name = "button_skills_buff_add";
             this.button_skills_buff_add.Size = new System.Drawing.Size(35, 23);
             this.button_skills_buff_add.TabIndex = 5;
@@ -1333,7 +1318,7 @@
             // button_skills_attack_remove
             // 
             this.button_skills_attack_remove.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button_skills_attack_remove.Location = new System.Drawing.Point(216, 59);
+            this.button_skills_attack_remove.Location = new System.Drawing.Point(218, 59);
             this.button_skills_attack_remove.Name = "button_skills_attack_remove";
             this.button_skills_attack_remove.Size = new System.Drawing.Size(35, 23);
             this.button_skills_attack_remove.TabIndex = 78;
@@ -1344,7 +1329,7 @@
             // button_skills_attack_add
             // 
             this.button_skills_attack_add.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button_skills_attack_add.Location = new System.Drawing.Point(257, 59);
+            this.button_skills_attack_add.Location = new System.Drawing.Point(259, 59);
             this.button_skills_attack_add.Name = "button_skills_attack_add";
             this.button_skills_attack_add.Size = new System.Drawing.Size(35, 23);
             this.button_skills_attack_add.TabIndex = 79;
@@ -1355,7 +1340,7 @@
             // listBox_skills_buff
             // 
             this.listBox_skills_buff.FormattingEnabled = true;
-            this.listBox_skills_buff.Location = new System.Drawing.Point(315, 129);
+            this.listBox_skills_buff.Location = new System.Drawing.Point(332, 129);
             this.listBox_skills_buff.Name = "listBox_skills_buff";
             this.listBox_skills_buff.Size = new System.Drawing.Size(175, 108);
             this.listBox_skills_buff.TabIndex = 2;
@@ -1363,7 +1348,7 @@
             // listBox_skills_attack
             // 
             this.listBox_skills_attack.FormattingEnabled = true;
-            this.listBox_skills_attack.Location = new System.Drawing.Point(315, 15);
+            this.listBox_skills_attack.Location = new System.Drawing.Point(332, 15);
             this.listBox_skills_attack.Name = "listBox_skills_attack";
             this.listBox_skills_attack.Size = new System.Drawing.Size(175, 108);
             this.listBox_skills_attack.TabIndex = 81;
@@ -1386,7 +1371,7 @@
             this.tab_loop.ImageIndex = 5;
             this.tab_loop.Location = new System.Drawing.Point(4, 24);
             this.tab_loop.Name = "tab_loop";
-            this.tab_loop.Size = new System.Drawing.Size(511, 289);
+            this.tab_loop.Size = new System.Drawing.Size(533, 289);
             this.tab_loop.TabIndex = 6;
             this.tab_loop.Text = "Loop";
             this.tab_loop.UseVisualStyleBackColor = true;
@@ -1426,7 +1411,6 @@
             this.textBox_loopunicount.Size = new System.Drawing.Size(49, 20);
             this.textBox_loopunicount.TabIndex = 63;
             this.textBox_loopunicount.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.textBox_loopunicount.TextChanged += new System.EventHandler(this.textBox_loopunicount_TextChanged);
             // 
             // checkBox_loopuni
             // 
@@ -1437,7 +1421,6 @@
             this.checkBox_loopuni.TabIndex = 62;
             this.checkBox_loopuni.Text = "Buy Universal Pills";
             this.checkBox_loopuni.UseVisualStyleBackColor = true;
-            this.checkBox_loopuni.CheckedChanged += new System.EventHandler(this.checkBox_Manager);
             // 
             // comboBox_uniloop
             // 
@@ -1447,7 +1430,6 @@
             this.comboBox_uniloop.Name = "comboBox_uniloop";
             this.comboBox_uniloop.Size = new System.Drawing.Size(213, 21);
             this.comboBox_uniloop.TabIndex = 61;
-            this.comboBox_uniloop.SelectedIndexChanged += new System.EventHandler(this.comboBox_uniloop_SelectedIndexChanged);
             // 
             // checkBox_loophp
             // 
@@ -1458,7 +1440,6 @@
             this.checkBox_loophp.TabIndex = 46;
             this.checkBox_loophp.Text = "Buy HP Potion";
             this.checkBox_loophp.UseVisualStyleBackColor = true;
-            this.checkBox_loophp.CheckedChanged += new System.EventHandler(this.checkBox_Manager);
             // 
             // textBox_loopscrollscount
             // 
@@ -1468,7 +1449,6 @@
             this.textBox_loopscrollscount.Size = new System.Drawing.Size(49, 20);
             this.textBox_loopscrollscount.TabIndex = 60;
             this.textBox_loopscrollscount.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.textBox_loopscrollscount.TextChanged += new System.EventHandler(this.textBox_loopscrollscount_TextChanged);
             // 
             // comboBox_hploop
             // 
@@ -1478,7 +1458,6 @@
             this.comboBox_hploop.Name = "comboBox_hploop";
             this.comboBox_hploop.Size = new System.Drawing.Size(213, 21);
             this.comboBox_hploop.TabIndex = 50;
-            this.comboBox_hploop.SelectedIndexChanged += new System.EventHandler(this.comboBox_hploop_SelectedIndexChanged);
             // 
             // comboBox_scrollsloop
             // 
@@ -1488,7 +1467,6 @@
             this.comboBox_scrollsloop.Name = "comboBox_scrollsloop";
             this.comboBox_scrollsloop.Size = new System.Drawing.Size(213, 21);
             this.comboBox_scrollsloop.TabIndex = 58;
-            this.comboBox_scrollsloop.SelectedIndexChanged += new System.EventHandler(this.comboBox_scrollsloop_SelectedIndexChanged);
             // 
             // checkBox_loopscrolls
             // 
@@ -1499,7 +1477,6 @@
             this.checkBox_loopscrolls.TabIndex = 59;
             this.checkBox_loopscrolls.Text = "Buy Return Scrolls";
             this.checkBox_loopscrolls.UseVisualStyleBackColor = true;
-            this.checkBox_loopscrolls.CheckedChanged += new System.EventHandler(this.checkBox_Manager);
             // 
             // textBox_loophpcount
             // 
@@ -1509,7 +1486,6 @@
             this.textBox_loophpcount.Size = new System.Drawing.Size(49, 20);
             this.textBox_loophpcount.TabIndex = 48;
             this.textBox_loophpcount.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.textBox_loophpcount.TextChanged += new System.EventHandler(this.textBox_loophpcount_TextChanged);
             // 
             // comboBox_mploop
             // 
@@ -1519,7 +1495,6 @@
             this.comboBox_mploop.Name = "comboBox_mploop";
             this.comboBox_mploop.Size = new System.Drawing.Size(213, 21);
             this.comboBox_mploop.TabIndex = 51;
-            this.comboBox_mploop.SelectedIndexChanged += new System.EventHandler(this.comboBox_mploop_SelectedIndexChanged);
             // 
             // checkBox_loopdrugs
             // 
@@ -1530,7 +1505,6 @@
             this.checkBox_loopdrugs.TabIndex = 55;
             this.checkBox_loopdrugs.Text = "Buy Speed Potions";
             this.checkBox_loopdrugs.UseVisualStyleBackColor = true;
-            this.checkBox_loopdrugs.CheckedChanged += new System.EventHandler(this.checkBox_Manager);
             // 
             // textBox_loopdrugscount
             // 
@@ -1540,7 +1514,6 @@
             this.textBox_loopdrugscount.Size = new System.Drawing.Size(49, 20);
             this.textBox_loopdrugscount.TabIndex = 57;
             this.textBox_loopdrugscount.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.textBox_loopdrugscount.TextChanged += new System.EventHandler(this.textBox_loopdrugscount_TextChanged);
             // 
             // textBox_loopmpcount
             // 
@@ -1550,7 +1523,6 @@
             this.textBox_loopmpcount.Size = new System.Drawing.Size(49, 20);
             this.textBox_loopmpcount.TabIndex = 49;
             this.textBox_loopmpcount.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.textBox_loopmpcount.TextChanged += new System.EventHandler(this.textBox_loopmpcount_TextChanged);
             // 
             // comboBox_drugsloop
             // 
@@ -1560,7 +1532,6 @@
             this.comboBox_drugsloop.Name = "comboBox_drugsloop";
             this.comboBox_drugsloop.Size = new System.Drawing.Size(213, 21);
             this.comboBox_drugsloop.TabIndex = 56;
-            this.comboBox_drugsloop.SelectedIndexChanged += new System.EventHandler(this.comboBox_drugsloop_SelectedIndexChanged);
             // 
             // checkBox_loopmp
             // 
@@ -1571,7 +1542,6 @@
             this.checkBox_loopmp.TabIndex = 47;
             this.checkBox_loopmp.Text = "Buy MP Potion";
             this.checkBox_loopmp.UseVisualStyleBackColor = true;
-            this.checkBox_loopmp.CheckedChanged += new System.EventHandler(this.checkBox_Manager);
             // 
             // comboBox_ammoloop
             // 
@@ -1581,7 +1551,6 @@
             this.comboBox_ammoloop.Name = "comboBox_ammoloop";
             this.comboBox_ammoloop.Size = new System.Drawing.Size(213, 21);
             this.comboBox_ammoloop.TabIndex = 53;
-            this.comboBox_ammoloop.SelectedIndexChanged += new System.EventHandler(this.comboBox_ammoloop_SelectedIndexChanged);
             // 
             // checkBox_loopammo
             // 
@@ -1592,7 +1561,6 @@
             this.checkBox_loopammo.TabIndex = 52;
             this.checkBox_loopammo.Text = "Buy Ammo";
             this.checkBox_loopammo.UseVisualStyleBackColor = true;
-            this.checkBox_loopammo.CheckedChanged += new System.EventHandler(this.checkBox_Manager);
             // 
             // textBox_loopammocount
             // 
@@ -1602,7 +1570,6 @@
             this.textBox_loopammocount.Size = new System.Drawing.Size(49, 20);
             this.textBox_loopammocount.TabIndex = 54;
             this.textBox_loopammocount.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.textBox_loopammocount.TextChanged += new System.EventHandler(this.textBox_loopammocount_TextChanged);
             // 
             // button_searchloopscript
             // 
@@ -1612,7 +1579,7 @@
             this.button_searchloopscript.TabIndex = 41;
             this.button_searchloopscript.Text = "Load";
             this.button_searchloopscript.UseVisualStyleBackColor = true;
-            this.button_searchloopscript.Click += new System.EventHandler(this.button_Manager);
+            this.button_searchloopscript.Click += new System.EventHandler(this.button_searchloopscript_Click);
             // 
             // textBox_loopscript
             // 
@@ -1630,7 +1597,7 @@
             this.button_looprecord.TabIndex = 0;
             this.button_looprecord.Text = "Start Record";
             this.button_looprecord.UseVisualStyleBackColor = true;
-            this.button_looprecord.Click += new System.EventHandler(this.button_Manager);
+            this.button_looprecord.Click += new System.EventHandler(this.button_looprecord_Click);
             // 
             // tab_chat
             // 
@@ -1638,7 +1605,7 @@
             this.tab_chat.ImageIndex = 6;
             this.tab_chat.Location = new System.Drawing.Point(4, 24);
             this.tab_chat.Name = "tab_chat";
-            this.tab_chat.Size = new System.Drawing.Size(511, 289);
+            this.tab_chat.Size = new System.Drawing.Size(533, 289);
             this.tab_chat.TabIndex = 7;
             this.tab_chat.Text = "Chat";
             this.tab_chat.UseVisualStyleBackColor = true;
@@ -1653,7 +1620,7 @@
             this.tabControl2.Location = new System.Drawing.Point(8, 6);
             this.tabControl2.Name = "tabControl2";
             this.tabControl2.SelectedIndex = 0;
-            this.tabControl2.Size = new System.Drawing.Size(490, 275);
+            this.tabControl2.Size = new System.Drawing.Size(508, 275);
             this.tabControl2.TabIndex = 2;
             // 
             // tabPage1
@@ -1663,7 +1630,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(482, 249);
+            this.tabPage1.Size = new System.Drawing.Size(500, 249);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "All";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -1674,7 +1641,7 @@
             this.richTextBox_chat.Location = new System.Drawing.Point(9, 6);
             this.richTextBox_chat.Name = "richTextBox_chat";
             this.richTextBox_chat.ReadOnly = true;
-            this.richTextBox_chat.Size = new System.Drawing.Size(470, 211);
+            this.richTextBox_chat.Size = new System.Drawing.Size(485, 211);
             this.richTextBox_chat.TabIndex = 0;
             this.richTextBox_chat.Text = "";
             // 
@@ -1684,7 +1651,7 @@
             this.textBox_chat.ForeColor = System.Drawing.SystemColors.Window;
             this.textBox_chat.Location = new System.Drawing.Point(6, 223);
             this.textBox_chat.Name = "textBox_chat";
-            this.textBox_chat.Size = new System.Drawing.Size(470, 20);
+            this.textBox_chat.Size = new System.Drawing.Size(488, 20);
             this.textBox_chat.TabIndex = 1;
             this.textBox_chat.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox_chat_KeyPress);
             // 
@@ -1694,7 +1661,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(482, 249);
+            this.tabPage2.Size = new System.Drawing.Size(500, 249);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Party";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -1705,7 +1672,7 @@
             this.richTextBox_chat_party.Location = new System.Drawing.Point(6, 6);
             this.richTextBox_chat_party.Name = "richTextBox_chat_party";
             this.richTextBox_chat_party.ReadOnly = true;
-            this.richTextBox_chat_party.Size = new System.Drawing.Size(470, 237);
+            this.richTextBox_chat_party.Size = new System.Drawing.Size(488, 237);
             this.richTextBox_chat_party.TabIndex = 1;
             this.richTextBox_chat_party.Text = "";
             // 
@@ -1714,7 +1681,7 @@
             this.tabPage3.Controls.Add(this.richTextBox_chat_guild);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Size = new System.Drawing.Size(482, 249);
+            this.tabPage3.Size = new System.Drawing.Size(500, 249);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Guild";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -1725,7 +1692,7 @@
             this.richTextBox_chat_guild.Location = new System.Drawing.Point(6, 6);
             this.richTextBox_chat_guild.Name = "richTextBox_chat_guild";
             this.richTextBox_chat_guild.ReadOnly = true;
-            this.richTextBox_chat_guild.Size = new System.Drawing.Size(470, 237);
+            this.richTextBox_chat_guild.Size = new System.Drawing.Size(489, 237);
             this.richTextBox_chat_guild.TabIndex = 2;
             this.richTextBox_chat_guild.Text = "";
             // 
@@ -1734,7 +1701,7 @@
             this.tabPage4.Controls.Add(this.richTextBox_chat_union);
             this.tabPage4.Location = new System.Drawing.Point(4, 22);
             this.tabPage4.Name = "tabPage4";
-            this.tabPage4.Size = new System.Drawing.Size(482, 249);
+            this.tabPage4.Size = new System.Drawing.Size(500, 249);
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "Union";
             this.tabPage4.UseVisualStyleBackColor = true;
@@ -1745,7 +1712,7 @@
             this.richTextBox_chat_union.Location = new System.Drawing.Point(6, 6);
             this.richTextBox_chat_union.Name = "richTextBox_chat_union";
             this.richTextBox_chat_union.ReadOnly = true;
-            this.richTextBox_chat_union.Size = new System.Drawing.Size(470, 237);
+            this.richTextBox_chat_union.Size = new System.Drawing.Size(489, 237);
             this.richTextBox_chat_union.TabIndex = 3;
             this.richTextBox_chat_union.Text = "";
             // 
@@ -1754,7 +1721,7 @@
             this.tabPage5.Controls.Add(this.richTextBox_chat_academy);
             this.tabPage5.Location = new System.Drawing.Point(4, 22);
             this.tabPage5.Name = "tabPage5";
-            this.tabPage5.Size = new System.Drawing.Size(482, 249);
+            this.tabPage5.Size = new System.Drawing.Size(500, 249);
             this.tabPage5.TabIndex = 4;
             this.tabPage5.Text = "Academy";
             this.tabPage5.UseVisualStyleBackColor = true;
@@ -1765,61 +1732,95 @@
             this.richTextBox_chat_academy.Location = new System.Drawing.Point(6, 6);
             this.richTextBox_chat_academy.Name = "richTextBox_chat_academy";
             this.richTextBox_chat_academy.ReadOnly = true;
-            this.richTextBox_chat_academy.Size = new System.Drawing.Size(470, 237);
+            this.richTextBox_chat_academy.Size = new System.Drawing.Size(489, 237);
             this.richTextBox_chat_academy.TabIndex = 3;
             this.richTextBox_chat_academy.Text = "";
             // 
             // tab_players
             // 
-            this.tab_players.Controls.Add(this.tabControl3);
+            this.tab_players.Controls.Add(this.checkBox_partytype4);
+            this.tab_players.Controls.Add(this.checkBox_partytype3);
+            this.tab_players.Controls.Add(this.checkBox_partytype2);
+            this.tab_players.Controls.Add(this.checkBox_partytype1);
+            this.tab_players.Controls.Add(this.checkBox_partyautoaccept);
             this.tab_players.ImageIndex = 7;
             this.tab_players.Location = new System.Drawing.Point(4, 24);
             this.tab_players.Name = "tab_players";
-            this.tab_players.Size = new System.Drawing.Size(511, 289);
+            this.tab_players.Size = new System.Drawing.Size(533, 289);
             this.tab_players.TabIndex = 8;
-            this.tab_players.Text = "Players";
+            this.tab_players.Text = "Party";
             this.tab_players.UseVisualStyleBackColor = true;
             // 
-            // tabControl3
+            // checkBox_partytype4
             // 
-            this.tabControl3.Controls.Add(this.tab_party);
-            this.tabControl3.Controls.Add(this.tab_charspy);
-            this.tabControl3.Location = new System.Drawing.Point(3, 3);
-            this.tabControl3.Name = "tabControl3";
-            this.tabControl3.SelectedIndex = 0;
-            this.tabControl3.Size = new System.Drawing.Size(505, 279);
-            this.tabControl3.TabIndex = 4;
+            this.checkBox_partytype4.AutoSize = true;
+            this.checkBox_partytype4.Location = new System.Drawing.Point(33, 92);
+            this.checkBox_partytype4.Name = "checkBox_partytype4";
+            this.checkBox_partytype4.Size = new System.Drawing.Size(153, 17);
+            this.checkBox_partytype4.TabIndex = 4;
+            this.checkBox_partytype4.Text = "Exp Share / Item Distribute";
+            this.checkBox_partytype4.UseVisualStyleBackColor = true;
             // 
-            // tab_party
+            // checkBox_partytype3
             // 
-            this.tab_party.Location = new System.Drawing.Point(4, 22);
-            this.tab_party.Name = "tab_party";
-            this.tab_party.Padding = new System.Windows.Forms.Padding(3);
-            this.tab_party.Size = new System.Drawing.Size(497, 253);
-            this.tab_party.TabIndex = 1;
-            this.tab_party.Text = "Party";
-            this.tab_party.UseVisualStyleBackColor = true;
+            this.checkBox_partytype3.AutoSize = true;
+            this.checkBox_partytype3.Location = new System.Drawing.Point(33, 73);
+            this.checkBox_partytype3.Name = "checkBox_partytype3";
+            this.checkBox_partytype3.Size = new System.Drawing.Size(153, 17);
+            this.checkBox_partytype3.TabIndex = 3;
+            this.checkBox_partytype3.Text = "Exp Distribute / Item Share";
+            this.checkBox_partytype3.UseVisualStyleBackColor = true;
             // 
-            // tab_charspy
+            // checkBox_partytype2
             // 
-            this.tab_charspy.Controls.Add(this.listBox_players);
-            this.tab_charspy.Controls.Add(this.listView_player);
-            this.tab_charspy.Location = new System.Drawing.Point(4, 22);
-            this.tab_charspy.Name = "tab_charspy";
-            this.tab_charspy.Padding = new System.Windows.Forms.Padding(3);
-            this.tab_charspy.Size = new System.Drawing.Size(497, 253);
-            this.tab_charspy.TabIndex = 0;
-            this.tab_charspy.Text = "CharSpy";
-            this.tab_charspy.UseVisualStyleBackColor = true;
+            this.checkBox_partytype2.AutoSize = true;
+            this.checkBox_partytype2.Location = new System.Drawing.Point(33, 54);
+            this.checkBox_partytype2.Name = "checkBox_partytype2";
+            this.checkBox_partytype2.Size = new System.Drawing.Size(153, 17);
+            this.checkBox_partytype2.TabIndex = 2;
+            this.checkBox_partytype2.Text = "Exp Share / Item Distribute";
+            this.checkBox_partytype2.UseVisualStyleBackColor = true;
+            // 
+            // checkBox_partytype1
+            // 
+            this.checkBox_partytype1.AutoSize = true;
+            this.checkBox_partytype1.Location = new System.Drawing.Point(33, 35);
+            this.checkBox_partytype1.Name = "checkBox_partytype1";
+            this.checkBox_partytype1.Size = new System.Drawing.Size(169, 17);
+            this.checkBox_partytype1.TabIndex = 1;
+            this.checkBox_partytype1.Text = "Exp Distribute / Item Distribute";
+            this.checkBox_partytype1.UseVisualStyleBackColor = true;
+            // 
+            // checkBox_partyautoaccept
+            // 
+            this.checkBox_partyautoaccept.AutoSize = true;
+            this.checkBox_partyautoaccept.Location = new System.Drawing.Point(19, 15);
+            this.checkBox_partyautoaccept.Name = "checkBox_partyautoaccept";
+            this.checkBox_partyautoaccept.Size = new System.Drawing.Size(141, 17);
+            this.checkBox_partyautoaccept.TabIndex = 0;
+            this.checkBox_partyautoaccept.Text = "Auto Accept Party Invite";
+            this.checkBox_partyautoaccept.UseVisualStyleBackColor = true;
+            // 
+            // tab_spy
+            // 
+            this.tab_spy.Controls.Add(this.listBox_players);
+            this.tab_spy.Controls.Add(this.listView_player);
+            this.tab_spy.ImageIndex = 0;
+            this.tab_spy.Location = new System.Drawing.Point(4, 24);
+            this.tab_spy.Name = "tab_spy";
+            this.tab_spy.Size = new System.Drawing.Size(533, 289);
+            this.tab_spy.TabIndex = 10;
+            this.tab_spy.Text = "Spy";
+            this.tab_spy.UseVisualStyleBackColor = true;
             // 
             // listBox_players
             // 
             this.listBox_players.FormattingEnabled = true;
-            this.listBox_players.Location = new System.Drawing.Point(6, 6);
+            this.listBox_players.Location = new System.Drawing.Point(14, 15);
             this.listBox_players.Name = "listBox_players";
-            this.listBox_players.Size = new System.Drawing.Size(141, 238);
+            this.listBox_players.Size = new System.Drawing.Size(141, 264);
             this.listBox_players.Sorted = true;
-            this.listBox_players.TabIndex = 1;
+            this.listBox_players.TabIndex = 4;
             this.listBox_players.SelectedIndexChanged += new System.EventHandler(this.listBox_players_SelectedIndexChanged);
             // 
             // listView_player
@@ -1828,10 +1829,10 @@
             this.columnHeader5,
             this.columnHeader6});
             this.listView_player.FullRowSelect = true;
-            this.listView_player.Location = new System.Drawing.Point(153, 6);
+            this.listView_player.Location = new System.Drawing.Point(161, 15);
             this.listView_player.Name = "listView_player";
-            this.listView_player.Size = new System.Drawing.Size(338, 238);
-            this.listView_player.TabIndex = 3;
+            this.listView_player.Size = new System.Drawing.Size(356, 264);
+            this.listView_player.TabIndex = 5;
             this.listView_player.UseCompatibleStateImageBehavior = false;
             this.listView_player.View = System.Windows.Forms.View.Details;
             // 
@@ -1843,7 +1844,7 @@
             // columnHeader6
             // 
             this.columnHeader6.Text = "Value";
-            this.columnHeader6.Width = 201;
+            this.columnHeader6.Width = 260;
             // 
             // tab_alchemy
             // 
@@ -1861,14 +1862,14 @@
             this.tab_alchemy.ImageIndex = 8;
             this.tab_alchemy.Location = new System.Drawing.Point(4, 24);
             this.tab_alchemy.Name = "tab_alchemy";
-            this.tab_alchemy.Size = new System.Drawing.Size(511, 289);
+            this.tab_alchemy.Size = new System.Drawing.Size(533, 289);
             this.tab_alchemy.TabIndex = 9;
             this.tab_alchemy.Text = "Alchemy";
             this.tab_alchemy.UseVisualStyleBackColor = true;
             // 
             // richTextBox_alchemy
             // 
-            this.richTextBox_alchemy.Location = new System.Drawing.Point(324, 155);
+            this.richTextBox_alchemy.Location = new System.Drawing.Point(339, 157);
             this.richTextBox_alchemy.Name = "richTextBox_alchemy";
             this.richTextBox_alchemy.Size = new System.Drawing.Size(168, 104);
             this.richTextBox_alchemy.TabIndex = 26;
@@ -1876,7 +1877,7 @@
             // 
             // button_stopfuse
             // 
-            this.button_stopfuse.Location = new System.Drawing.Point(410, 127);
+            this.button_stopfuse.Location = new System.Drawing.Point(425, 129);
             this.button_stopfuse.Name = "button_stopfuse";
             this.button_stopfuse.Size = new System.Drawing.Size(80, 23);
             this.button_stopfuse.TabIndex = 25;
@@ -1886,19 +1887,18 @@
             // button_startfuse
             // 
             this.button_startfuse.Enabled = false;
-            this.button_startfuse.Location = new System.Drawing.Point(324, 127);
+            this.button_startfuse.Location = new System.Drawing.Point(339, 129);
             this.button_startfuse.Name = "button_startfuse";
             this.button_startfuse.Size = new System.Drawing.Size(80, 23);
             this.button_startfuse.TabIndex = 24;
             this.button_startfuse.Text = "Start Fuse";
             this.button_startfuse.UseVisualStyleBackColor = true;
-            this.button_startfuse.Click += new System.EventHandler(this.button_Manager);
             // 
             // comboBox1
             // 
             this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(449, 100);
+            this.comboBox1.Location = new System.Drawing.Point(464, 102);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(41, 21);
             this.comboBox1.TabIndex = 23;
@@ -1906,7 +1906,7 @@
             // checkBox2
             // 
             this.checkBox2.AutoSize = true;
-            this.checkBox2.Location = new System.Drawing.Point(328, 102);
+            this.checkBox2.Location = new System.Drawing.Point(343, 104);
             this.checkBox2.Name = "checkBox2";
             this.checkBox2.Size = new System.Drawing.Size(115, 17);
             this.checkBox2.TabIndex = 22;
@@ -1925,16 +1925,15 @@
             "5",
             "6",
             "7"});
-            this.comboBox_plustoreach.Location = new System.Drawing.Point(449, 75);
+            this.comboBox_plustoreach.Location = new System.Drawing.Point(464, 77);
             this.comboBox_plustoreach.Name = "comboBox_plustoreach";
             this.comboBox_plustoreach.Size = new System.Drawing.Size(41, 21);
             this.comboBox_plustoreach.TabIndex = 21;
-            this.comboBox_plustoreach.SelectedIndexChanged += new System.EventHandler(this.comboBox_Manager);
             // 
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(325, 78);
+            this.label13.Location = new System.Drawing.Point(340, 80);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(72, 13);
             this.label13.TabIndex = 20;
@@ -1943,7 +1942,7 @@
             // label_itemtype
             // 
             this.label_itemtype.AutoSize = true;
-            this.label_itemtype.Location = new System.Drawing.Point(398, 49);
+            this.label_itemtype.Location = new System.Drawing.Point(413, 51);
             this.label_itemtype.Name = "label_itemtype";
             this.label_itemtype.Size = new System.Drawing.Size(43, 13);
             this.label_itemtype.TabIndex = 19;
@@ -1952,7 +1951,7 @@
             // label20
             // 
             this.label20.AutoSize = true;
-            this.label20.Location = new System.Drawing.Point(325, 49);
+            this.label20.Location = new System.Drawing.Point(340, 51);
             this.label20.Name = "label20";
             this.label20.Size = new System.Drawing.Size(54, 13);
             this.label20.TabIndex = 18;
@@ -1960,7 +1959,7 @@
             // 
             // textBox_fuseitem
             // 
-            this.textBox_fuseitem.Location = new System.Drawing.Point(329, 23);
+            this.textBox_fuseitem.Location = new System.Drawing.Point(344, 25);
             this.textBox_fuseitem.Name = "textBox_fuseitem";
             this.textBox_fuseitem.Size = new System.Drawing.Size(161, 20);
             this.textBox_fuseitem.TabIndex = 5;
@@ -1972,7 +1971,7 @@
             this.columnHeader8,
             this.columnHeader9});
             this.listView_inventory.FullRowSelect = true;
-            this.listView_inventory.Location = new System.Drawing.Point(17, 23);
+            this.listView_inventory.Location = new System.Drawing.Point(29, 23);
             this.listView_inventory.Name = "listView_inventory";
             this.listView_inventory.Size = new System.Drawing.Size(279, 238);
             this.listView_inventory.TabIndex = 2;
@@ -2011,18 +2010,18 @@
             // 
             // button_hide
             // 
-            this.button_hide.Location = new System.Drawing.Point(441, 9);
+            this.button_hide.Location = new System.Drawing.Point(398, 10);
             this.button_hide.Name = "button_hide";
-            this.button_hide.Size = new System.Drawing.Size(80, 22);
+            this.button_hide.Size = new System.Drawing.Size(72, 22);
             this.button_hide.TabIndex = 4;
             this.button_hide.Text = "Hide Client";
             this.button_hide.UseVisualStyleBackColor = true;
-            this.button_hide.Click += new System.EventHandler(this.button_Manager);
+            this.button_hide.Click += new System.EventHandler(this.button_hide_Click);
             // 
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(145, 15);
+            this.label7.Location = new System.Drawing.Point(118, 15);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(37, 13);
             this.label7.TabIndex = 32;
@@ -2031,7 +2030,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(13, 15);
+            this.label6.Location = new System.Drawing.Point(7, 15);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(41, 13);
             this.label6.TabIndex = 31;
@@ -2040,41 +2039,41 @@
             // progressBar_mpdisplay
             // 
             this.progressBar_mpdisplay.BackColor = System.Drawing.SystemColors.ActiveBorder;
-            this.progressBar_mpdisplay.Location = new System.Drawing.Point(188, 15);
+            this.progressBar_mpdisplay.Location = new System.Drawing.Point(152, 15);
             this.progressBar_mpdisplay.Name = "progressBar_mpdisplay";
-            this.progressBar_mpdisplay.Size = new System.Drawing.Size(79, 14);
+            this.progressBar_mpdisplay.Size = new System.Drawing.Size(65, 14);
             this.progressBar_mpdisplay.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
             this.progressBar_mpdisplay.TabIndex = 22;
             // 
             // progressBar_hpdisplay
             // 
             this.progressBar_hpdisplay.BackColor = System.Drawing.SystemColors.ActiveBorder;
-            this.progressBar_hpdisplay.Location = new System.Drawing.Point(60, 15);
+            this.progressBar_hpdisplay.Location = new System.Drawing.Point(47, 15);
             this.progressBar_hpdisplay.Name = "progressBar_hpdisplay";
-            this.progressBar_hpdisplay.Size = new System.Drawing.Size(79, 14);
+            this.progressBar_hpdisplay.Size = new System.Drawing.Size(65, 14);
             this.progressBar_hpdisplay.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
             this.progressBar_hpdisplay.TabIndex = 21;
             // 
             // button_startbot
             // 
             this.button_startbot.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button_startbot.Location = new System.Drawing.Point(273, 9);
+            this.button_startbot.Location = new System.Drawing.Point(223, 10);
             this.button_startbot.Name = "button_startbot";
-            this.button_startbot.Size = new System.Drawing.Size(80, 22);
+            this.button_startbot.Size = new System.Drawing.Size(79, 22);
             this.button_startbot.TabIndex = 2;
             this.button_startbot.Text = "Start Training";
             this.button_startbot.UseVisualStyleBackColor = true;
-            this.button_startbot.Click += new System.EventHandler(this.button_Manager);
+            this.button_startbot.Click += new System.EventHandler(this.button_startbot_Click);
             // 
             // button_stopbot
             // 
-            this.button_stopbot.Location = new System.Drawing.Point(357, 9);
+            this.button_stopbot.Location = new System.Drawing.Point(308, 10);
             this.button_stopbot.Name = "button_stopbot";
-            this.button_stopbot.Size = new System.Drawing.Size(80, 22);
+            this.button_stopbot.Size = new System.Drawing.Size(84, 22);
             this.button_stopbot.TabIndex = 3;
             this.button_stopbot.Text = "Stop Training";
             this.button_stopbot.UseVisualStyleBackColor = true;
-            this.button_stopbot.Click += new System.EventHandler(this.button_Manager);
+            this.button_stopbot.Click += new System.EventHandler(this.button_stopbot_Click);
             // 
             // label_pm
             // 
@@ -2088,12 +2087,23 @@
             this.label_pm.Text = "PM";
             this.label_pm.Visible = false;
             // 
+            // button_save
+            // 
+            this.button_save.Location = new System.Drawing.Point(476, 10);
+            this.button_save.Name = "button_save";
+            this.button_save.Size = new System.Drawing.Size(75, 22);
+            this.button_save.TabIndex = 34;
+            this.button_save.Text = "Save Config";
+            this.button_save.UseVisualStyleBackColor = true;
+            this.button_save.Click += new System.EventHandler(this.button_save_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(539, 359);
+            this.ClientSize = new System.Drawing.Size(561, 359);
+            this.Controls.Add(this.button_save);
             this.Controls.Add(this.label_pm);
             this.Controls.Add(this.button_stopbot);
             this.Controls.Add(this.button_hide);
@@ -2141,8 +2151,8 @@
             this.tabPage4.ResumeLayout(false);
             this.tabPage5.ResumeLayout(false);
             this.tab_players.ResumeLayout(false);
-            this.tabControl3.ResumeLayout(false);
-            this.tab_charspy.ResumeLayout(false);
+            this.tab_players.PerformLayout();
+            this.tab_spy.ResumeLayout(false);
             this.tab_alchemy.ResumeLayout(false);
             this.tab_alchemy.PerformLayout();
             this.ResumeLayout(false);
@@ -2272,17 +2282,13 @@
         private System.Windows.Forms.RichTextBox richTextBox_chat_union;
         private System.Windows.Forms.RichTextBox richTextBox_chat_academy;
         private System.Windows.Forms.TabPage tab_players;
-        private System.Windows.Forms.ListView listView_player;
-        private System.Windows.Forms.ColumnHeader columnHeader5;
-        private System.Windows.Forms.ColumnHeader columnHeader6;
-        private System.Windows.Forms.ListBox listBox_players;
         private System.Windows.Forms.ComboBox comboBox_profile;
         private System.Windows.Forms.Label label_pm;
         private System.Windows.Forms.ComboBox comboBox_uniloop;
         private System.Windows.Forms.CheckBox checkBox_loopuni;
         private System.Windows.Forms.TextBox textBox_loopunicount;
         private System.Windows.Forms.CheckBox checkBox_useuni;
-        private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.CheckBox checkBox_logpackets;
         private System.Windows.Forms.TabPage tab_alchemy;
         private System.Windows.Forms.RichTextBox richTextBox_alchemy;
         private System.Windows.Forms.Button button_stopfuse;
@@ -2298,9 +2304,6 @@
         private System.Windows.Forms.ColumnHeader columnHeader7;
         private System.Windows.Forms.ColumnHeader columnHeader8;
         private System.Windows.Forms.ColumnHeader columnHeader9;
-        private System.Windows.Forms.TabControl tabControl3;
-        private System.Windows.Forms.TabPage tab_charspy;
-        private System.Windows.Forms.TabPage tab_party;
         private System.Windows.Forms.Label label_clientless;
         private System.Windows.Forms.Label label16;
         private System.Windows.Forms.ListView listView_items;
@@ -2326,6 +2329,17 @@
         private System.Windows.Forms.ComboBox comboBox_itemrace;
         private System.Windows.Forms.Label label28;
         private System.Windows.Forms.Button button_resetitemfilter;
+        private System.Windows.Forms.TabPage tab_spy;
+        private System.Windows.Forms.ListBox listBox_players;
+        private System.Windows.Forms.ListView listView_player;
+        private System.Windows.Forms.ColumnHeader columnHeader5;
+        private System.Windows.Forms.ColumnHeader columnHeader6;
+        private System.Windows.Forms.CheckBox checkBox_partyautoaccept;
+        private System.Windows.Forms.CheckBox checkBox_partytype4;
+        private System.Windows.Forms.CheckBox checkBox_partytype3;
+        private System.Windows.Forms.CheckBox checkBox_partytype2;
+        private System.Windows.Forms.CheckBox checkBox_partytype1;
+        private System.Windows.Forms.Button button_save;
     }
 }
 

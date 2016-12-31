@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ZPBot.Common.Items;
+using ZPBot.Common.Resources;
 
 namespace ZPBot.Common.Characters
 {
@@ -45,7 +46,7 @@ namespace ZPBot.Common.Characters
         {
             lock (_petList)
             {
-                foreach (var pet in _petList.Where(pet => (pet.CurHealth / (float)pet.MaxHealth * 100) <= Config.UsePethpPercent))
+                foreach (var pet in _petList.Where(pet => (pet.CurHealth / (float)pet.MaxHealth * 100) <= 70))
                 {
                     return pet;
                 }

@@ -7,6 +7,20 @@ namespace ZPBot.Common
     internal partial class GlobalManager
     {
         private Packet _buffer;
+        public string LoginId { get; set; }
+        public string LoginPw { get; set; }
+        public string LoginChar { get; set; }
+
+        private bool _autologin;
+        public bool Autologin
+        {
+            get { return _autologin; }
+            set
+            {
+                _autologin = value;
+                OnPropertyChanged(nameof(Autologin));
+            }
+        }
 
         public bool AgentServerToClient(ref Packet packet)
         {
@@ -21,26 +35,23 @@ namespace ZPBot.Common
                 switch (packet.Opcode)
                 {
                     case 0x2005:
-                        if (Game.Clientless && (Client.ServerLoginid != 0))
+                        if (Clientless && (Client.ServerLoginid != 0))
                         {
                             var newPacket = new Packet(0x6102, true);
                             newPacket.WriteUInt8(Client.ClientLocale);
-                            newPacket.WriteAscii(Config.LoginId);
-                            newPacket.WriteAscii(Config.LoginPw);
+                            newPacket.WriteAscii(LoginId);
+                            newPacket.WriteAscii(LoginPw);
                             newPacket.WriteUInt16(Client.ServerId);
                             Silkroadproxy.Send(newPacket, Proxy.EPacketdestination.GatewayRemote);
                         }
                         break;
                     case 0x2322:
-                        if (Config.Autologin && (Client.ImageCode.Length > 0))
+                        if (Autologin && (Client.ImageCode.Length > 0))
                         {
                             PacketManager.ImageCode();
                             return false;
                         }
 
-                        break;
-                    case 0xB007:
-                        PacketManager.CharListing();
                         break;
                     case 0x3011:
                         Died(packet);
@@ -65,7 +76,7 @@ namespace ZPBot.Common
                         _buffer?.WriteUInt8Array(packet.GetBytes());
                         break;
                     case 0x3020:
-                        if (Game.Clientless)
+                        if (Clientless)
                             PacketManager.EndTeleport();
 
                         break;
@@ -113,7 +124,7 @@ namespace ZPBot.Common
                         break;
                     case 0x34B5:
                         Game.IsTeleporting = true;
-                        if (Game.Clientless)
+                        if (Clientless)
                             PacketManager.BeginTeleport();
 
                         break;

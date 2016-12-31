@@ -1,12 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Threading;
+using ZPBot.Annotations;
 using ZPBot.Common.Resources;
 
 namespace ZPBot.Common.Characters
 {
-    internal class MonsterManager : ThreadManager
+    internal class MonsterManager : ThreadManager, INotifyPropertyChanged
     {
+        private int _range;
+        public int Range
+        {
+            get { return _range; }
+            set
+            {
+                if (value > 100) value = 100;
+                if (value < 0) value = 0;
+                _range = value;
+            }
+        }
+
+        public GamePosition TrainingRange { get; protected set; }
+
+        public bool UseZerk { get; set; }
+        public int UseZerkType { get; set; }
+
         private readonly GlobalManager _globalManager;
         private readonly Dictionary<uint, Monster> _monsterList;
 
@@ -14,16 +33,22 @@ namespace ZPBot.Common.Characters
         {
             _globalManager = globalManager;
             _monsterList = new Dictionary<uint, Monster>();
+            TrainingRange = new GamePosition(0, 0);
         }
 
-        public void Add(Monster monster)
+        public void UpdatePosition([NotNull] GamePosition position)
+        {
+            TrainingRange.XPos = position.XPos;
+            TrainingRange.YPos = position.YPos;
+            OnPropertyChanged(nameof(TrainingRange));
+        }
+
+        public void Add([NotNull] Monster monster)
         {
             lock (_monsterList)
             {
                 if (!_monsterList.ContainsKey(monster.WorldId))
-                {
                     _monsterList.Add(monster.WorldId, monster);
-                }
             }
         }
 
@@ -32,9 +57,7 @@ namespace ZPBot.Common.Characters
             lock (_monsterList)
             {
                 if (_monsterList.ContainsKey(worldId))
-                {
                     _monsterList.Remove(worldId);
-                }
             }
         }
 
@@ -51,18 +74,12 @@ namespace ZPBot.Common.Characters
             lock (_monsterList)
             {
                 if (_monsterList.ContainsKey(worldId))
-                {
                     _monsterList[worldId].SetPosition(position);
-                }
             }
         }
 
-        private static double GetDistance(EGamePosition sourcePosition, EGamePosition destPosition)
-        {
-            return Math.Sqrt(Math.Pow(sourcePosition.XPos - destPosition.XPos, 2) + Math.Pow(sourcePosition.YPos - destPosition.YPos, 2));
-        }
-
-        public Monster FindNextMonster(EGamePosition charPos)
+        [CanBeNull]
+        public Monster FindNextMonster(GamePosition charPos)
         {
             lock (_monsterList)
             {
@@ -75,7 +92,7 @@ namespace ZPBot.Common.Characters
                 {
                     var mob = pair.Value;
 
-                    if (Game.Range > 0 && (GetDistance(mob.GetIngamePosition(), Game.GetRangePosition()) > Game.Range))
+                    if ((Range > 0) && (Game.Distance(mob.GetIngamePosition(), TrainingRange) > Range))
                         continue;
 
                     if (mob.WorldId == Game.AttackBlacklist)
@@ -84,10 +101,10 @@ namespace ZPBot.Common.Characters
                         continue;
                     }
 
-                    if (targetMonster == null || (GetDistance(mob.GetIngamePosition(), _globalManager.Player.GetIngamePosition()) < GetDistance(targetMonster.GetIngamePosition(), _globalManager.Player.GetIngamePosition())))
+                    if ((targetMonster == null) || (Game.Distance(mob.GetIngamePosition(), _globalManager.Player.InGamePosition) < Game.Distance(targetMonster.GetIngamePosition(), _globalManager.Player.InGamePosition)))
                         targetMonster = mob;
 
-                    if (mob.Type == EMonsterType.Unique || mob.Type == EMonsterType.SubUnique)
+                    if ((mob.Type == EMonsterType.Unique) || (mob.Type == EMonsterType.SubUnique))
                         return mob;
                 }
 
@@ -101,30 +118,29 @@ namespace ZPBot.Common.Characters
             {
                 Thread.Sleep(200);
 
-                if (Config.Botstate && !Game.IsLooping && Game.SelectedMonster == 0)
+                if (_globalManager.Botstate && !Game.IsLooping && (Game.SelectedMonster == 0))
                 {
-                    var next = FindNextMonster(_globalManager.Player.GetIngamePosition());
+                    var next = FindNextMonster(_globalManager.Player.InGamePosition);
                     if (next != null)
                     {
                         Game.SelectedMonster = next.WorldId;
                         //c_PacketManager.SelectMonster(next.world_id);
 
-                        if (Config.UseZerk && _globalManager.Player.RemainHwanCount == 5 && (((next.Type == EMonsterType.Giant || next.Type == EMonsterType.GiantParty) && Config.UseZerktype == 1) || Config.UseZerktype == 0))
+                        if (UseZerk && (_globalManager.Player.RemainHwanCount == 5) && ((((next.Type == EMonsterType.Giant) || (next.Type == EMonsterType.GiantParty)) && (UseZerkType == 1)) || (UseZerkType == 0)))
                             _globalManager.PacketManager.UseZerk();
                     }
                     else
                     {
-                        var charPos = _globalManager.Player.GetIngamePosition();
                         var random = new Random();
                         int randX, randY;
                         double rangeDistance;
 
                         do
                         {
-                            randX = charPos.XPos + random.Next(-40, 40);
-                            randY = charPos.YPos + random.Next(-40, 40);
-                            rangeDistance = Math.Sqrt(Math.Pow((randX - Game.RangeXpos), 2) + Math.Pow((randY - Game.RangeYpos), 2));
-                        } while (rangeDistance > Game.Range && Game.Range != 0);
+                            randX = _globalManager.Player.InGamePosition.XPos + random.Next(-40, 40);
+                            randY = _globalManager.Player.InGamePosition.YPos + random.Next(-40, 40);
+                            rangeDistance = Game.Distance(TrainingRange, new GamePosition(randX, randY));
+                        } while ((rangeDistance > Range) && (Range != 0));
 
                         _globalManager.PacketManager.MoveToCoords(randX, randY);
                         Thread.Sleep(2000);
@@ -132,5 +148,9 @@ namespace ZPBot.Common.Characters
                 }
             }
         }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        [NotifyPropertyChangedInvocator]
+        protected void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }

@@ -7,6 +7,7 @@ using System.IO;
 using System.Drawing;
 using System.Linq;
 using System.Runtime.InteropServices;
+using ZPBot.Annotations;
 using ZPBot.Common.Items;
 using ZPBot.Common.Characters;
 using ZPBot.Common.Resources;
@@ -29,7 +30,6 @@ namespace ZPBot
         private GlobalManager _globalManager;
 
         private bool _finishLoad;
-        private bool _settingsLoad;
 
         public Form1()
         {
@@ -41,7 +41,6 @@ namespace ZPBot
         private void Form1_Load(object sender, EventArgs e)
         {
             _finishLoad = false;
-            _settingsLoad = false;
 
             NativeMethods.SetWindowTheme(progressBar_hpdisplay.Handle, "", "");
             NativeMethods.SetWindowTheme(progressBar_mpdisplay.Handle, "", "");
@@ -49,12 +48,7 @@ namespace ZPBot
             progressBar_mpdisplay.ForeColor = Color.Blue;
 
             //Form Settings
-            label_botstate.Text = @"inactive";
-            label_botstate.ForeColor = Color.Red;
             label_version.Text = Config.Version;
-            label_clientless.Text = @"inactive";
-            label_clientless.ForeColor = Color.Red;
-
             AddEvent("Welcome to ZPBot (v." + Config.Version + ")!", "System");
 
             _globalManager = new GlobalManager(this);
@@ -78,21 +72,11 @@ namespace ZPBot
 
         private void Form1_Unload(object sender, FormClosingEventArgs e) => _globalManager.Close();
 
-        private void SetBindings()
-        {
-            listBox_players.DataSource = _globalManager.CharManager.PlayerList;
-            listBox_skills.DataSource = _globalManager.SkillManager.SkillList;
-            listBox_skills_attack.DataSource = _globalManager.SkillManager.AttackList;
-            listBox_skills_buff.DataSource = _globalManager.SkillManager.BuffList;
-            listBox_skills_imbue.DataSource = _globalManager.SkillManager.ImbueList;
-        }
-
         private void LoadProfile(string profil)
         {
             if (profil == "0")
                 return;
 
-            _settingsLoad = false;
             Config.IniPath = Directory.GetCurrentDirectory() + "\\ZPBot\\" + profil;
             _iniSet = new IniFile(Config.IniPath);
 
@@ -113,7 +97,6 @@ namespace ZPBot
                 LoopSettings();
             }
             comboBox_profile.Text = profil;
-            _settingsLoad = true;
         }
 
         public void AddAlchemyEvent(string text)
@@ -188,13 +171,6 @@ namespace ZPBot
             richTextBox_chat.ScrollToCaret();
         });
 
-
-        public void UpdateCharacterPos(Character player) => Invoke((MethodInvoker)delegate
-        {
-            var charPos = player.GetIngamePosition();
-            label_position.Text = @"(X:" + charPos.XPos + @" Y:" + charPos.YPos + @")";
-        });
-
         public void UpdateCharacter(Character player) => Invoke((MethodInvoker)delegate
         {
             var healthPercent = (int)(player.Health / (float)player.MaxHealth * 100);
@@ -202,7 +178,7 @@ namespace ZPBot
             if (healthPercent <= 100) progressBar_hpdisplay.Value = healthPercent;
             if (manaPercent <= 100) progressBar_mpdisplay.Value = manaPercent;
 
-            label_charname.Text = player.Charname;
+            //label_charname.Text = player.Charname;
             label_infophyatk.Text = player.MinPhydmg + @" - " + player.MaxPhydmg;
             label_infomagatk.Text = player.MinMagdmg + @" - " + player.MaxMagdmg;
             label_infophydef.Text = player.PhyDef.ToString();
@@ -211,7 +187,6 @@ namespace ZPBot
             label_infoparry.Text = player.ParryRate.ToString();
             label_infozerk.Text = player.RemainHwanCount.ToString();
             label_infospeed.Text = ((int)player.Runspeed).ToString();
-            UpdateCharacterPos(player);
         });
 
         public void FinishLoad(bool state) => Invoke((MethodInvoker)delegate
@@ -231,7 +206,7 @@ namespace ZPBot
             _finishLoad = true;
         });
 
-        private void textBox_chat_KeyPress(object sender, KeyPressEventArgs e)
+        private void textBox_chat_KeyPress(object sender, [NotNull] KeyPressEventArgs e)
         {
             if (e.KeyChar == (char)13)
             {
@@ -282,7 +257,7 @@ namespace ZPBot
                 else if (textBox_chat.Text.StartsWith("#"))
                     textBox_chat.ForeColor = Color.FromArgb(0xFF, 0x9A, 0xFF, 0xD0);
                 else if (textBox_chat.Text.StartsWith("@"))
-                    textBox_chat.ForeColor = Color.FromArgb(0xFF, 0xFF, 0xB5, 0x41);         
+                    textBox_chat.ForeColor = Color.FromArgb(0xFF, 0xFF, 0xB5, 0x41);
                 else
                     textBox_chat.ForeColor = Color.White;
             }
@@ -317,16 +292,6 @@ namespace ZPBot
                 button_startfuse.Enabled = _globalManager.InventoryManager.SetFuseItem(slot);
             }
         }
-
-        public void UpdateTrainingArea(EGamePosition charPos) => Invoke((MethodInvoker) delegate
-        {
-            Game.RangeXpos = charPos.XPos;
-            Game.RangeYpos = charPos.YPos;
-            label_monster_rangepos.Text = @"(X: " + Game.RangeXpos + @" Y: " + Game.RangeYpos + @")";
-
-            _iniSet.Write("Training", "Range_XPos", Game.RangeXpos.ToString());
-            _iniSet.Write("Training", "Range_YPos", Game.RangeYpos.ToString());
-        });
 
         private void listBox_players_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -395,10 +360,153 @@ namespace ZPBot
                 label_pm.Visible = false;
         }
 
-        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        private void LoopSettings()
         {
-            Config.LogPackets = checkBox1.Checked;
-            if (checkBox1.Checked) Console.Clear();
+            //Items Settings
+            if (_iniSet == null) return;
+
+            var itemdata = Silkroad.GetLoopData();
+            foreach (var item in itemdata)
+            {
+                switch (item.ConsumableType2)
+                {
+                    case EConsumableType2.Potion:
+                        switch (item.PotionType3)
+                        {
+                            case EPotionType3.Health:
+                                comboBox_hploop.Items.Add(item);
+                                break;
+                            case EPotionType3.Mana:
+                                comboBox_mploop.Items.Add(item);
+                                break;
+                        }
+                        break;
+                    case EConsumableType2.Cure:
+                        if (item.CureType3 == ECureType3.Univsersal)
+                            comboBox_uniloop.Items.Add(item);
+                        break;
+                    case EConsumableType2.Scroll:
+                        if (item.ScrollType3 == EScrollType3.Return)
+                            comboBox_scrollsloop.Items.Add(item);
+                        break;
+                    case EConsumableType2.Ammo:
+                        comboBox_ammoloop.Items.Add(item);
+                        break;
+                    case EConsumableType2.CharScroll:
+                        if (item.ScrollType == EScrollType.Speed)
+                            comboBox_drugsloop.Items.Add(item);
+                        break;
+                }
+            }
+
+            _globalManager.LoopManager.HpLoopOption.BuyType = Silkroad.GetItemById(_iniSet.Read<uint>("Loop", "BuyHPType"));
+            _globalManager.LoopManager.MpLoopOption.BuyType = Silkroad.GetItemById(_iniSet.Read<uint>("Loop", "BuyMPType"));
+            _globalManager.LoopManager.UniLoopOption.BuyType = Silkroad.GetItemById(_iniSet.Read<uint>("Loop", "BuyUniType"));
+            _globalManager.LoopManager.AmmoLoopOption.BuyType = Silkroad.GetItemById(_iniSet.Read<uint>("Loop", "BuyAmmoType"));
+            _globalManager.LoopManager.SpeedLoopOption.BuyType = Silkroad.GetItemById(_iniSet.Read<uint>("Loop", "BuyDrugsType"));
+            _globalManager.LoopManager.ReturnLoopOption.BuyType = Silkroad.GetItemById(_iniSet.Read<uint>("Loop", "BuyScrollsType"));
+        }
+
+        private void Settings()
+        {
+            //Main
+            _globalManager.Autologin = _iniSet.Read<bool>("Settings", "Autologin");
+            _globalManager.Clientless = _iniSet.Read<bool>("Settings", "Clientless");
+            _globalManager.LoginId = _iniSet.Read<string>("Settings", "LoginID", "");
+            _globalManager.LoginPw = _iniSet.Read<string>("Settings", "LoginPW", "");
+            _globalManager.LoginChar = _iniSet.Read<string>("Settings", "LoginChar", "");
+
+            //Items
+            _globalManager.ItemDropManager.PickupMyItems = _iniSet.Read<bool>("Pickfilter", "Own", "");
+
+            //Training
+            _globalManager.MonsterManager.Range = _iniSet.Read<int>("Training", "Range");
+            _globalManager.MonsterManager.UpdatePosition(new GamePosition(_iniSet.Read<int>("Training", "Range_XPos"),
+                _iniSet.Read<int>("Training", "Range_YPos")));
+
+            _globalManager.InventoryManager.EnableHp = _iniSet.Read<bool>("Training", "EnableHp");
+            _globalManager.InventoryManager.HpPercent = _iniSet.Read<int>("Training", "HpPercent");
+            _globalManager.InventoryManager.EnableMp = _iniSet.Read<bool>("Training", "EnableMp");
+            _globalManager.InventoryManager.MpPercent = _iniSet.Read<int>("Training", "MpPercent");
+            _globalManager.InventoryManager.EnableUniversal = _iniSet.Read<bool>("Training", "EnableUniversal");
+
+            _globalManager.ReturntownDied = _iniSet.Read<bool>("Training", "ReturntownDied");
+            _globalManager.InventoryManager.ReturntownNoPotion = _iniSet.Read<bool>("Training", "ReturntownNoPotion");
+            _globalManager.InventoryManager.ReturntownNoAmmo = _iniSet.Read<bool>("Training", "ReturntownNoAmmo");
+
+            _globalManager.MonsterManager.UseZerk = _iniSet.Read<bool>("Training", "UseZerk");
+            _globalManager.MonsterManager.UseZerkType = _iniSet.Read<int>("Training", "UseZerkType");
+            _globalManager.InventoryManager.EnableSpeedDrug = _iniSet.Read<bool>("Training", "EnableSpeedDrug");
+
+            //Loop
+            _globalManager.LoopManager.HpLoopOption.Enabled = _iniSet.Read<bool>("Loop", "BuyHP");
+            _globalManager.LoopManager.HpLoopOption.BuyAmount = _iniSet.Read<ushort>("Loop", "BuyHpAmount");
+            _globalManager.LoopManager.MpLoopOption.Enabled = _iniSet.Read<bool>("Loop", "BuyMP");
+            _globalManager.LoopManager.MpLoopOption.BuyAmount = _iniSet.Read<ushort>("Loop", "BuyMpAmount");
+            _globalManager.LoopManager.UniLoopOption.Enabled = _iniSet.Read<bool>("Loop", "BuyUni");
+            _globalManager.LoopManager.UniLoopOption.BuyAmount = _iniSet.Read<ushort>("Loop", "BuyUniAmount");
+            _globalManager.LoopManager.AmmoLoopOption.Enabled = _iniSet.Read<bool>("Loop", "BuyAmmo");
+            _globalManager.LoopManager.AmmoLoopOption.BuyAmount = _iniSet.Read<ushort>("Loop", "BuyAmmoAmount");
+            _globalManager.LoopManager.SpeedLoopOption.Enabled = _iniSet.Read<bool>("Loop", "BuyDrugs");
+            _globalManager.LoopManager.SpeedLoopOption.BuyAmount = _iniSet.Read<ushort>("Loop", "BuyDrugsAmount");
+            _globalManager.LoopManager.ReturnLoopOption.Enabled = _iniSet.Read<bool>("Loop", "BuyScrolls");
+            _globalManager.LoopManager.ReturnLoopOption.BuyAmount = _iniSet.Read<ushort>("Loop", "BuyScrollsAmount");
+
+            _globalManager.LoopManager.WalkscriptPath = _iniSet.Read<string>("Loop", "Walkscript", "No Walkscript is set");
+        }
+
+        private void button_save_Click(object sender, EventArgs e)
+        {
+            //Main
+            _iniSet.Write("Settings", "Clientless", _globalManager.Clientless.ToString());
+            _iniSet.Write("Settings", "Autologin", _globalManager.Autologin.ToString());
+            _iniSet.Write("Settings", "LoginID", _globalManager.LoginId);
+            _iniSet.Write("Settings", "LoginPW", _globalManager.LoginPw);
+            _iniSet.Write("Settings", "LoginChar", _globalManager.LoginChar);
+
+            //Items
+            _iniSet.Write("Pickfilter", "Own", _globalManager.ItemDropManager.PickupMyItems.ToString());
+
+            //Training
+            _iniSet.Write("Training", "Range", _globalManager.MonsterManager.Range.ToString());
+            _iniSet.Write("Training", "Range_XPos", _globalManager.MonsterManager.TrainingRange.XPos.ToString());
+            _iniSet.Write("Training", "Range_YPos", _globalManager.MonsterManager.TrainingRange.YPos.ToString());
+
+            _iniSet.Write("Training", "EnableHp", _globalManager.InventoryManager.EnableHp.ToString());
+            _iniSet.Write("Training", "HpPercent", _globalManager.InventoryManager.HpPercent.ToString());
+            _iniSet.Write("Training", "EnableMp", _globalManager.InventoryManager.EnableMp.ToString());
+            _iniSet.Write("Training", "MpPercent", _globalManager.InventoryManager.MpPercent.ToString());
+            _iniSet.Write("Training", "EnableUniversal", _globalManager.InventoryManager.EnableUniversal.ToString());
+
+            _iniSet.Write("Training", "ReturntownDied", _globalManager.ReturntownDied.ToString());
+            _iniSet.Write("Training", "ReturntownNoPotion", _globalManager.InventoryManager.ReturntownNoPotion.ToString());
+            _iniSet.Write("Training", "ReturntownNoAmmo", _globalManager.InventoryManager.ReturntownNoAmmo.ToString());
+
+            _iniSet.Write("Training", "UseZerk", _globalManager.MonsterManager.UseZerk.ToString());
+            _iniSet.Write("Training", "UseZerkType", _globalManager.MonsterManager.UseZerkType.ToString());
+            _iniSet.Write("Training", "EnableSpeedDrug", _globalManager.InventoryManager.EnableSpeedDrug.ToString());
+
+            //Loop
+            _iniSet.Write("Loop", "BuyHP", _globalManager.LoopManager.HpLoopOption.Enabled.ToString());
+            _iniSet.Write("Loop", "BuyHpType", _globalManager.LoopManager.HpLoopOption.BuyType?.Id.ToString());
+            _iniSet.Write("Loop", "BuyHpAmount", _globalManager.LoopManager.HpLoopOption.BuyAmount.ToString());
+            _iniSet.Write("Loop", "BuyMP", _globalManager.LoopManager.MpLoopOption.Enabled.ToString());
+            _iniSet.Write("Loop", "BuyMpType", _globalManager.LoopManager.MpLoopOption.BuyType?.Id.ToString());
+            _iniSet.Write("Loop", "BuyMpAmount", _globalManager.LoopManager.MpLoopOption.BuyAmount.ToString());
+            _iniSet.Write("Loop", "BuyUni", _globalManager.LoopManager.UniLoopOption.Enabled.ToString());
+            _iniSet.Write("Loop", "BuyUniType", _globalManager.LoopManager.UniLoopOption.BuyType?.Id.ToString());
+            _iniSet.Write("Loop", "BuyUniAmount", _globalManager.LoopManager.UniLoopOption.BuyAmount.ToString());
+            _iniSet.Write("Loop", "BuyAmmo", _globalManager.LoopManager.AmmoLoopOption.Enabled.ToString());
+            _iniSet.Write("Loop", "BuyAmmoType", _globalManager.LoopManager.AmmoLoopOption.BuyType?.Id.ToString());
+            _iniSet.Write("Loop", "BuyAmmoAmount", _globalManager.LoopManager.AmmoLoopOption.BuyAmount.ToString());
+            _iniSet.Write("Loop", "BuyDrugs", _globalManager.LoopManager.SpeedLoopOption.Enabled.ToString());
+            _iniSet.Write("Loop", "BuyDrugsType", _globalManager.LoopManager.SpeedLoopOption.BuyType?.Id.ToString());
+            _iniSet.Write("Loop", "BuyDrugsAmount", _globalManager.LoopManager.SpeedLoopOption.BuyAmount.ToString());
+            _iniSet.Write("Loop", "BuyScrolls", _globalManager.LoopManager.ReturnLoopOption.Enabled.ToString());
+            _iniSet.Write("Loop", "BuyScrollsType", _globalManager.LoopManager.ReturnLoopOption.BuyType?.Id.ToString());
+            _iniSet.Write("Loop", "BuyScrollsAmount", _globalManager.LoopManager.ReturnLoopOption.BuyAmount.ToString());
+
+            _iniSet.Write("Loop", "Walkscript", _globalManager.LoopManager.WalkscriptPath);
         }
     }
 }

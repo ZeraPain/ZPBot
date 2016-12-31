@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 using ZPBot.Common;
+using ZPBot.Common.Resources;
 using ZPBot.Common.Skills;
 
 namespace ZPBot

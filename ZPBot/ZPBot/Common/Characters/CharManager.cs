@@ -41,7 +41,13 @@ namespace ZPBot.Common.Characters
         {
             while (BActive)
             {
-                if (!Game.Clientless && _globalManager.Player.AccountId != 0)
+                if (_globalManager.Player.AccountId == 0)
+                {
+                    Thread.Sleep(10);
+                    continue;
+                }
+
+                if (!_globalManager.Clientless)
                 {
                     var position = new EPosition
                     {
@@ -50,7 +56,8 @@ namespace ZPBot.Common.Characters
                         XPosition = _globalManager.ClientManager.ReadSingle(0xEED1CC),
                         YPosition = _globalManager.ClientManager.ReadSingle(0xEED1D4)
                     };
-                    _globalManager.Player.Position = position;
+                    _globalManager.Player.SetPosition(Game.PositionToGamePosition(position));
+
                     _globalManager.FMain.UpdateCharacter(_globalManager.Player);
                 }
 

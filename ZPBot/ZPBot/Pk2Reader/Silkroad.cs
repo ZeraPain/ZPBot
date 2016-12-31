@@ -6,6 +6,7 @@ using ZPBot.Common.Characters;
 using ZPBot.Pk2Reader;
 using ZPBot.Common.Skills;
 using ZPBot.Common.Items;
+using ZPBot.Common.Resources;
 using Char = ZPBot.Common.Characters.Char;
 using EPetType3 = ZPBot.Common.Characters.EPetType3;
 

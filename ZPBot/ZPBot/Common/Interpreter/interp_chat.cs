@@ -1,11 +1,13 @@
-﻿using ZPBot.SilkroadSecurityApi;
+﻿using ZPBot.Annotations;
+using ZPBot.Common.Resources;
+using ZPBot.SilkroadSecurityApi;
 
 // ReSharper disable once CheckNamespace
 namespace ZPBot.Common
 {
     internal partial class GlobalManager
     {
-        private void OutgoingMessage(Packet packet)
+        private void OutgoingMessage([NotNull] Packet packet)
         {
             var messagetype = packet.ReadUInt8();
             var count = packet.ReadUInt8();

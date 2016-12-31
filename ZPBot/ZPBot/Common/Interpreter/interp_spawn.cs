@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Windows.Forms;
 using ZPBot.Common.Items;
 using ZPBot.Common.Loop;
 using ZPBot.Common.Characters;
+using ZPBot.Common.Resources;
 using ZPBot.SilkroadSecurityApi;
 using Char = ZPBot.Common.Characters.Char;
 using EPetType3 = ZPBot.Common.Characters.EPetType3;
@@ -94,7 +96,7 @@ namespace ZPBot.Common
         {
             try
             {
-                var player = new Character(chardata);
+                var player = new Character(this, chardata);
                 var mob = new Monster(chardata);
                 var npc = new Npc(chardata);
 
@@ -260,7 +262,7 @@ namespace ZPBot.Common
 
                         //Add Player
                         player.WorldId = worldId;
-                        player.Position = position;
+                        player.SetPosition(Game.PositionToGamePosition(position));
                         CharManager.Add(player);
 
                         if (status == 4 || status == 7)

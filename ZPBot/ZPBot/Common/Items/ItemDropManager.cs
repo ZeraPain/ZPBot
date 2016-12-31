@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
+using ZPBot.Annotations;
 using ZPBot.Common.Resources;
 
 namespace ZPBot.Common.Items
@@ -9,25 +9,24 @@ namespace ZPBot.Common.Items
     internal class ItemDropManager : ThreadManager
     {
         private readonly GlobalManager _globalManager;
-        private readonly Dictionary<uint, Item> _itemFilter;
+        public Dictionary<uint, Item> ItemFilter { get; protected set; }
         private readonly Dictionary<uint, ItemDrop> _itemList;
+        public bool PickupMyItems { get; set; }
 
         public ItemDropManager(GlobalManager globalManager)
         {
             _globalManager = globalManager;
 
-            _itemFilter = new Dictionary<uint, Item>();
+            ItemFilter = new Dictionary<uint, Item>();
             _itemList = new Dictionary<uint, ItemDrop>();
         }
 
-        public void Add(ItemDrop item)
+        public void Add([NotNull] ItemDrop item)
         {
             lock (_itemList)
             {
                 if (!_itemList.ContainsKey(item.WorldId))
-                {
                     _itemList.Add(item.WorldId, item);
-                }
             }
         }
 
@@ -36,9 +35,7 @@ namespace ZPBot.Common.Items
             lock (_itemList)
             {
                 if (_itemList.ContainsKey(worldId))
-                {
                     _itemList.Remove(worldId);
-                }
             }
         }
 
@@ -52,38 +49,29 @@ namespace ZPBot.Common.Items
 
         public bool ExistsPickup(Item item)
         {
-            return _itemFilter.ContainsKey(item.Id);
+            return ItemFilter.ContainsKey(item.Id);
         }
 
-        public bool AddPickup(Item item)
+        public bool AddPickup([NotNull] Item item)
         {
-            if (_itemFilter.ContainsKey(item.Id))
+            if (ItemFilter.ContainsKey(item.Id))
                 return false;
 
-            _itemFilter.Add(item.Id, item);
+            ItemFilter.Add(item.Id, item);
             return true;
         }
 
-        public bool RemovePickup(Item item)
+        public bool RemovePickup([NotNull] Item item)
         {
-            if (!_itemFilter.ContainsKey(item.Id))
+            if (!ItemFilter.ContainsKey(item.Id))
                 return false;
 
-            _itemFilter.Remove(item.Id);
+            ItemFilter.Remove(item.Id);
             return true;
         }
 
-        public Dictionary<uint, Item> GetPickupList()
-        {
-            return _itemFilter;
-        }
-
-        private double Distance(EGamePosition sourcePosition, EGamePosition itemPosition)
-        {
-            return Math.Sqrt(Math.Pow(sourcePosition.XPos - itemPosition.XPos, 2) + Math.Pow(sourcePosition.YPos - itemPosition.YPos, 2));
-        }
-
-        private ItemDrop GetNextItem(EGamePosition sourcePosition)
+        [CanBeNull]
+        private ItemDrop GetNextItem(GamePosition sourcePosition)
         {
             lock (_itemList)
             {
@@ -91,7 +79,7 @@ namespace ZPBot.Common.Items
                     return null;
 
                 ItemDrop targetItem = null;
-                 
+
                 foreach (var pair in _itemList)
                 {
                     var item = pair.Value;
@@ -99,13 +87,13 @@ namespace ZPBot.Common.Items
                     if (!ExistsPickup(item))
                         continue;
 
-                    if (Config.PickupMyitems && item.Owner != _globalManager.Player.AccountId)
+                    if (PickupMyItems && (item.Owner != _globalManager.Player.AccountId))
                         continue;
 
-                    if (item.Owner != 0 && item.Owner != 0xFFFFFFFF && item.Owner != _globalManager.Player.AccountId)
+                    if ((item.Owner != 0) && (item.Owner != 0xFFFFFFFF) && (item.Owner != _globalManager.Player.AccountId))
                         continue;
 
-                    if (targetItem == null || (Distance(sourcePosition, item.GetIngamePosition()) < Distance(sourcePosition, targetItem.GetIngamePosition())))
+                    if ((targetItem == null) || (Game.Distance(sourcePosition, item.GetIngamePosition()) < Game.Distance(sourcePosition, targetItem.GetIngamePosition())))
                         targetItem = item;
                 }
 
@@ -123,12 +111,10 @@ namespace ZPBot.Common.Items
             {
                 Thread.Sleep(200);
 
-                var sourcePosition = _globalManager.Player.GetIngamePosition();
+                var sourcePosition = _globalManager.Player.InGamePosition;
                 var pet = _globalManager.PetManager.GetGrabPet();
                 if (pet != null)
-                {
                     sourcePosition = pet.GetIngamePosition();
-                }
 
                 var item = GetNextItem(sourcePosition);
                 if (item == null)
@@ -155,7 +141,7 @@ namespace ZPBot.Common.Items
                 }
                 else
                 {
-                    if (Config.Botstate && !Game.IsLooping)
+                    if (_globalManager.Botstate && !Game.IsLooping)
                     {
                         Game.IsPicking = true;
                         _globalManager.PacketManager.Pickup(item.WorldId);

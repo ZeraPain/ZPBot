@@ -1,14 +1,16 @@
-﻿using System;
+﻿using System.ComponentModel;
 using System.Threading;
+using ZPBot.Annotations;
 using ZPBot.Common.Items;
 using ZPBot.Common.Skills;
 using ZPBot.Common.Loop;
 using ZPBot.Common.Characters;
+using ZPBot.Common.Resources;
 using ZPBot.SilkroadSecurityApi;
 
 namespace ZPBot.Common
 {
-    internal partial class GlobalManager
+    internal partial class GlobalManager : INotifyPropertyChanged
     {
         public Form1 FMain { get; protected set; }
         public Proxy Silkroadproxy { get; protected set; }
@@ -24,6 +26,23 @@ namespace ZPBot.Common
         public NpcManager NpcManager { get; protected set; }
         public LoopManager LoopManager { get; protected set; }
         public PetManager PetManager { get; protected set; }
+        public PartyManager PartyManager { get; protected set; }
+
+        private bool _clientless;
+        public bool Clientless
+        {
+            get
+            {
+                return _clientless;
+            }
+            set
+            {
+                _clientless = value;
+                OnPropertyChanged(nameof(Clientless));
+            }
+        }
+        public bool ReturntownDied { get; set; }
+        public bool Botstate { get; set; }
 
         private byte _spawnType;
         private byte _spawnAmount;
@@ -38,7 +57,7 @@ namespace ZPBot.Common
 
             ClientManager = new ClientManager();
             Silkroadproxy = new Proxy(this);
-            Player = new Character();
+            Player = new Character(this);
 
             PetManager = new PetManager();
             NpcManager = new NpcManager();
@@ -50,6 +69,7 @@ namespace ZPBot.Common
             InventoryManager = new InventoryManager(this);
             MonsterManager = new MonsterManager(this);
             LoopManager = new LoopManager(this);
+            PartyManager = new PartyManager();
 
             StopBot();
 
@@ -94,22 +114,22 @@ namespace ZPBot.Common
         {
             if (Player.AccountId == 0) return false;
 
-            var charPos = Player.GetIngamePosition();
-            var distance = Math.Sqrt(Math.Pow((charPos.XPos - Game.RangeXpos), 2) + Math.Pow((charPos.YPos - Game.RangeYpos), 2));
-            if ((forceArea && distance > Game.Range) || (!forceArea && distance < 200))
+            var charPos = Player.InGamePosition;
+            var distance = Game.Distance(charPos, MonsterManager.TrainingRange);
+            if ((forceArea && (distance > MonsterManager.Range)) || (!forceArea && (distance < 200)))
             {
-                FMain.UpdateTrainingArea(charPos);
-                distance = Math.Sqrt(Math.Pow((charPos.XPos - Game.RangeXpos), 2) + Math.Pow((charPos.YPos - Game.RangeYpos), 2));
+                MonsterManager.UpdatePosition(charPos);
+                distance = Game.Distance(charPos, MonsterManager.TrainingRange);
             }
 
-            Config.Botstate = true;
+            Botstate = true;
             Game.IsLooping = false;
 
             Game.AllowCast = true;
             Game.SelectedMonster = 0;
             Game.SelectedNpc = 0;
 
-            if (Game.Range == 0 || distance <= Game.Range)
+            if (MonsterManager.Range == 0 || distance <= MonsterManager.Range)
             {
                 MonsterManager.Start();
                 SkillManager.Start();
@@ -129,7 +149,7 @@ namespace ZPBot.Common
             SkillManager.Stop();
             MonsterManager.Stop();
 
-            Config.Botstate = false;
+            Botstate = false;
             Game.IsLooping = false;
 
             Game.AllowCast = false;
@@ -164,17 +184,28 @@ namespace ZPBot.Common
         {
             while (_threadActive)
             {
-                if (Config.ReturntownDied && (Player.Dead || Player.Health == 0))
+                if (Player.AccountId == 0)
                 {
-                    PacketManager.ReturnTown();
-                    if (Config.Botstate) LoopManager.StartLoop(true);
+                    Thread.Sleep(10);
+                    continue;
                 }
 
-                if (Game.Clientless)
+                if (ReturntownDied && (Player.Dead || Player.Health == 0))
+                {
+                    PacketManager.ReturnTown();
+                    if (Botstate) LoopManager.StartLoop(true);
+                }
+
+                if (Clientless)
                     PacketManager.KeepAlive();
 
                 Thread.Sleep(5000);
             }
         }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        [NotifyPropertyChangedInvocator]
+        protected void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }

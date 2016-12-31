@@ -190,7 +190,7 @@ namespace ZPBot.Common.Skills
             {
                 Thread.Sleep(200);
 
-                if (!Config.Botstate || Game.IsLooping || !Game.AllowCast || Game.IsPicking)
+                if (!_globalManager.Botstate || Game.IsLooping || !Game.AllowCast || Game.IsPicking)
                     continue;
 
                 var isBuffing = false;

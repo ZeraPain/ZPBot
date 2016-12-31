@@ -1,4 +1,5 @@
 ﻿using ZPBot.Common.Items;
+using ZPBot.Common.Resources;
 using ZPBot.SilkroadSecurityApi;
 
 namespace ZPBot.Common
@@ -16,16 +17,6 @@ namespace ZPBot.Common
         {
             var packet = new Packet(0x6101, true);
             _globalManager.Silkroadproxy.Send(packet, Proxy.EPacketdestination.GatewayRemote);
-        }
-
-        public void CharListing()
-        {
-            if (!Config.Autologin || Config.LoginChar == "")
-                return;
-
-            var packet = new Packet(0x7001, false);
-            packet.WriteAscii(Config.LoginChar);
-            _globalManager.Silkroadproxy.Send(packet, Proxy.EPacketdestination.AgentRemote);
         }
 
         public void ImageCode()
@@ -116,6 +107,14 @@ namespace ZPBot.Common
             var packet = new Packet(0x3080, false);
             packet.WriteUInt8(1);
             packet.WriteUInt8(1);
+            _globalManager.Silkroadproxy.Send(packet, Proxy.EPacketdestination.AgentRemote);
+        }
+
+        public void DenyPlayerRequest()
+        {
+            var packet = new Packet(0x3080, false);
+            packet.WriteUInt8(1);
+            packet.WriteUInt8(0);
             _globalManager.Silkroadproxy.Send(packet, Proxy.EPacketdestination.AgentRemote);
         }
 

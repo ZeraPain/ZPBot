@@ -1,4 +1,6 @@
 ﻿
+using ZPBot.Common.Resources;
+
 namespace ZPBot.Common.Items
 {
     public class Item

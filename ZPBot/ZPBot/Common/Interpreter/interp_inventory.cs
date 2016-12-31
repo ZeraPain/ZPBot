@@ -251,7 +251,7 @@ namespace ZPBot.Common
                         }
                         Game.AllowFuse = true;
 
-                        if (invItem.Plus >= Config.PlusToreach)
+                        if (invItem.Plus >= 1)
                         {
                             FMain.AddEvent("Reached the requested plus [" + invItem.Plus + "]", "Alchemy");
                             Game.AllowFuse = false;

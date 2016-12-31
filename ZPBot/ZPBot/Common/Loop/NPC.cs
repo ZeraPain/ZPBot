@@ -1,5 +1,6 @@
 ﻿
 using ZPBot.Common.Characters;
+using ZPBot.Common.Resources;
 
 namespace ZPBot.Common.Loop
 {

@@ -12,6 +12,14 @@ namespace ZPBot.Common.Items
         private readonly GlobalManager _globalManager;
         private readonly object _lock;
         private Thread _fuseThread;
+        public bool EnableHp { get; set; }
+        public int HpPercent { get; set; }
+        public bool EnableMp { get; set; }
+        public int MpPercent { get; set; }
+        public bool EnableUniversal { get; set; }
+        public bool ReturntownNoAmmo { get; set; }
+        public bool ReturntownNoPotion { get; set; }
+        public bool EnableSpeedDrug { get; set; }
 
         public InventoryManager(GlobalManager globalManager)
         {
@@ -364,7 +372,7 @@ namespace ZPBot.Common.Items
             {
                 Thread.Sleep(200);
 
-                if (Config.Useuni && _globalManager.Player.CureCount > 0) //Cure Recovery
+                if (EnableUniversal && _globalManager.Player.CureCount > 0) //Cure Recovery
                 {
                     var invItem = GetUnivsersalPill();
                     if (invItem != null)
@@ -372,12 +380,12 @@ namespace ZPBot.Common.Items
                         _globalManager.PacketManager.UseItem(invItem);
                         Thread.Sleep(500);
                     }
-                    if (Config.Botstate && Config.ReturntownNoPotion && !Game.IsLooping && GetUniversalCount() < 5 && ReturnTown("No Universal Pills"))
+                    if (_globalManager.Botstate && ReturntownNoPotion && !Game.IsLooping && GetUniversalCount() < 5 && ReturnTown("No Universal Pills"))
                         _globalManager.StartLoop(true);
                 }
 
                 var healthPercent = _globalManager.Player.Health / (float)_globalManager.Player.MaxHealth * 100;
-                if (Config.Usehp && healthPercent <= Config.UsehpPercent) //HP Recovery
+                if (EnableHp && healthPercent <= HpPercent) //HP Recovery
                 {
                     var invItem = GetPotion(EPotionType3.Health);
                     if (invItem != null)
@@ -385,13 +393,13 @@ namespace ZPBot.Common.Items
                         _globalManager.PacketManager.UseItem(invItem);
                         Thread.Sleep(500);
                     }
-                    if (Config.Botstate && Config.ReturntownNoPotion && !Game.IsLooping && GetPotionCount(EPotionType3.Health) < 20 && ReturnTown("No Health Potion"))
+                    if (_globalManager.Botstate && ReturntownNoPotion && !Game.IsLooping && GetPotionCount(EPotionType3.Health) < 20 && ReturnTown("No Health Potion"))
                         _globalManager.StartLoop(true);
      
                 }
 
                 var manaPercent = _globalManager.Player.Mana / (float)_globalManager.Player.MaxMana * 100;
-                if (Config.Usemp && manaPercent <= Config.UsempPercent) //MP Recovery
+                if (EnableMp && manaPercent <= MpPercent) //MP Recovery
                 {
                     var invItem = GetPotion(EPotionType3.Mana);
                     if (invItem != null)
@@ -399,7 +407,7 @@ namespace ZPBot.Common.Items
                         _globalManager.PacketManager.UseItem(invItem);
                         Thread.Sleep(500);
                     }
-                    if (Config.Botstate && Config.ReturntownNoPotion && !Game.IsLooping && GetPotionCount(EPotionType3.Mana) < 20 && ReturnTown("No Mana Potion"))
+                    if (_globalManager.Botstate && ReturntownNoPotion && !Game.IsLooping && GetPotionCount(EPotionType3.Mana) < 20 && ReturnTown("No Mana Potion"))
                         _globalManager.StartLoop(true);
                 }
 
@@ -412,11 +420,11 @@ namespace ZPBot.Common.Items
                 }
 
                 //Check for Ammo
-                if (Config.Botstate && Config.ReturntownNoAmmo && !Game.IsLooping && GetAmmoCount() == 0 && ReturnTown("Out of Ammo"))
+                if (_globalManager.Botstate && ReturntownNoAmmo && !Game.IsLooping && GetAmmoCount() == 0 && ReturnTown("Out of Ammo"))
                     _globalManager.StartLoop(true);
 
                 //Use Speed Drug
-                if (Config.UseSpeeddrug && !_globalManager.SkillManager.SpeedDrug_is_active())
+                if (EnableSpeedDrug && !_globalManager.SkillManager.SpeedDrug_is_active())
                 {
                     var invItem = GetSpeedDrug();
                     if (invItem != null)
@@ -464,7 +472,7 @@ namespace ZPBot.Common.Items
                             break;
                         }
 
-                        if (fuseItem.Plus < Config.PlusToreach)
+                        if (fuseItem.Plus < 1)
                         {
                             _globalManager.PacketManager.FuseItem(fuseItem.Slot, elixir.Slot, powder.Slot);
                             Game.AllowFuse = false;

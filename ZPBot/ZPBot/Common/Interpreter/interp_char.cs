@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Windows.Forms;
 using ZPBot.Common.Characters;
+using ZPBot.Common.Resources;
 using ZPBot.SilkroadSecurityApi;
 
 // ReSharper disable once CheckNamespace
@@ -159,7 +161,7 @@ namespace ZPBot.Common
 
             //Main
             Player.WorldId = packet.ReadUInt32();
-            Player.Position = GetPosition(ref packet);
+            Player.SetPosition(Game.PositionToGamePosition(GetPosition(ref packet)));
 
             var hasDestination = packet.ReadUInt8();
             packet.ReadUInt8(); // movementType
@@ -205,7 +207,8 @@ namespace ZPBot.Common
                     packet.SkipBytes(1); // IsCreator
             }
 
-            Player.Charname = packet.ReadAscii();
+            FMain.Invoke((MethodInvoker) (() => Player.Charname = packet.ReadAscii()));
+
             packet.ReadAscii(); // JobName
             packet.ReadUInt8(); // JobType
             packet.ReadUInt8(); // JobLevel
@@ -387,9 +390,9 @@ namespace ZPBot.Common
 
                 if (worldId == Player.WorldId)
                 {
-                    if (Game.Clientless)
+                    if (Clientless)
                     {
-                        Player.Position = position;
+                        Player.SetPosition(Game.PositionToGamePosition(position));
                         FMain.UpdateCharacter(Player);
                     }
                 }
@@ -543,7 +546,32 @@ namespace ZPBot.Common
                     //exchange
                     break;
                 case 2:
-                    //unknown
+                    var playerId = packet.ReadUInt32();
+                    var partyType = packet.ReadUInt8();
+                    switch (partyType)
+                    {
+                        case 0: // item dist, exp dist
+                        case 4:
+                            if (PartyManager.AutoAccept && PartyManager.AcceptType1)
+                                PacketManager.AcceptPlayerRequest();
+                            break;
+                        case 1: // item dist, exp share
+                        case 5:
+                            if (PartyManager.AutoAccept && PartyManager.AcceptType2)
+                                PacketManager.AcceptPlayerRequest();
+                            break;
+                        case 2: // item share, exp dist
+                        case 6:
+                            if (PartyManager.AutoAccept && PartyManager.AcceptType3)
+                                PacketManager.AcceptPlayerRequest();
+                            break;
+                        case 3: // item share, exp share
+                        case 7:
+                            if (PartyManager.AutoAccept && PartyManager.AcceptType4)
+                                PacketManager.AcceptPlayerRequest();
+                            break;
+                    }
+
                     break;
                 case 3:
                     //party

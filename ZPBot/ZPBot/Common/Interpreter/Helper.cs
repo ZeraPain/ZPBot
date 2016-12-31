@@ -1,5 +1,6 @@
 ﻿using System;
 using ZPBot.Common.Items;
+using ZPBot.Common.Resources;
 using ZPBot.SilkroadSecurityApi;
 using EPetType3 = ZPBot.Common.Items.EPetType3;
 

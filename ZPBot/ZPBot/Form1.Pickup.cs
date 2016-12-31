@@ -4,6 +4,7 @@ using System.Linq;
 using System.Windows.Forms;
 using ZPBot.Common;
 using ZPBot.Common.Items;
+using ZPBot.Common.Resources;
 
 namespace ZPBot
 {
@@ -188,7 +189,7 @@ namespace ZPBot
         {
             _iniSet.RemoveSection("Items");
 
-            var itemList = _globalManager.ItemDropManager.GetPickupList();
+            var itemList = _globalManager.ItemDropManager.ItemFilter;
             if (itemList.Count == 0)
                 return;
 

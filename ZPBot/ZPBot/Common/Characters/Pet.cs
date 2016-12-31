@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using ZPBot.Annotations;
 using ZPBot.Common.Items;
+using ZPBot.Common.Resources;
 
 namespace ZPBot.Common.Characters
 {
@@ -32,14 +34,9 @@ namespace ZPBot.Common.Characters
             _position = position;
         }
 
-        public EGamePosition GetIngamePosition()
-        {
-            return new EGamePosition
-            {
-                XPos = (int)((_position.XSection - 135) * 192 + (_position.XPosition / 10)),
-                YPos = (int)((_position.YSection - 92) * 192 + (_position.YPosition / 10))
-            };
-        }
+        [NotNull]
+        public GamePosition GetIngamePosition() => new GamePosition((int)((_position.XSection - 135) * 192 + _position.XPosition / 10),
+            (int)((_position.YSection - 92) * 192 + _position.YPosition / 10));
 
         public void ClearInventory()
         {

@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Threading;
+using ZPBot.Annotations;
 using ZPBot.Common;
 
 namespace ZPBot.SilkroadSecurityApi
@@ -53,6 +55,8 @@ namespace ZPBot.SilkroadSecurityApi
 
         private readonly GlobalManager _globalManager;
 
+        public bool LogPackets { get; set; }
+
         public Proxy(GlobalManager globalManager)
         {
             _globalManager = globalManager;
@@ -86,7 +90,7 @@ namespace ZPBot.SilkroadSecurityApi
                     {
                         foreach (var packet in gwRemoteRecvPackets)
                         {
-                            //Console.WriteLine(@"[Gateway] [S->P][{0:X4}][{1} bytes]{2}{3}{4}{5}{6}", packet.Opcode, packet.GetBytes().Length, packet.Encrypted ? "[Encrypted]" : "", packet.Massive ? "[Massive]" : "", Environment.NewLine, Utility.HexDump(packet.GetBytes()), Environment.NewLine);
+                            if (LogPackets) Console.WriteLine(@"[Gateway] [S->P][{0:X4}][{1} bytes]{2}{3}{4}{5}{6}", packet.Opcode, packet.GetBytes().Length, packet.Encrypted ? "[Encrypted]" : "", packet.Massive ? "[Massive]" : "", Environment.NewLine, Utility.HexDump(packet.GetBytes()), Environment.NewLine);
 
                             switch (packet.Opcode)
                             {
@@ -95,7 +99,7 @@ namespace ZPBot.SilkroadSecurityApi
                                 case 0x9000:
                                     continue;
                                 case 0xA100:
-                                    if (Game.Clientless)
+                                    if (_globalManager.Clientless)
                                     {
                                         Send(new Packet(0x6106, true), EPacketdestination.GatewayRemote);
                                         Send(new Packet(0x6101, true), EPacketdestination.GatewayRemote);
@@ -103,12 +107,12 @@ namespace ZPBot.SilkroadSecurityApi
                                     break;
                                 case 0xA101:
                                     _globalManager.ServerStats(packet);
-                                    if (Config.Autologin)
+                                    if (_globalManager.Autologin)
                                     {
                                         var newPacket = new Packet(0x6102, true);
                                         newPacket.WriteUInt8(Client.ClientLocale);
-                                        newPacket.WriteAscii(Config.LoginId);
-                                        newPacket.WriteAscii(Config.LoginPw);
+                                        newPacket.WriteAscii(_globalManager.LoginId);
+                                        newPacket.WriteAscii(_globalManager.LoginPw);
                                         newPacket.WriteUInt16(Client.ServerId);
                                         Send(newPacket, EPacketdestination.GatewayRemote);
                                     }
@@ -197,7 +201,7 @@ namespace ZPBot.SilkroadSecurityApi
                     {
                         foreach (var packet in gwLocalRecvPackets)
                         {
-                            //Console.WriteLine(@"[Gateway] [C->P][{0:X4}][{1} bytes]{2}{3}{4}{5}{6}", packet.Opcode, packet.GetBytes().Length, packet.Encrypted ? "[Encrypted]" : "", packet.Massive ? "[Massive]" : "", Environment.NewLine, Utility.HexDump(packet.GetBytes()), Environment.NewLine);
+                            if (LogPackets) Console.WriteLine(@"[Gateway] [C->P][{0:X4}][{1} bytes]{2}{3}{4}{5}{6}", packet.Opcode, packet.GetBytes().Length, packet.Encrypted ? "[Encrypted]" : "", packet.Massive ? "[Massive]" : "", Environment.NewLine, Utility.HexDump(packet.GetBytes()), Environment.NewLine);
 
                             // Do not pass through these packets.
                             switch (packet.Opcode)
@@ -330,7 +334,7 @@ namespace ZPBot.SilkroadSecurityApi
                     {
                         foreach (var packet in agRemoteRecvPackets)
                         {
-                            //Console.WriteLine(@"[Agent] [S->P][{0:X4}][{1} bytes]{2}{3}{4}{5}{6}", packet.Opcode, packet.GetBytes().Length, packet.Encrypted ? "[Encrypted]" : "", packet.Massive ? "[Massive]" : "", Environment.NewLine, Utility.HexDump(packet.GetBytes()), Environment.NewLine);
+                            if (LogPackets) Console.WriteLine(@"[Agent] [S->P][{0:X4}][{1} bytes]{2}{3}{4}{5}{6}", packet.Opcode, packet.GetBytes().Length, packet.Encrypted ? "[Encrypted]" : "", packet.Massive ? "[Massive]" : "", Environment.NewLine, Utility.HexDump(packet.GetBytes()), Environment.NewLine);
 
                             // Do not pass through these packets.
                             switch (packet.Opcode)
@@ -343,7 +347,7 @@ namespace ZPBot.SilkroadSecurityApi
                                     var result = packet.ReadUInt8();
                                     if (result == 1) // successfully logged on
                                     {
-                                        if (Game.Clientless)
+                                        if (_globalManager.Clientless)
                                         {
                                             var newPacket = new Packet(0x7007, false);
                                             newPacket.WriteUInt8(2);
@@ -352,6 +356,14 @@ namespace ZPBot.SilkroadSecurityApi
                                         _globalManager.ClientManager.SetLocalConnection(Client.LocalGatewayPort);
                                     }
                                     continue;
+                                case 0xB007:
+                                    if (_globalManager.Autologin)
+                                    {
+                                        var newPacket = new Packet(0x7001, false);
+                                        newPacket.WriteAscii(_globalManager.LoginChar);
+                                        Send(newPacket, EPacketdestination.AgentRemote);
+                                    }
+                                    break;
                             }
 
                             var packetToSend = packet;
@@ -414,7 +426,7 @@ namespace ZPBot.SilkroadSecurityApi
                     {
                         foreach (var packet in agLocalRecvPackets)
                         {
-                            //Console.WriteLine(@"[Agent] [C->P][{0:X4}][{1} bytes]{2}{3}{4}{5}{6}", packet.Opcode, packet.GetBytes().Length, packet.Encrypted ? "[Encrypted]" : "", packet.Massive ? "[Massive]" : "", Environment.NewLine, Utility.HexDump(packet.GetBytes()), Environment.NewLine);
+                            if (LogPackets) Console.WriteLine(@"[Agent] [C->P][{0:X4}][{1} bytes]{2}{3}{4}{5}{6}", packet.Opcode, packet.GetBytes().Length, packet.Encrypted ? "[Encrypted]" : "", packet.Massive ? "[Massive]" : "", Environment.NewLine, Utility.HexDump(packet.GetBytes()), Environment.NewLine);
 
                             // Do not pass through these packets.
                             switch (packet.Opcode)
@@ -424,12 +436,12 @@ namespace ZPBot.SilkroadSecurityApi
                                 case 0x2001:
                                     continue;
                                 case 0x6103:
-                                    if (Config.Autologin)
+                                    if (_globalManager.Autologin)
                                     {
                                         var newPacket = new Packet(0x6103, true);
                                         newPacket.WriteUInt32(Client.ServerLoginid);
-                                        newPacket.WriteAscii(Config.LoginId);
-                                        newPacket.WriteAscii(Config.LoginPw);
+                                        newPacket.WriteAscii(_globalManager.LoginId);
+                                        newPacket.WriteAscii(_globalManager.LoginPw);
                                         newPacket.WriteUInt16(Client.ClientLocale);
                                         newPacket.WriteUInt32(0);
                                         newPacket.WriteUInt8(0);
@@ -624,5 +636,9 @@ namespace ZPBot.SilkroadSecurityApi
                 }
             }
         }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        [NotifyPropertyChangedInvocator]
+        protected void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }

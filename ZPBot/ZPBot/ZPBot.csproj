@@ -65,6 +65,7 @@
     <Compile Include="Common\Characters\Char.cs" />
     <Compile Include="Common\Characters\Character.cs" />
     <Compile Include="Common\Characters\CharManager.cs" />
+    <Compile Include="Common\Characters\PartyManager.cs" />
     <Compile Include="Common\Characters\Pet.cs" />
     <Compile Include="Common\Characters\PetManager.cs" />
     <Compile Include="Common\ClientManager.cs" />
@@ -84,13 +85,13 @@
     <Compile Include="Common\Skills\Skill.cs" />
     <Compile Include="Common\Skills\SkillManager.cs" />
     <Compile Include="Common\Resources\ThreadManager.cs" />
-    <Compile Include="Form1.Loop.cs">
+    <Compile Include="Form1.Bindings.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Form1.Skills.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="GUI_Manager.cs">
+    <Compile Include="Form1.Buttons.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Common\Resources\Enumeration.cs" />
@@ -114,6 +115,7 @@
     <Compile Include="Pk2Reader\Reader.cs" />
     <Compile Include="Pk2Reader\SRODecrypt.cs" />
     <Compile Include="Program.cs" />
+    <Compile Include="Properties\Annotations1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Pk2Reader\Silkroad.cs" />
     <Compile Include="SilkroadSecurityApi\Blowfish.cs" />

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using ZPBot.Common.Resources;
 
 namespace ZPBot.Common.Loop
 {
@@ -11,8 +12,8 @@ namespace ZPBot.Common.Loop
     {
         private enum ShopType
         {
-            Potion, 
-            Blacksmith, 
+            Potion,
+            Blacksmith,
             Accessory
         }
 
@@ -27,6 +28,8 @@ namespace ZPBot.Common.Loop
         private readonly List<Walkscript> _walkScript;
         private readonly List<Walkscript> _recordScript;
 
+        public string WalkscriptPath { get; set; }
+
         private Thread _tTeleport;
         private Thread _tLoop;
         private Thread _tRecord;
@@ -36,6 +39,13 @@ namespace ZPBot.Common.Loop
         private const int Timeout = 5000;
         private readonly object _lock;
 
+        public LoopOption HpLoopOption { get; set; }
+        public LoopOption MpLoopOption { get; set; }
+        public LoopOption UniLoopOption { get; set; }
+        public LoopOption AmmoLoopOption { get; set; }
+        public LoopOption SpeedLoopOption { get; set; }
+        public LoopOption ReturnLoopOption { get; set; }
+
         public LoopManager(GlobalManager globalManager)
         {
             _globalManager = globalManager;
@@ -44,6 +54,13 @@ namespace ZPBot.Common.Loop
             _recordScript = new List<Walkscript>();
 
             _lock = new object();
+
+            HpLoopOption = new LoopOption();
+            MpLoopOption = new LoopOption();
+            UniLoopOption = new LoopOption();
+            AmmoLoopOption = new LoopOption();
+            SpeedLoopOption = new LoopOption();
+            ReturnLoopOption = new LoopOption();
         }
 
         private void Loop()
@@ -72,6 +89,7 @@ namespace ZPBot.Common.Loop
                         break;
 
                 }
+
                 Thread.Sleep(Delay);
 
                 if (!Game.IsLooping)
@@ -92,10 +110,8 @@ namespace ZPBot.Common.Loop
 
         private void Record()
         {
-            var charPos = _globalManager.Player.GetIngamePosition();
-
-            int checkPointXPos = charPos.XPos, 
-                checkPointYPos = charPos.YPos;
+            int checkPointXPos = _globalManager.Player.InGamePosition.XPos,
+                checkPointYPos = _globalManager.Player.InGamePosition.YPos;
             AddPosition(checkPointXPos, checkPointYPos);
 
             while (Game.RecordLoop)
@@ -103,13 +119,13 @@ namespace ZPBot.Common.Loop
                 double distance;
                 do
                 {
-                    charPos = _globalManager.Player.GetIngamePosition();
-                    distance = Math.Sqrt(Math.Pow((charPos.XPos - checkPointXPos), 2) + Math.Pow((charPos.YPos - checkPointYPos), 2));
+                    distance = Game.Distance(_globalManager.Player.InGamePosition,
+                        new GamePosition(checkPointXPos, checkPointYPos));
                     Thread.Sleep(50);
-                } while ((distance < 20  && Game.RecordLoop) || Game.IsTeleporting);
+                } while (((distance < 20)  && Game.RecordLoop) || Game.IsTeleporting);
 
-                checkPointXPos = charPos.XPos;
-                checkPointYPos = charPos.YPos;
+                checkPointXPos = _globalManager.Player.InGamePosition.XPos;
+                checkPointYPos = _globalManager.Player.InGamePosition.YPos;
                 AddPosition(checkPointXPos, checkPointYPos);
             }
         }
@@ -125,7 +141,7 @@ namespace ZPBot.Common.Loop
                     Param2 = yPos
                 };
                 _recordScript.Add(tmp);
-            }  
+            }
         }
 
         public void AddTeleport(uint source, uint dest)
@@ -200,7 +216,7 @@ namespace ZPBot.Common.Loop
             }
             else
             {
-                Load(Config.WalkscriptLoop);
+                Load(WalkscriptPath);
                 _tLoop = new Thread(Loop);
                 _tLoop.Start();
             }
@@ -222,15 +238,15 @@ namespace ZPBot.Common.Loop
 
         private void Walk(int xPos, int yPos)
         {
-            var charPos = _globalManager.Player.GetIngamePosition();
-            var distance = Math.Sqrt(Math.Pow((charPos.XPos - xPos), 2) + Math.Pow((charPos.YPos - yPos), 2));
+            var distance = Game.Distance(_globalManager.Player.InGamePosition, new GamePosition(xPos, yPos));
 
             Game.IsWalking = false;
             _globalManager.PacketManager.MoveToCoords(xPos, yPos);
 
-            if (Game.Clientless)
+            if (_globalManager.Clientless)
             {
                 while (!Game.IsWalking && Game.IsLooping) Thread.Sleep(Delay);
+
                 var estimatedTime = (distance / 10) * (100 / _globalManager.Player.Runspeed);
                 Thread.Sleep((int)(estimatedTime * 1000));
             }
@@ -241,10 +257,9 @@ namespace ZPBot.Common.Loop
                 do
                 {
                     _globalManager.PacketManager.MoveToCoords(xPos, yPos);
-                    var realCharPos = _globalManager.Player.GetIngamePosition();
-                    realDistance = Math.Sqrt(Math.Pow((realCharPos.XPos - xPos), 2) + Math.Pow((realCharPos.YPos - yPos), 2));
+                    realDistance = Game.Distance(_globalManager.Player.InGamePosition, new GamePosition(xPos, yPos));
                     Thread.Sleep(50);
-                } while (realDistance > 10 && Game.IsLooping);
+                } while ((realDistance > 10) && Game.IsLooping);
             }
         }
 
@@ -266,7 +281,7 @@ namespace ZPBot.Common.Loop
 
             var timeout = new Stopwatch();
             timeout.Start();
-            
+
             do
             {
                 if (timeout.ElapsedMilliseconds > Timeout)
@@ -275,7 +290,7 @@ namespace ZPBot.Common.Loop
                     timeout.Restart();
                 }
                 Thread.Sleep(Delay);
-            } while (Game.SelectedNpc != worldId); 
+            } while (Game.SelectedNpc != worldId);
         }
 
         private void HandShake(uint worldId, byte option)
@@ -294,7 +309,7 @@ namespace ZPBot.Common.Loop
                     timeout.Restart();
                 }
                 Thread.Sleep(Delay);
-            } while (!Game.AllowBuy); 
+            } while (!Game.AllowBuy);
         }
 
         private void Shop(uint npcId, byte option, ShopType type)
@@ -315,30 +330,30 @@ namespace ZPBot.Common.Loop
                 {
                     case ShopType.Potion:
                         //Buy HP Potions
-                        var hpData = GetItemDataToBuy(srData, Config.HpLooptype);
-                        if (Config.HpLoop)
+                        var hpData = GetItemDataToBuy(srData, HpLoopOption.BuyType.Id);
+                        if (HpLoopOption.Enabled && (hpData.ItemId > 0))
                         {
-                            BuyItems(hpData, worldId, Config.HpLooptype, Config.HpLoopcount);
+                            BuyItems(hpData, worldId, HpLoopOption.BuyAmount);
                             _globalManager.InventoryManager.StackInventoryItems();
                             Thread.Sleep(Delay);
                             if (Config.Debug) Console.WriteLine(type + @": Bought HP");
-                        } 
+                        }
 
                         //Buy MP Potions
-                        var mpData = GetItemDataToBuy(srData, Config.MpLooptype);
-                        if (Config.MpLoop)
+                        var mpData = GetItemDataToBuy(srData, MpLoopOption.BuyType.Id);
+                        if (MpLoopOption.Enabled && (mpData.ItemId > 0))
                         {
-                            BuyItems(mpData, worldId, Config.MpLooptype, Config.MpLoopcount);
+                            BuyItems(mpData, worldId, MpLoopOption.BuyAmount);
                             _globalManager.InventoryManager.StackInventoryItems();
                             Thread.Sleep(Delay);
                             if (Config.Debug) Console.WriteLine(type + @": Bought MP");
                         }
 
                         //Buy Universal Pills
-                        var uniData = GetItemDataToBuy(srData, Config.UniLooptype);
-                        if (Config.UniLoop)
+                        var uniData = GetItemDataToBuy(srData, UniLoopOption.BuyType.Id);
+                        if (UniLoopOption.Enabled && (uniData.ItemId > 0))
                         {
-                            BuyItems(uniData, worldId, Config.UniLooptype, Config.UniLoopcount);
+                            BuyItems(uniData, worldId, UniLoopOption.BuyAmount);
                             _globalManager.InventoryManager.StackInventoryItems();
                             Thread.Sleep(Delay);
                             if (Config.Debug) Console.WriteLine(type + @": Bought Universal Pills");
@@ -353,16 +368,16 @@ namespace ZPBot.Common.Loop
                         Thread.Sleep(1000);
 
                         //Buy Arrows / Bolts
-                        var ammoData = GetItemDataToBuy(srData, Config.AmmoLooptype);
-                        if (Config.AmmoLoop) BuyItems(ammoData, worldId, Config.AmmoLooptype, Config.AmmoLoopcount);
+                        var ammoData = GetItemDataToBuy(srData, AmmoLoopOption.BuyType.Id);
+                        if (AmmoLoopOption.Enabled && (ammoData.ItemId > 0)) BuyItems(ammoData, worldId, AmmoLoopOption.BuyAmount);
                         if (Config.Debug) Console.WriteLine(type + @": Bought Ammo");
                         break;
                     case ShopType.Accessory:
                         //Buy Drugs
-                        var drugsData = GetItemDataToBuy(srData, Config.DrugsLooptype);
-                        if (Config.DrugsLoop)
+                        var drugsData = GetItemDataToBuy(srData, SpeedLoopOption.BuyType.Id);
+                        if (SpeedLoopOption.Enabled && (drugsData.ItemId > 0))
                         {
-                            BuyItems(drugsData, worldId, Config.DrugsLooptype, Config.DrugsLoopcount);
+                            BuyItems(drugsData, worldId, SpeedLoopOption.BuyAmount);
                             _globalManager.InventoryManager.StackInventoryItems();
                             Thread.Sleep(Delay);
                         }
@@ -370,10 +385,10 @@ namespace ZPBot.Common.Loop
                         if (Config.Debug) Console.WriteLine(type + @": Bought Speed Drugs");
 
                         //Buy Return Scrolls
-                        var scrollsData = GetItemDataToBuy(srData, Config.ScrollsLooptype);
-                        if (Config.ScrollsLoop)
+                        var scrollsData = GetItemDataToBuy(srData, ReturnLoopOption.BuyType.Id);
+                        if (ReturnLoopOption.Enabled && (scrollsData.ItemId > 0))
                         {
-                            BuyItems(scrollsData, worldId, Config.ScrollsLooptype, Config.ScrollsLoopcount);
+                            BuyItems(scrollsData, worldId, ReturnLoopOption.BuyAmount);
                             _globalManager.InventoryManager.StackInventoryItems();
                             Thread.Sleep(Delay);
                         }
@@ -407,7 +422,7 @@ namespace ZPBot.Common.Loop
                     timeout.Restart();
                 }
                 Thread.Sleep(Delay);
-            } while (!Game.AllowBuy); 
+            } while (!Game.AllowBuy);
         }
 
         private void Sell()
@@ -436,38 +451,35 @@ namespace ZPBot.Common.Loop
             }
         }
 
-        private void BuyItems(Silkroad.Shop data, uint worldId, uint itemId, ushort quantity)
+        private void BuyItems(Silkroad.Shop data, uint worldId, ushort quantity)
         {
-            if (itemId != 0)
+            if (data.ItemId == 0)
+                return;
+
+            var item = Silkroad.GetItemById(data.ItemId);
+            var quantityToBuy = quantity - _globalManager.InventoryManager.GetItemCount(data.ItemId);
+            if (Config.Debug) Console.WriteLine(@"Buying " + item.Code + @" (" + quantityToBuy + @")");
+
+            while (quantityToBuy > 0)
             {
-                var item = Silkroad.GetItemById(itemId);
-                var quantityToBuy = quantity - _globalManager.InventoryManager.GetItemCount(itemId);
-                if (Config.Debug) Console.WriteLine(@"Buying " + item.Code + @" (" + quantityToBuy + @")");
+                if (!Game.IsLooping)
+                    return;
 
-                while (quantityToBuy > 0)
+                Game.AllowBuy = true;
+
+                if (quantityToBuy > item.MaxQuantity)
                 {
-                    if (!Game.IsLooping)
-                        return;
-
-                    Game.AllowBuy = true;
-
-                    if (quantityToBuy > item.MaxQuantity)
-                    {
-                        Buy(worldId, data.TabIndex, data.SlotIndex, item.MaxQuantity);
-                        quantityToBuy -= item.MaxQuantity;
-                    }
-                    else
-                    {
-                        Buy(worldId, data.TabIndex, data.SlotIndex, (ushort)quantityToBuy);
-                        quantityToBuy = 0;
-                    }
+                    Buy(worldId, data.TabIndex, data.SlotIndex, item.MaxQuantity);
+                    quantityToBuy -= item.MaxQuantity;
+                }
+                else
+                {
+                    Buy(worldId, data.TabIndex, data.SlotIndex, (ushort) quantityToBuy);
+                    quantityToBuy = 0;
                 }
             }
         }
 
-        private static Silkroad.Shop GetItemDataToBuy(List<Silkroad.Shop> shopdata, uint itemId)
-        {
-            return shopdata.Find(temp => temp.ItemId == itemId);
-        }
+        private static Silkroad.Shop GetItemDataToBuy(List<Silkroad.Shop> shopdata, uint itemId) => shopdata.Find(temp => temp.ItemId == itemId);
     }
 }

@@ -1,4 +1,8 @@
 ﻿
+using System;
+using ZPBot.Annotations;
+using ZPBot.Common.Resources;
+
 namespace ZPBot.Common
 {
     internal class Client
@@ -21,64 +25,16 @@ namespace ZPBot.Common
         public static string Version = "1.1.2";
         public static bool Debug = false;
         public static string IniPath;
-
-        public static bool Usehp = false;
-        public static bool Usemp = false;
-        public static bool Useuni = false;
-        public static bool Gmtag = false;
-        public static bool Autologin = false;
-        public static bool LaunchClientless = false;
-
-        public static string LoginId = "";
-        public static string LoginPw = "";
-        public static string LoginChar = "";
-
-        public static bool PickupMyitems = false;
-        public static bool Botstate = false;
-
-        public static string WalkscriptLoop = null;
-        public static string SroPath = null;
-
-        public static bool HpLoop = false;
-        public static bool MpLoop = false;
-        public static bool UniLoop = false;
-        public static bool AmmoLoop = false;
-        public static bool DrugsLoop = false;
-        public static bool ScrollsLoop = false;
-        public static ushort HpLoopcount = 0;
-        public static ushort MpLoopcount = 0;
-        public static ushort UniLoopcount = 0;
-        public static ushort AmmoLoopcount = 0;
-        public static ushort DrugsLoopcount = 0;
-        public static ushort ScrollsLoopcount = 0;
-        public static uint HpLooptype = 0;
-        public static uint MpLooptype = 0;
-        public static uint UniLooptype = 0;
-        public static uint AmmoLooptype = 0;
-        public static uint DrugsLooptype = 0;
-        public static uint ScrollsLooptype = 0;
-
-        public static bool ReturntownDied = false;
-        public static bool ReturntownNoPotion = false;
-        public static bool ReturntownNoAmmo = false;
-
-        public static int UsehpPercent = 0;
-        public static int UsempPercent = 0;
-        public static int UsePethpPercent = 70;
-
-        public static bool UseZerk = false;
-        public static int UseZerktype = 0;
-        public static bool UseSpeeddrug = false;
-
-        public static byte PlusToreach = 0;
-        public static bool LogPackets = false;
+        public static string SroPath;
     }
 
     internal class Game
     {
-        public static int Range;
-        public static int RangeXpos, RangeYpos;
-        public static bool Clientless = false;
+        public static double Distance([NotNull] GamePosition sourcePosition, [NotNull] GamePosition itemPosition) => Math.Sqrt(Math.Pow(sourcePosition.XPos - itemPosition.XPos, 2) + Math.Pow(sourcePosition.YPos - itemPosition.YPos, 2));
+
+        [NotNull]
+        public static GamePosition PositionToGamePosition(EPosition position) => new GamePosition((int)((position.XSection - 135) * 192 + position.XPosition / 10),
+            (int)((position.YSection - 92) * 192 + position.YPosition / 10));
 
         public static uint SelectedNpc = 0;
         public static uint SelectedMonster = 0;
@@ -102,14 +58,5 @@ namespace ZPBot.Common
 
         public static byte[,] ChatCount = new byte[6, 2];
         public static bool ReturnChatcount = true;
-
-        public static EGamePosition GetRangePosition()
-        {
-            return new EGamePosition
-            {
-                XPos = RangeXpos,
-                YPos = RangeYpos
-            };
-        }
     }
 }

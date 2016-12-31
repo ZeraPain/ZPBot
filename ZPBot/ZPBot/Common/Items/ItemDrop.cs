@@ -1,4 +1,6 @@
-﻿
+﻿using ZPBot.Annotations;
+using ZPBot.Common.Resources;
+
 namespace ZPBot.Common.Items
 {
     public class ItemDrop : Item
@@ -16,13 +18,8 @@ namespace ZPBot.Common.Items
             PickCounter = 0;
         }
 
-        public EGamePosition GetIngamePosition()
-        {
-            return new EGamePosition
-            {
-                XPos = (int) ((Position.XSection - 135) * 192 + (Position.XPosition / 10)),
-                YPos = (int) ((Position.YSection - 92) * 192 + (Position.YPosition / 10))
-            };
-        }
+        [NotNull]
+        public GamePosition GetIngamePosition() => new GamePosition((int) ((Position.XSection - 135)*192 + Position.XPosition/10),
+            (int) ((Position.YSection - 92)*192 + Position.YPosition/10));
     }
 }
