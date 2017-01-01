@@ -65,7 +65,6 @@
     <Compile Include="Common\Characters\Char.cs" />
     <Compile Include="Common\Characters\Character.cs" />
     <Compile Include="Common\Characters\CharManager.cs" />
-    <Compile Include="Common\Characters\PartyManager.cs" />
     <Compile Include="Common\Characters\Pet.cs" />
     <Compile Include="Common\Characters\PetManager.cs" />
     <Compile Include="Common\ClientManager.cs" />
@@ -82,6 +81,9 @@
     <Compile Include="Common\Loop\NPC.cs" />
     <Compile Include="Common\Loop\NPCManager.cs" />
     <Compile Include="Common\Characters\Monster.cs" />
+    <Compile Include="Common\Party\Party.cs" />
+    <Compile Include="Common\Party\PartyManager.cs" />
+    <Compile Include="Common\Party\PartyMember.cs" />
     <Compile Include="Common\Skills\Skill.cs" />
     <Compile Include="Common\Skills\SkillManager.cs" />
     <Compile Include="Common\Resources\ThreadManager.cs" />

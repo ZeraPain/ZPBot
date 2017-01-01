@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using ZPBot.Annotations;
 using ZPBot.Common.Resources;
 
 namespace ZPBot.Common.Items
@@ -244,6 +245,7 @@ namespace ZPBot.Common.Items
             return invItem;
         }
 
+        [CanBeNull]
         private InventoryItem GetReturnScroll()
         {
             InventoryItem invItem = null;

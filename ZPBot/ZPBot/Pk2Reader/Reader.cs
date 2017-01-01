@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
+using ZPBot.Annotations;
 
 namespace ZPBot.Pk2Reader
 {
@@ -10,54 +9,54 @@ namespace ZPBot.Pk2Reader
     {
         #region PK2Loading Algorithmus
 
-        private string pFile;
-        private Blowfish bf;
-        private Dictionary<String, sFile> content;
+        private string _pFile;
+        private Blowfish _bf;
+        private Dictionary<string, SFile> _content;
 
-        private bool pIsLoaded = false;
+        private bool _pIsLoaded;
 
         public Reader()
         {
-            bf = new Blowfish(new byte[] { 0x32, 0xCE, 0xDD, 0x7C, 0xBC, 0xA8 }, 0, 6);
-            content = new Dictionary<string, sFile>();
+            _bf = new Blowfish(new byte[] { 0x32, 0xCE, 0xDD, 0x7C, 0xBC, 0xA8 }, 0, 6);
+            _content = new Dictionary<string, SFile>();
         }
-        public Reader(byte[] BlowfishKey)
+        public Reader([NotNull] byte[] blowfishKey)
         {
-            bf = new Blowfish(BlowfishKey, 0, BlowfishKey.Length);
-            content = new Dictionary<string, sFile>();
+            _bf = new Blowfish(blowfishKey, 0, blowfishKey.Length);
+            _content = new Dictionary<string, SFile>();
         }
 
-        public Reader(string PK2Path)
+        public Reader(string pk2Path)
         {
-            pFile = PK2Path;
+            _pFile = pk2Path;
 
-            bf = new Blowfish(new byte[] { 0x32, 0xCE, 0xDD, 0x7C, 0xBC, 0xA8 }, 0, 6);
-            content = new Dictionary<string, sFile>();
+            _bf = new Blowfish(new byte[] { 0x32, 0xCE, 0xDD, 0x7C, 0xBC, 0xA8 }, 0, 6);
+            _content = new Dictionary<string, SFile>();
 
             Load();
         }
-        public Reader(string PK2Path, byte[] BlowfishKey)
+        public Reader(string pk2Path, [NotNull] byte[] blowfishKey)
         {
-            pFile = PK2Path;
+            _pFile = pk2Path;
 
-            bf = new Blowfish(BlowfishKey, 0, BlowfishKey.Length);
-            content = new Dictionary<string, sFile>();
+            _bf = new Blowfish(blowfishKey, 0, blowfishKey.Length);
+            _content = new Dictionary<string, SFile>();
 
             Load();
         }
 
         public bool Load()
         {
-            if (String.IsNullOrEmpty(pFile) == false && System.IO.File.Exists(pFile))
+            if (string.IsNullOrEmpty(_pFile) == false && File.Exists(_pFile))
             {
                 try
                 {
-                    FileStream fs = new FileStream(pFile, FileMode.Open, FileAccess.Read);
+                    var fs = new FileStream(_pFile, FileMode.Open, FileAccess.Read);
 
-                    BinaryReader r = new BinaryReader(fs);
+                    var r = new BinaryReader(fs);
 
                     r.BaseStream.Position = 0;
-                    content.Clear();
+                    _content.Clear();
 
                     r.ReadChars(30);
                     r.ReadUInt32();
@@ -65,10 +64,10 @@ namespace ZPBot.Pk2Reader
                     r.BaseStream.Position += 218; //00-00-00..
 
                     //First Entry
-                    byte[] buffer = r.ReadBytes(128);
-                    bf.DecryptRev(buffer, 0, buffer, 0, 131);
+                    var buffer = r.ReadBytes(128);
+                    _bf.DecryptRev(buffer, 0, buffer, 0, 131);
 
-                    using (BinaryReader rr = new BinaryReader(new MemoryStream(buffer)))
+                    using (var rr = new BinaryReader(new MemoryStream(buffer)))
                     {
                         rr.ReadByte(); //Type
                         rr.ReadChars(81); //Name
@@ -84,35 +83,36 @@ namespace ZPBot.Pk2Reader
                     r.Close();
                     fs.Close();
 
-                    pIsLoaded = true;
+                    _pIsLoaded = true;
                     return true;
                 }
                 catch (Exception ex)
                 {
-                    throw ex;
+                    Console.WriteLine(@"Pk2Reader" + ex.Message);
+                    return false;
                 }
             }
             else
             {
-                pIsLoaded = false;
+                _pIsLoaded = false;
                 return false;
             }
         }
-        public bool Load(string PK2Path)
+        public bool Load(string pk2Path)
         {
-            pFile = PK2Path;
+            _pFile = pk2Path;
             return Load();
         }
 
         public bool IsLoaded()
         {
-            return pIsLoaded;
+            return _pIsLoaded;
         }
 
-        private string level = "\\";
+        private string _level = "\\";
         private bool ProcessFile(long startpos, ref BinaryReader r, ref byte[] buffer)
         {
-            sPK2Entry entry = new sPK2Entry();
+            var entry = new SPk2Entry();
             r.BaseStream.Position = startpos;
 
             buffer = r.ReadBytes(128);
@@ -120,14 +120,14 @@ namespace ZPBot.Pk2Reader
             {
                 return false;
             }
-            bf.DecryptRev(buffer, 0, buffer, 0, 131);
+            _bf.DecryptRev(buffer, 0, buffer, 0, 131);
 
-            using (BinaryReader rr = new BinaryReader(new MemoryStream(buffer)))
+            using (var rr = new BinaryReader(new MemoryStream(buffer)))
             {
                 entry.Type = rr.ReadByte();
-                for (int i = 1; i < 81; i++)
+                for (var i = 1; i < 81; i++)
                 {
-                    byte b = rr.ReadByte();
+                    var b = rr.ReadByte();
                     if (b >= 0x20 && b <= 0x7E)
                     {
                         entry.Name += Convert.ToChar(b);
@@ -142,8 +142,8 @@ namespace ZPBot.Pk2Reader
                 rr.BaseStream.Position += 24;
                 entry.PosLow = rr.ReadUInt32();
                 entry.PosHigh = rr.ReadUInt32();
-                entry.size = rr.ReadUInt32();
-                entry.nextChain = rr.ReadUInt32();
+                entry.Size = rr.ReadUInt32();
+                entry.NextChain = rr.ReadUInt32();
             }
 
             switch (entry.Type)
@@ -152,11 +152,11 @@ namespace ZPBot.Pk2Reader
                     if (entry.Name != "." && entry.Name != "..")
                     {
                         //Some name fixes
-                        level = level + entry.Name + "\\";
-                        level = level.ToLower();
+                        _level = _level + entry.Name + "\\";
+                        _level = _level.ToLower();
 
                         //Store Directory EPosition
-                        long currentpos = r.BaseStream.Position;
+                        var currentpos = r.BaseStream.Position;
 
                         //Go to first Directory entry
                         r.BaseStream.Position = entry.PosLow;
@@ -167,25 +167,27 @@ namespace ZPBot.Pk2Reader
                         r.BaseStream.Position = currentpos; //Back to Directory
 
                         //Restore Directorys root path
-                        level = level.Remove(Len(level) - Len(entry.Name) - 1, Len(entry.Name) + 1);
+                        _level = _level.Remove(Len(_level) - Len(entry.Name) - 1, Len(entry.Name) + 1);
 
                     }
                     break;
 
                 case 2: //File
-                    if (entry.size != 0 && String.IsNullOrEmpty(entry.Name) == false)
+                    if (entry.Size != 0 && string.IsNullOrEmpty(entry.Name) == false)
                     {
-                        sFile file = new sFile();
-                        file.Pos = entry.PosLow;
-                        file.size = entry.size;
-                        if (content.ContainsKey(level + entry.Name))
+                        var file = new SFile
                         {
-                            Console.WriteLine("Warning: File: " + level + entry.Name + " already exist.");
+                            Pos = entry.PosLow,
+                            Size = entry.Size
+                        };
+                        if (_content.ContainsKey(_level + entry.Name))
+                        {
+                            Console.WriteLine(@"Warning: File: " + _level + entry.Name + @" already exist.");
                             //return false;
                         }
                         else
                         {
-                            content.Add(level + entry.Name.ToLower(), file);
+                            _content.Add(_level + entry.Name.ToLower(), file);
                         }
                     }
                     break;
@@ -194,9 +196,9 @@ namespace ZPBot.Pk2Reader
                     return false;
             }
 
-            if (entry.nextChain > 0)
+            if (entry.NextChain > 0)
             {
-                r.BaseStream.Position = entry.nextChain;
+                r.BaseStream.Position = entry.NextChain;
             }
             if (r.BaseStream.Position == entry.PosLow)
             {
@@ -204,7 +206,7 @@ namespace ZPBot.Pk2Reader
             }
             return true;
         }
-        private int Len(string expression)
+        private int Len([CanBeNull] string expression)
         {
             if (expression == null)
             {
@@ -216,91 +218,93 @@ namespace ZPBot.Pk2Reader
             }
         }
 
-        public Dictionary<string, sFile> GetContent()
+        public Dictionary<string, SFile> GetContent()
         {
-            return content;
+            return _content;
         }
         public int GetContentCount()
         {
-            return content.Count;
+            return _content.Count;
         }
 
-        public struct sFile
+        public struct SFile
         {
             public uint Pos;
-            public uint size;
+            public uint Size;
         }
-        private struct sPK2Entry
+        private struct SPk2Entry
         {
             public byte Type;
             public string Name;
             public uint PosLow;
             public uint PosHigh;
-            public uint size;
-            public uint nextChain;
+            public uint Size;
+            public uint NextChain;
         }
 
         public void Unload()
         {
-            pIsLoaded = false;
-            content.Clear();
+            _pIsLoaded = false;
+            _content.Clear();
         }
 
         #endregion
 
         //Custom functions to get Files,Images etc...
 
-        public byte[] GetFile(sFile file)
+        [NotNull]
+        public byte[] GetFile(SFile file)
         {
             byte[] buffer;
 
-            using (FileStream fs = new FileStream(pFile, FileMode.Open, FileAccess.Read))
+            using (var fs = new FileStream(_pFile, FileMode.Open, FileAccess.Read))
             {
-                using (BinaryReader r = new BinaryReader(fs))
+                using (var r = new BinaryReader(fs))
                 {
                     r.BaseStream.Position = file.Pos;
-                    buffer = r.ReadBytes(Convert.ToInt32(file.size));
+                    buffer = r.ReadBytes(Convert.ToInt32(file.Size));
                 }
             }
             return buffer;
         }
 
+        [CanBeNull]
         public byte[] GetFile(string file)
         {
             byte[] buffer;
 
             file = file.ToLower();
 
-            if (content.ContainsKey(file) == false)
+            if (_content.ContainsKey(file) == false)
             {
                 return null;
             }
 
-            using (FileStream fs = new FileStream(pFile, FileMode.Open, FileAccess.Read))
+            using (var fs = new FileStream(_pFile, FileMode.Open, FileAccess.Read))
             {
-                using (BinaryReader r = new BinaryReader(fs))
+                using (var r = new BinaryReader(fs))
                 {
-                    r.BaseStream.Position = content[file].Pos;
-                    buffer = r.ReadBytes(Convert.ToInt32(content[file].size));
+                    r.BaseStream.Position = _content[file].Pos;
+                    buffer = r.ReadBytes(Convert.ToInt32(_content[file].Size));
                 }
             }
             return buffer;
         }
 
-        public void PrintContent(string filepath)
+        public void PrintContent([NotNull] string filepath)
         {
-            StreamWriter sw = new StreamWriter(filepath, false);
-            foreach (string entry in content.Keys)
+            var sw = new StreamWriter(filepath, false);
+            foreach (var entry in _content.Keys)
             {
                 sw.WriteLine(entry);
             }
             sw.Close();
         }
+
         public void PrintContent()
         {
-            FileInfo fi = new FileInfo(pFile);
+            var fi = new FileInfo(_pFile);
             PrintContent(Environment.CurrentDirectory + "\\" + fi.Name.Replace(".pk2", ".txt"));
-            fi = null;
         }
 
         #region IDisposable Member
@@ -308,9 +312,9 @@ namespace ZPBot.Pk2Reader
         public void Dispose()
         {
 
-            content.Clear();
-            content = null;
-            bf = null;
+            _content.Clear();
+            _content = null;
+            _bf = null;
             GC.SuppressFinalize(this);
         }
 

@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
+using ZPBot.Annotations;
 using ZPBot.Common.Resources;
 
 namespace ZPBot.Common.Characters
@@ -35,6 +36,18 @@ namespace ZPBot.Common.Characters
                     break;
                 }
             }
+        }
+
+        [CanBeNull]
+        public Character GetCharById(uint worldId)
+        {
+            lock (PlayerList)
+            {
+                foreach (var player in PlayerList.Where(player => player.WorldId == worldId))
+                    return player;
+            }
+
+            return null;
         }
 
         protected override void MyThread()

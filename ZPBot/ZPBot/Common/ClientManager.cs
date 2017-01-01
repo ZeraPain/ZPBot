@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
+using ZPBot.Annotations;
 
 namespace ZPBot.Common
 {
@@ -235,7 +235,6 @@ namespace ZPBot.Common
             var alreadyProgramExeAddr = results[0] - 0x2;
             NativeMethods.WriteProcessMemory(_sroProcess.Handle, alreadyProgramExeAddr, patch, patch.Length, 0);
 
-
             //Multiclient Error MessageBox
             var multiClientErrorStringPattern = Encoding.Default.GetBytes("½ÇÅ©·Îµå°¡ ÀÌ¹Ì ½ÇÇà Áß ÀÔ´Ï´Ù.");
             results = FindStringPattern(multiClientErrorStringPattern, _fileArray, Push);
@@ -248,7 +247,6 @@ namespace ZPBot.Common
             var multiClientErrorAddr = results[0] - 0x8;
             NativeMethods.WriteProcessMemory(_sroProcess.Handle, multiClientErrorAddr, patch, patch.Length, 0);
 
-
             //Mac Address
             byte[] macAddressPattern = { 0x6A, 0x06, 0x8D, 0x44, 0x24, 0x48, 0x50, 0x8B, 0xCF };
             results = FindPattern(macAddressPattern, _fileArray);
@@ -260,7 +258,6 @@ namespace ZPBot.Common
 
             var macAddrAddr = results[0] + 0x9;
 
-
             //Callforward Address
             byte[] callForwardPattern = { 0x56, 0x8B, 0xF1, 0x0F, 0xB7, 0x86, 0x3E, 0x10, 0x00, 0x00, 0x57, 0x66, 0x8B, 0x7C, 0x24, 0x10, 0x0F, 0xB7, 0xCF, 0x8D, 0x14, 0x01, 0x3B, 0x96, 0x4C, 0x10, 0x00, 0x00 };
             var results1 = FindPattern(callForwardPattern, _fileArray);
@@ -271,7 +268,6 @@ namespace ZPBot.Common
             }
 
             var callforwardAddr = results1[0];
-
 
             //Patch
             var multiClientCodeCave = NativeMethods.VirtualAllocEx(_sroProcess.Handle, IntPtr.Zero, 45, 0x1000, 0x4);
@@ -324,7 +320,8 @@ namespace ZPBot.Common
             _sroProcess.Kill();
         }
 
-        private static List<uint> FindStringPattern(ICollection<byte> stringByteArray, IList<byte> fileArray, byte stringWorker)
+        [NotNull]
+        private static List<uint> FindStringPattern(byte[] stringByteArray, byte[] fileArray, byte stringWorker)
         {
             var results = FindPattern(stringByteArray, fileArray);
             if (results.Count == 0)
@@ -336,14 +333,31 @@ namespace ZPBot.Common
             return FindPattern(pattern, fileArray);
         }
 
-        private static List<uint> FindPattern(ICollection<byte> pattern, IList<byte> fileByteArray)
+        [NotNull]
+        private static List<uint> FindPattern([NotNull] byte[] pattern, [NotNull] byte[] fileByteArray)
         {
             var results = new List<uint>();
 
-            for (uint i = 0; i < fileByteArray.Count - pattern.Count; i++)
+            for (uint i = 0; i < fileByteArray.Length; i++)
             {
-                var flag = !pattern.Where((t, j) => fileByteArray[(int) (i + j)] != t).Any();
-                if (flag)
+                var found = true;
+
+                for (var k = 0; k < pattern.Length; k++)
+                {
+                    if (i + pattern.Length >= fileByteArray.Length)
+                    {
+                        found = false;
+                        break;
+                    }
+
+                    if (fileByteArray[i + k] != pattern[k])
+                    {
+                        found = false;
+                        break;
+                    }
+                }
+
+                if (found)
                 {
                     results.Add(0x400000 + i);
                 }

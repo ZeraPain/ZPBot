@@ -10,6 +10,7 @@ using System.Runtime.InteropServices;
 using ZPBot.Annotations;
 using ZPBot.Common.Items;
 using ZPBot.Common.Characters;
+using ZPBot.Common.Party;
 using ZPBot.Common.Resources;
 
 namespace ZPBot
@@ -188,6 +189,69 @@ namespace ZPBot
             label_infozerk.Text = player.RemainHwanCount.ToString();
             label_infospeed.Text = ((int)player.Runspeed).ToString();
         });
+
+        public void UpdateParty(List<PartyMember> partyMembers) => Invoke((MethodInvoker)delegate
+        {
+            listView_party.Items.Clear();
+
+            if (partyMembers == null)
+                return;
+
+            foreach (var player in partyMembers)
+            {
+                var listItem = new ListViewItem(player.WorldId.ToString());
+                listItem.SubItems.Add(player.Charname);
+                listItem.SubItems.Add(player.Guildname);
+                listItem.SubItems.Add(player.Level.ToString());
+                listItem.SubItems.Add(_globalManager.PartyManager.IsValidInvite(player.Charname) ? "X" : "");
+                listView_party.Items.Add(listItem);
+            }
+
+            UpdatePartyCfg();
+        });
+
+        private void PartyInviteSettings()
+        {
+            if (_iniSet == null) return;
+
+            for (var i = 0; i < _iniSet.Read<int>("PartyInvite", "Count"); i++)
+            {
+                try
+                {
+                    var player = _iniSet.Read<string>("PartyInvite", i.ToString());
+                    _globalManager.PartyManager.AcceptInviteList.Add(player);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(@"PickupSettings - " + ex.Message);
+                }
+            }
+        }
+
+        private void UpdatePartyCfg()
+        {
+            _iniSet.RemoveSection("PartyInvite");
+
+            var acceptInviteList = _globalManager.PartyManager.AcceptInviteList;
+            if (acceptInviteList.Count == 0)
+                return;
+
+            _iniSet.Write("PartyInvite", "Count", acceptInviteList.Count.ToString());
+
+            var index = 0;
+            foreach (var player in acceptInviteList)
+                _iniSet.Write("PartyInvite", index++.ToString(), player);
+        }
+
+        private void toolStripMenuItem_add_Click(object sender, EventArgs e)
+        {
+            listView_party.BeginUpdate();
+
+            foreach (ListViewItem lvItem in listView_party.SelectedItems)
+                lvItem.SubItems[4].Text = _globalManager.PartyManager.ToggleInviteList(lvItem.SubItems[1].Text) ? @"X" : "";
+
+            listView_party.EndUpdate();
+        }
 
         public void FinishLoad(bool state) => Invoke((MethodInvoker)delegate
         {
@@ -453,6 +517,13 @@ namespace ZPBot
             _globalManager.LoopManager.ReturnLoopOption.BuyAmount = _iniSet.Read<ushort>("Loop", "BuyScrollsAmount");
 
             _globalManager.LoopManager.WalkscriptPath = _iniSet.Read<string>("Loop", "Walkscript", "No Walkscript is set");
+
+            //Party
+            _globalManager.PartyManager.AutoAccept = _iniSet.Read<bool>("Party", "AutoAccept");
+            _globalManager.PartyManager.AutoInvite = _iniSet.Read<bool>("Party", "AutoInvite");
+            _globalManager.PartyManager.AcceptInviteAll = _iniSet.Read<bool>("Party", "AcceptInviteAll");
+            _globalManager.PartyManager.PartyType = _iniSet.Read<int>("Party", "PartyType");
+            PartyInviteSettings();
         }
 
         private void button_save_Click(object sender, EventArgs e)
@@ -507,6 +578,12 @@ namespace ZPBot
             _iniSet.Write("Loop", "BuyScrollsAmount", _globalManager.LoopManager.ReturnLoopOption.BuyAmount.ToString());
 
             _iniSet.Write("Loop", "Walkscript", _globalManager.LoopManager.WalkscriptPath);
+
+            //Party
+            _iniSet.Write("Party", "AutoAccept", _globalManager.PartyManager.AutoAccept.ToString());
+            _iniSet.Write("Party", "AutoInvite", _globalManager.PartyManager.AutoInvite.ToString());
+            _iniSet.Write("Party", "AcceptInviteAll", _globalManager.PartyManager.AcceptInviteAll.ToString());
+            _iniSet.Write("Party", "PartyType", _globalManager.PartyManager.PartyType.ToString());
         }
     }
 }

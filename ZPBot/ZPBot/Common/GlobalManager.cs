@@ -5,6 +5,7 @@ using ZPBot.Common.Items;
 using ZPBot.Common.Skills;
 using ZPBot.Common.Loop;
 using ZPBot.Common.Characters;
+using ZPBot.Common.Party;
 using ZPBot.Common.Resources;
 using ZPBot.SilkroadSecurityApi;
 
@@ -69,14 +70,13 @@ namespace ZPBot.Common
             InventoryManager = new InventoryManager(this);
             MonsterManager = new MonsterManager(this);
             LoopManager = new LoopManager(this);
-            PartyManager = new PartyManager();
+            PartyManager = new PartyManager(this);
 
             StopBot();
 
-            _tHelper = new Thread(TimerThread);
             _threadActive = true;
+            _tHelper = new Thread(TimerThread);
             _tHelper.Start();
-            CharManager.Start();
         }
 
         public void Close()
@@ -84,12 +84,13 @@ namespace ZPBot.Common
             _threadActive = false;
             StopBot();
             _tSrodata?.Abort();
-            _tHelper?.Abort();
-            CharManager?.Stop();
-            InventoryManager?.Stop();
-            ItemDropManager?.Stop();
-            Silkroadproxy?.Stop();
-            ClientManager?.Kill();
+            _tHelper.Abort();
+            CharManager.Stop();
+            PartyManager.Stop();
+            InventoryManager.Stop();
+            ItemDropManager.Stop();
+            Silkroadproxy.Stop();
+            ClientManager.Kill();
         }
 
         public void StartLoop(bool returnTown)
@@ -137,6 +138,7 @@ namespace ZPBot.Common
             else
             {
                 if (!InventoryManager.ReturnTown("Out of Trainingarea")) return true;
+
                 SendMessage("Out of Trainingarea - Returning to town", EMessageType.Notice);
                 LoopManager.StartLoop(true);
             }
@@ -184,16 +186,13 @@ namespace ZPBot.Common
         {
             while (_threadActive)
             {
-                if (Player.AccountId == 0)
+                if (Player.WorldId != 0)
                 {
-                    Thread.Sleep(10);
-                    continue;
-                }
-
-                if (ReturntownDied && (Player.Dead || Player.Health == 0))
-                {
-                    PacketManager.ReturnTown();
-                    if (Botstate) LoopManager.StartLoop(true);
+                    if (ReturntownDied && (Player.Dead || Player.Health == 0))
+                    {
+                        PacketManager.ReturnTown();
+                        if (Botstate) LoopManager.StartLoop(true);
+                    }
                 }
 
                 if (Clientless)

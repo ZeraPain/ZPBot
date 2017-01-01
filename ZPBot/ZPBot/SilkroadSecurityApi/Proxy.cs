@@ -90,7 +90,7 @@ namespace ZPBot.SilkroadSecurityApi
                     {
                         foreach (var packet in gwRemoteRecvPackets)
                         {
-                            if (LogPackets) Console.WriteLine(@"[Gateway] [S->P][{0:X4}][{1} bytes]{2}{3}{4}{5}{6}", packet.Opcode, packet.GetBytes().Length, packet.Encrypted ? "[Encrypted]" : "", packet.Massive ? "[Massive]" : "", Environment.NewLine, Utility.HexDump(packet.GetBytes()), Environment.NewLine);
+                            //Console.WriteLine(@"[Gateway] [S->P][{0:X4}][{1} bytes]{2}{3}{4}{5}{6}", packet.Opcode, packet.GetBytes().Length, packet.Encrypted ? "[Encrypted]" : "", packet.Massive ? "[Massive]" : "", Environment.NewLine, Utility.HexDump(packet.GetBytes()), Environment.NewLine);
 
                             switch (packet.Opcode)
                             {
@@ -158,9 +158,13 @@ namespace ZPBot.SilkroadSecurityApi
                     var gwRemoteSendBuffers = _gwRemoteSecurity.TransferOutgoing();
                     if (gwRemoteSendBuffers != null)
                     {
-                        foreach (var buffer in from kvp in gwRemoteSendBuffers let packet = kvp.Value let buffer = kvp.Key select buffer)
+                        foreach (var kvp in gwRemoteSendBuffers)
                         {
-                            //Console.WriteLine(@"[Gateway] [P->S][{0:X4}][{1} bytes]{2}{3}{4}{5}{6}", packet.Opcode, packet_bytes.Length, packet.Encrypted ? "[Encrypted]" : "", packet.Massive ? "[Massive]" : "", Environment.NewLine, Utility.HexDump(packet_bytes), Environment.NewLine);
+                            var packet = kvp.Value;
+                            var buffer = kvp.Key;
+                            var packetBytes = packet.GetBytes();
+
+                            if (LogPackets) Console.WriteLine(@"[Gateway P->S][{0:X4}][{1} bytes]{2}{3}{4}{5}{6}", packet.Opcode, packetBytes.Length, packet.Encrypted ? "[Encrypted]" : "", packet.Massive ? "[Massive]" : "", Environment.NewLine, Utility.HexDump(packetBytes), Environment.NewLine);
                             _gwRemoteStream.Write(buffer.Buffer, 0, buffer.Size);
                         }
                     }
@@ -201,7 +205,7 @@ namespace ZPBot.SilkroadSecurityApi
                     {
                         foreach (var packet in gwLocalRecvPackets)
                         {
-                            if (LogPackets) Console.WriteLine(@"[Gateway] [C->P][{0:X4}][{1} bytes]{2}{3}{4}{5}{6}", packet.Opcode, packet.GetBytes().Length, packet.Encrypted ? "[Encrypted]" : "", packet.Massive ? "[Massive]" : "", Environment.NewLine, Utility.HexDump(packet.GetBytes()), Environment.NewLine);
+                            //Console.WriteLine(@"[Gateway] [C->P][{0:X4}][{1} bytes]{2}{3}{4}{5}{6}", packet.Opcode, packet.GetBytes().Length, packet.Encrypted ? "[Encrypted]" : "", packet.Massive ? "[Massive]" : "", Environment.NewLine, Utility.HexDump(packet.GetBytes()), Environment.NewLine);
 
                             // Do not pass through these packets.
                             switch (packet.Opcode)
@@ -227,9 +231,13 @@ namespace ZPBot.SilkroadSecurityApi
                     var gwLocalSendBuffers = _gwLocalSecurity.TransferOutgoing();
                     if (gwLocalSendBuffers != null)
                     {
-                        foreach (var buffer in from kvp in gwLocalSendBuffers let packet = kvp.Value let buffer = kvp.Key select buffer)
+                        foreach (var kvp in gwLocalSendBuffers)
                         {
-                            //Console.WriteLine("[P->C][{0:X4}][{1} bytes]{2}{3}{4}{5}{6}", packet.Opcode, packet_bytes.Length, packet.Encrypted ? "[Encrypted]" : "", packet.Massive ? "[Massive]" : "", Environment.NewLine, Utility.HexDump(packet_bytes), Environment.NewLine);
+                            var packet = kvp.Value;
+                            var buffer = kvp.Key;
+                            var packetBytes = packet.GetBytes();
+
+                            if (LogPackets) Console.WriteLine(@"[Gateway P->C][{0:X4}][{1} bytes]{2}{3}{4}{5}{6}", packet.Opcode, packetBytes.Length, packet.Encrypted ? "[Encrypted]" : "", packet.Massive ? "[Massive]" : "", Environment.NewLine, Utility.HexDump(packetBytes), Environment.NewLine);
                             _gwLocalStream.Write(buffer.Buffer, 0, buffer.Size);
                         }
                     }
@@ -334,7 +342,7 @@ namespace ZPBot.SilkroadSecurityApi
                     {
                         foreach (var packet in agRemoteRecvPackets)
                         {
-                            if (LogPackets) Console.WriteLine(@"[Agent] [S->P][{0:X4}][{1} bytes]{2}{3}{4}{5}{6}", packet.Opcode, packet.GetBytes().Length, packet.Encrypted ? "[Encrypted]" : "", packet.Massive ? "[Massive]" : "", Environment.NewLine, Utility.HexDump(packet.GetBytes()), Environment.NewLine);
+                            //Console.WriteLine(@"[Agent] [S->P][{0:X4}][{1} bytes]{2}{3}{4}{5}{6}", packet.Opcode, packet.GetBytes().Length, packet.Encrypted ? "[Encrypted]" : "", packet.Massive ? "[Massive]" : "", Environment.NewLine, Utility.HexDump(packet.GetBytes()), Environment.NewLine);
 
                             // Do not pass through these packets.
                             switch (packet.Opcode)
@@ -383,11 +391,16 @@ namespace ZPBot.SilkroadSecurityApi
                     var agRemoteSendBuffers = _agRemoteSecurity.TransferOutgoing();
                     if (agRemoteSendBuffers != null)
                     {
-                        foreach (var buffer in from kvp in agRemoteSendBuffers let packet = kvp.Value let buffer = kvp.Key select buffer)
+                        foreach (var kvp in agRemoteSendBuffers)
                         {
-                            //Console.WriteLine(@"[P->S][{0:X4}][{1} bytes]{2}{3}{4}{5}{6}", packet.Opcode, packetBytes.Length, packet.Encrypted ? "[Encrypted]" : "", packet.Massive ? "[Massive]" : "", Environment.NewLine, Utility.HexDump(packetBytes), Environment.NewLine);
+                            var packet = kvp.Value;
+                            var buffer = kvp.Key;
+                            var packetBytes = packet.GetBytes();
+
+                            if (LogPackets) Console.WriteLine(@"[Agent P->S][{0:X4}][{1} bytes]{2}{3}{4}{5}{6}", packet.Opcode, packetBytes.Length, packet.Encrypted ? "[Encrypted]" : "", packet.Massive ? "[Massive]" : "", Environment.NewLine, Utility.HexDump(packetBytes), Environment.NewLine);
                             _agRemoteStream.Write(buffer.Buffer, 0, buffer.Size);
                         }
+
                     }
 
                     Thread.Sleep(1);
@@ -426,7 +439,7 @@ namespace ZPBot.SilkroadSecurityApi
                     {
                         foreach (var packet in agLocalRecvPackets)
                         {
-                            if (LogPackets) Console.WriteLine(@"[Agent] [C->P][{0:X4}][{1} bytes]{2}{3}{4}{5}{6}", packet.Opcode, packet.GetBytes().Length, packet.Encrypted ? "[Encrypted]" : "", packet.Massive ? "[Massive]" : "", Environment.NewLine, Utility.HexDump(packet.GetBytes()), Environment.NewLine);
+                            //Console.WriteLine(@"[Agent] [C->P][{0:X4}][{1} bytes]{2}{3}{4}{5}{6}", packet.Opcode, packet.GetBytes().Length, packet.Encrypted ? "[Encrypted]" : "", packet.Massive ? "[Massive]" : "", Environment.NewLine, Utility.HexDump(packet.GetBytes()), Environment.NewLine);
 
                             // Do not pass through these packets.
                             switch (packet.Opcode)
@@ -468,9 +481,13 @@ namespace ZPBot.SilkroadSecurityApi
                     var agLocalSendBuffers = _agLocalSecurity.TransferOutgoing();
                     if (agLocalSendBuffers != null)
                     {
-                        foreach (var buffer in from kvp in agLocalSendBuffers let packet = kvp.Value let buffer = kvp.Key select buffer)
+                        foreach (var kvp in agLocalSendBuffers)
                         {
-                            //Console.WriteLine("[P->C][{0:X4}][{1} bytes]{2}{3}{4}{5}{6}", packet.Opcode, packet_bytes.Length, packet.Encrypted ? "[Encrypted]" : "", packet.Massive ? "[Massive]" : "", Environment.NewLine, Utility.HexDump(packet_bytes), Environment.NewLine);
+                            var packet = kvp.Value;
+                            var buffer = kvp.Key;
+                            var packetBytes = packet.GetBytes();
+
+                            if (LogPackets) Console.WriteLine(@"[Agent P->C][{0:X4}][{1} bytes]{2}{3}{4}{5}{6}", packet.Opcode, packetBytes.Length, packet.Encrypted ? "[Encrypted]" : "", packet.Massive ? "[Massive]" : "", Environment.NewLine, Utility.HexDump(packetBytes), Environment.NewLine);
                             _agLocalStream.Write(buffer.Buffer, 0, buffer.Size);
                         }
                     }

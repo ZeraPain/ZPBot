@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
+using ZPBot.Annotations;
 using ZPBot.Common.Characters;
+using ZPBot.Common.Party;
 using ZPBot.Common.Resources;
 using ZPBot.SilkroadSecurityApi;
 
@@ -9,7 +12,7 @@ namespace ZPBot.Common
 {
     internal partial class GlobalManager
     {
-        private void Died(Packet packet)
+        private void Died([NotNull] Packet packet)
         {
             var type = packet.ReadUInt8();
             if (type == 4)
@@ -116,9 +119,7 @@ namespace ZPBot.Common
                 var questType = packet.ReadUInt8();
 
                 if (questType == 28)
-                {
                     packet.ReadUInt32(); // remainingTime
-                }
 
                 packet.ReadUInt8(); // Status
 
@@ -132,9 +133,7 @@ namespace ZPBot.Common
                         packet.ReadAscii(); // Questname
                         var taskCount = packet.ReadUInt8();
                         for (var taskIndex = 0; taskIndex < taskCount; taskIndex++)
-                        {
                             packet.ReadUInt32(); // Value
-                        }
                     }
                 }
 
@@ -261,11 +260,13 @@ namespace ZPBot.Common
             FMain.UpdateCharacter(Player);
             InventoryManager.Start();
             ItemDropManager.Start();
+            CharManager.Start();
+            PartyManager.Start();
 
             if (Config.Debug) Console.WriteLine(@"CharUpdate - Completed");
         }
 
-        private void ChangeHpmp(Packet packet)
+        private void ChangeHpmp([NotNull] Packet packet)
         {
             var worldId = packet.ReadUInt32();
             packet.ReadUInt16(); //damageType
@@ -295,7 +296,7 @@ namespace ZPBot.Common
             FMain.UpdateCharacter(Player);
         }
 
-        private void UpdateStats(Packet packet)
+        private void UpdateStats([NotNull] Packet packet)
         {
             Player.MinPhydmg = packet.ReadUInt32();
             Player.MaxPhydmg = packet.ReadUInt32();
@@ -338,14 +339,14 @@ namespace ZPBot.Common
             }
         }
 
-        private void UpdatePetStatus(Packet packet)
+        private void UpdatePetStatus([NotNull] Packet packet)
         {
             var worldId = packet.ReadUInt32();
             var status = packet.ReadUInt8();
             if (status == 1) PetManager.Remove(worldId);
         }
 
-        private void UpdateSpeed(Packet packet)
+        private void UpdateSpeed([NotNull] Packet packet)
         {
             var worldId = packet.ReadUInt32();
             if (worldId != Player.WorldId) return;
@@ -355,12 +356,12 @@ namespace ZPBot.Common
             FMain.UpdateCharacter(Player);
         }
 
-        private void CureStatus(Packet packet)
+        private void CureStatus([NotNull] Packet packet)
         {
             Player.CureCount = packet.ReadUInt8();
         }
 
-        private void UpdateZerk(Packet packet)
+        private void UpdateZerk([NotNull] Packet packet)
         {
             var type = packet.ReadUInt8();
             if (type == 4)
@@ -372,7 +373,7 @@ namespace ZPBot.Common
             }
         }
 
-        private void Movement(Packet packet)
+        private void Movement([NotNull] Packet packet)
         {
             var worldId = packet.ReadUInt32();
 
@@ -427,7 +428,7 @@ namespace ZPBot.Common
             }
         }
 
-        private void Teleport(Packet packet)
+        private void Teleport([NotNull] Packet packet)
         {
             var source = packet.ReadUInt32();
             var type = packet.ReadUInt8();
@@ -441,7 +442,7 @@ namespace ZPBot.Common
             }
         }
 
-        private void ChangeState(Packet packet)
+        private void ChangeState([NotNull] Packet packet)
         {
             var worldId = packet.ReadUInt32();
             var param1 = packet.ReadUInt8();
@@ -532,12 +533,12 @@ namespace ZPBot.Common
             }
         }
 
-        private static void ReceiveExp(Packet packet)
+        private static void ReceiveExp([NotNull] Packet packet)
         {
             packet.ReadUInt32(); //worldId
         }
 
-        private void ReceivePlayerRequest(Packet packet)
+        private void ReceivePlayerRequest([NotNull] Packet packet)
         {
             var type = packet.ReadUInt8();
             switch (type)
@@ -545,36 +546,11 @@ namespace ZPBot.Common
                 case 1:
                     //exchange
                     break;
-                case 2:
-                    var playerId = packet.ReadUInt32();
+                case 2: // create party
+                case 3: // join party
+                    var worldId = packet.ReadUInt32(); // worldID
                     var partyType = packet.ReadUInt8();
-                    switch (partyType)
-                    {
-                        case 0: // item dist, exp dist
-                        case 4:
-                            if (PartyManager.AutoAccept && PartyManager.AcceptType1)
-                                PacketManager.AcceptPlayerRequest();
-                            break;
-                        case 1: // item dist, exp share
-                        case 5:
-                            if (PartyManager.AutoAccept && PartyManager.AcceptType2)
-                                PacketManager.AcceptPlayerRequest();
-                            break;
-                        case 2: // item share, exp dist
-                        case 6:
-                            if (PartyManager.AutoAccept && PartyManager.AcceptType3)
-                                PacketManager.AcceptPlayerRequest();
-                            break;
-                        case 3: // item share, exp share
-                        case 7:
-                            if (PartyManager.AutoAccept && PartyManager.AcceptType4)
-                                PacketManager.AcceptPlayerRequest();
-                            break;
-                    }
-
-                    break;
-                case 3:
-                    //party
+                    PartyManager.PartyRequest(worldId, partyType);
                     break;
                 case 4:
                     //ressurect
@@ -584,7 +560,7 @@ namespace ZPBot.Common
             }
         }
 
-        private static void SelectSuccess(Packet packet)
+        private static void SelectSuccess([NotNull] Packet packet)
         {
             var success = packet.ReadUInt8();
             if (success == 1)
@@ -594,12 +570,12 @@ namespace ZPBot.Common
             }
         }
 
-        private static void Select(Packet packet)
+        private static void Select([NotNull] Packet packet)
         {
             packet.ReadUInt32(); //worldId
         }
 
-        private static void AttackResponse(Packet packet)
+        private static void AttackResponse([NotNull] Packet packet)
         {
             var success = packet.ReadUInt8();
             if (success == 2)
@@ -611,6 +587,96 @@ namespace ZPBot.Common
                     Game.AttackBlacklist = Game.SelectedMonster;
                     Game.SelectedMonster = 0;
                 }
+            }
+        }
+
+        [NotNull]
+        private static PartyMember ParsePartyMember(ref Packet packet)
+        {
+            var partyMember = new PartyMember();
+
+            packet.SkipBytes(1); // 0xFF
+            partyMember.WorldId = packet.ReadUInt32(); // worldID
+            partyMember.Charname = packet.ReadAscii(); // charname
+            partyMember.Model = packet.ReadUInt32(); // model
+            partyMember.Level = packet.ReadUInt8(); // level
+            partyMember.HpMpInfo = packet.ReadUInt8(); // hp mp info
+            partyMember.InGamePosition = Game.PositionToGamePosition(new EPosition()
+            {
+                XSection = packet.ReadUInt8(),
+                YSection = packet.ReadUInt8(),
+                XPosition = packet.ReadUInt16(),
+                ZPosition = packet.ReadUInt16(),
+                YPosition = packet.ReadUInt16()
+            });
+            packet.SkipBytes(4);
+            partyMember.Guildname = packet.ReadAscii(); // guildname
+            packet.SkipBytes(1);
+            partyMember.SkillTree1 = packet.ReadUInt32(); // skill tree 1
+            partyMember.SkillTree2 = packet.ReadUInt32(); // skill tree 2
+
+            return partyMember;
+        }
+
+        private void PartyJoin([NotNull] Packet packet)
+        {
+            packet.SkipBytes(1); // 0xFF
+            var partyId = packet.ReadUInt32();
+            var masterId = packet.ReadUInt32(); // master worldID
+            packet.ReadUInt8(); // partyType
+            var memberCount = packet.ReadUInt8();
+
+            var partyMembers = new List<PartyMember>();
+            for (var i = 0; i < memberCount; i++)
+                partyMembers.Add(ParsePartyMember(ref packet));
+
+            PartyManager.JoinParty(partyId, masterId, partyMembers);
+        }
+
+        private void PartyUpdate([NotNull] Packet packet)
+        {
+            var type = packet.ReadUInt8();
+
+            uint worldId;
+            switch (type)
+            {
+                case 1: // Dismiss
+                    PartyManager.Dismiss();
+                    break;
+                case 2: // Join
+                    var partyMember = ParsePartyMember(ref packet);
+                    PartyManager.Join(partyMember);
+                    break;
+                case 3: // Leave / Kick
+                    worldId = packet.ReadUInt32();
+                    PartyManager.Leave(worldId);
+                    break;
+                case 6: // Update
+                    worldId = packet.ReadUInt32();
+                    var action = packet.ReadUInt8();
+                    switch (action)
+                    {
+                        case 0x4: // HP MP
+                            var hpMpInfo = packet.ReadUInt8();;
+                            PartyManager.CurrentParty?.UpdateHpMp(worldId, hpMpInfo);
+                            break;
+                        case 0x20: // Position
+                            var inGamePosition = Game.PositionToGamePosition(new EPosition()
+                            {
+                                XSection = packet.ReadUInt8(),
+                                YSection = packet.ReadUInt8(),
+                                XPosition = packet.ReadUInt16(),
+                                ZPosition = packet.ReadUInt16(),
+                                YPosition = packet.ReadUInt16()
+                            });
+                            PartyManager.CurrentParty?.UpdatePosition(worldId, inGamePosition);
+                            break;
+                    }
+                    break;
+                case 9: // New Party Master
+                    worldId = packet.ReadUInt32(); // worldID
+                    PartyManager.SetPartyMaster(worldId);
+                    break;
             }
         }
     }

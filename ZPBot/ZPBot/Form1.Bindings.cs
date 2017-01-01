@@ -32,10 +32,9 @@ namespace ZPBot
             listBox_players.DataSource = _globalManager.CharManager.PlayerList;
 
             checkBox_partyautoaccept.DataBindings.Add("Checked", _globalManager.PartyManager, "AutoAccept", false, DataSourceUpdateMode.OnPropertyChanged);
-            checkBox_partytype1.DataBindings.Add("Checked", _globalManager.PartyManager, "AcceptType1", false, DataSourceUpdateMode.OnPropertyChanged);
-            checkBox_partytype2.DataBindings.Add("Checked", _globalManager.PartyManager, "AcceptType2", false, DataSourceUpdateMode.OnPropertyChanged);
-            checkBox_partytype3.DataBindings.Add("Checked", _globalManager.PartyManager, "AcceptType3", false, DataSourceUpdateMode.OnPropertyChanged);
-            checkBox_partytype4.DataBindings.Add("Checked", _globalManager.PartyManager, "AcceptType4", false, DataSourceUpdateMode.OnPropertyChanged);
+            checkBox_partyautoinvite.DataBindings.Add("Checked", _globalManager.PartyManager, "AutoInvite", false, DataSourceUpdateMode.OnPropertyChanged);
+            checkBox_partyautoall.DataBindings.Add("Checked", _globalManager.PartyManager, "AcceptInviteAll", false, DataSourceUpdateMode.OnPropertyChanged);
+            comboBox_partytype.DataBindings.Add("SelectedIndex", _globalManager.PartyManager, "PartyType", false, DataSourceUpdateMode.OnPropertyChanged);
         }
 
         private void SetPlayerStatsBindings()

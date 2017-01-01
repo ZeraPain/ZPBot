@@ -269,9 +269,7 @@ namespace ZPBot.Common.Loop
             Game.IsTeleporting = true;
 
             while (Game.IsTeleporting && Game.IsLooping)
-            {
                 Thread.Sleep(Delay);
-            }
         }
 
         private void Select(uint worldId)

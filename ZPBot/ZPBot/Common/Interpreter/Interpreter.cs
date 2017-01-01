@@ -83,6 +83,9 @@ namespace ZPBot.Common
                     case 0x3026:
                         IncomingMessage(packet);
                         break;
+                    case 0x3065:
+                        PartyJoin(packet);
+                        break;
                     case 0x3040:
                         UpdateInventoryAlchemy(packet);
                         break;
@@ -131,6 +134,9 @@ namespace ZPBot.Common
                     case 0x3809:
                         //Game.is_teleporting = false;
                         //packet = null;
+                        break;
+                    case 0x3864:
+                        PartyUpdate(packet);
                         break;
                     case 0x7025:
                         OutgoingMessage(packet);

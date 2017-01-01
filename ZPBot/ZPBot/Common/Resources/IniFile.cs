@@ -24,10 +24,7 @@ namespace ZPBot.Common.Resources
             _path = iniPath;
         }
 
-        public void Write(string section, string key, string value)
-        {
-            NativeMethods.WritePrivateProfileString(section, key, value, _path);
-        }
+        public void Write(string section, string key, string value) => NativeMethods.WritePrivateProfileString(section, key, value, _path);
 
         public T Read<T>(string section, string key, string defValue = "0")
         {
@@ -36,7 +33,7 @@ namespace ZPBot.Common.Resources
                 var temp = new StringBuilder(255);
                 NativeMethods.GetPrivateProfileString(section, key, defValue, temp, 255, _path);
 
-                return (T) Convert.ChangeType(temp.ToString(), typeof (T));
+                return (T) Convert.ChangeType(temp.ToString(), typeof(T));
             }
             catch (Exception ex)
             {
@@ -44,10 +41,7 @@ namespace ZPBot.Common.Resources
                 return default(T);
             }
         }
-        
-        public void RemoveSection(string pSection)
-        {
-            NativeMethods.WritePrivateProfileString(pSection, null, null, _path);
-        }
+
+        public void RemoveSection(string pSection) => NativeMethods.WritePrivateProfileString(pSection, null, null, _path);
     }
 }

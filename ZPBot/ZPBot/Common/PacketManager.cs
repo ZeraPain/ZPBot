@@ -330,5 +330,13 @@ namespace ZPBot.Common
             packet.WriteUInt8(1);
             _globalManager.Silkroadproxy.Send(packet, Proxy.EPacketdestination.AgentRemote);
         }
+
+        public void SendPartyInvite(uint worldId, byte partyType)
+        {
+            var packet = new Packet(0x7060, false);
+            packet.WriteUInt32(worldId);
+            packet.WriteUInt8(partyType);
+            _globalManager.Silkroadproxy.Send(packet, Proxy.EPacketdestination.AgentRemote);
+        }
     }
 }
