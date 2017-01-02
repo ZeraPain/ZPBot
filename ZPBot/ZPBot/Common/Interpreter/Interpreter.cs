@@ -8,9 +8,39 @@ namespace ZPBot.Common
     internal partial class GlobalManager
     {
         private Packet _buffer;
-        public string LoginId { get; set; }
-        public string LoginPw { get; set; }
-        public string LoginChar { get; set; }
+
+        private string _loginid;
+        public string LoginId
+        {
+            get { return _loginid; }
+            set
+            {
+                _loginid = value;
+                OnPropertyChanged(nameof(LoginId));
+            }
+        }
+
+        private string _loginpw;
+        public string LoginPw
+        {
+            get { return _loginpw; }
+            set
+            {
+                _loginpw = value;
+                OnPropertyChanged(nameof(LoginPw));
+            }
+        }
+
+        private string _loginchar;
+        public string LoginChar
+        {
+            get { return _loginchar; }
+            set
+            {
+                _loginchar = value;
+                OnPropertyChanged(nameof(LoginChar));
+            }
+        }
 
         private bool _autologin;
         public bool Autologin

@@ -256,7 +256,7 @@ namespace ZPBot.Common.Loop
                     return;
             }
 
-            if (_tLoop != null && _tLoop.IsAlive) _tLoop.Abort();
+            if (_tLoop?.IsAlive == true) _tLoop.Abort();
             _tLoop = new Thread(Loop);
             _tLoop.Start();
         }
