@@ -8,12 +8,14 @@ namespace ZPBot.Common.Party
     {
         public uint Id { get; protected set; }
         public uint MasterId { get; set; }
+        public byte PartyType { get; protected set; }
         public List<PartyMember> PartyMembers { get; protected set; }
 
-        public Party(uint id, uint masterId, List<PartyMember> partyMembers)
+        public Party(uint id, uint masterId, byte partyType, List<PartyMember> partyMembers)
         {
             Id = id;
             MasterId = masterId;
+            PartyType = partyType;
             PartyMembers = partyMembers;
         }
 
@@ -41,5 +43,9 @@ namespace ZPBot.Common.Party
         }
 
         public bool PlayerInParty(string charname) => PartyMembers.Any(player => player.Charname == charname);
+
+        public bool PlayerInParty(uint accountId) => PartyMembers.Any(player => player.AccountId == accountId);
+
+        public bool IsAutoShare() => PartyType % 4 == 2 || PartyType % 4 == 3;
     }
 }

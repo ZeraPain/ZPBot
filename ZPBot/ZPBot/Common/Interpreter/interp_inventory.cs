@@ -28,7 +28,7 @@ namespace ZPBot.Common
                                 InventoryManager.MoveItem(fromSlot, toSlot, amount);
 
                                 Game.AllowStack = true;
-                                if (Game.Blocknpcanswer) Silkroadproxy.Send(packet, Proxy.EPacketdestination.AgentLocal);
+                                if (LoopManager.BlockNpcAnswer) Silkroadproxy.Send(packet, Proxy.EPacketdestination.AgentLocal);
                             }
                             break;
                         case 1: //Move Item in Storage
@@ -84,14 +84,15 @@ namespace ZPBot.Common
                                 var amount = packet.ReadUInt16();
                                 packet.SkipBytes(4);
 
-                                var item = Silkroad.GetItemFromShop(NpcManager.GetNpcid(Game.SelectedNpc), tabIndex, slotIndex);
+                                var item = Silkroad.GetItemFromShop(NpcManager.GetNpcid(LoopManager.SelectedNpc), tabIndex, slotIndex);
                                 if (item != null)
                                 {
                                     InventoryManager.Update(new InventoryItem(item, slotInventory, amount));
-                                    if (Game.Blocknpcanswer)
+                                    if (LoopManager.BlockNpcAnswer)
                                     {
                                         PacketManager.FakePickup(item.Id, slotInventory, amount);
-                                        Game.AllowBuy = true;
+                                        LoopManager.AllowBuy = true;
+                                        LoopManager.BlockNpcAnswer = false;
                                     }
                                     //Console.WriteLine("Item From Shop - " + item.item_code + " Tab: " + tab_index + " Slot: " + slot_index);
                                 }
@@ -109,10 +110,10 @@ namespace ZPBot.Common
                                 packet.ReadUInt8(); //rebuyId
                                 InventoryManager.Remove(slot);
 
-                                if (Game.Blocknpcanswer)
+                                if (LoopManager.BlockNpcAnswer)
                                 {
                                     Silkroadproxy.Send(packet, Proxy.EPacketdestination.AgentLocal);
-                                    Game.AllowSell = true;
+                                    LoopManager.AllowSell = true;
                                 }
                             }
                             break;

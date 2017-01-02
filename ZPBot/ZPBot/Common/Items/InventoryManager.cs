@@ -345,7 +345,7 @@ namespace ZPBot.Common.Items
                 {
                     _globalManager.PacketManager.UseItem(invItem); //Return Scroll
                     Thread.Sleep(1000);
-                } while (!Game.IsTeleporting);
+                } while (!_globalManager.LoopManager.IsTeleporting);
 
                 _globalManager.FMain.AddEvent("Returning to town " + reason, "Character");
                 return true;
@@ -371,7 +371,7 @@ namespace ZPBot.Common.Items
                     while (!Game.AllowStack)
                     {
                         Thread.Sleep(500);
-                        if (!Game.IsLooping)
+                        if (!_globalManager.LoopManager.IsLooping)
                             return;
                     }
 
@@ -394,7 +394,7 @@ namespace ZPBot.Common.Items
                         _globalManager.PacketManager.UseItem(invItem);
                         Thread.Sleep(500);
                     }
-                    if (_globalManager.Botstate && ReturntownNoPotion && !Game.IsLooping && GetUniversalCount() < 5 && ReturnTown("No Universal Pills"))
+                    if (_globalManager.Botstate && ReturntownNoPotion && !_globalManager.LoopManager.IsLooping && GetUniversalCount() < 5 && ReturnTown("No Universal Pills"))
                         _globalManager.StartLoop(true);
                 }
 
@@ -407,7 +407,7 @@ namespace ZPBot.Common.Items
                         _globalManager.PacketManager.UseItem(invItem);
                         Thread.Sleep(500);
                     }
-                    if (_globalManager.Botstate && ReturntownNoPotion && !Game.IsLooping && GetPotionCount(EPotionType3.Health) < 20 && ReturnTown("No Health Potion"))
+                    if (_globalManager.Botstate && ReturntownNoPotion && !_globalManager.LoopManager.IsLooping && GetPotionCount(EPotionType3.Health) < 20 && ReturnTown("No Health Potion"))
                         _globalManager.StartLoop(true);
      
                 }
@@ -421,7 +421,7 @@ namespace ZPBot.Common.Items
                         _globalManager.PacketManager.UseItem(invItem);
                         Thread.Sleep(500);
                     }
-                    if (_globalManager.Botstate && ReturntownNoPotion && !Game.IsLooping && GetPotionCount(EPotionType3.Mana) < 20 && ReturnTown("No Mana Potion"))
+                    if (_globalManager.Botstate && ReturntownNoPotion && !_globalManager.LoopManager.IsLooping && GetPotionCount(EPotionType3.Mana) < 20 && ReturnTown("No Mana Potion"))
                         _globalManager.StartLoop(true);
                 }
 
@@ -434,7 +434,7 @@ namespace ZPBot.Common.Items
                 }
 
                 //Check for Ammo
-                if (_globalManager.Botstate && ReturntownNoAmmo && !Game.IsLooping && GetAmmoCount() == 0 && ReturnTown("Out of Ammo"))
+                if (_globalManager.Botstate && ReturntownNoAmmo && !_globalManager.LoopManager.IsLooping && GetAmmoCount() == 0 && ReturnTown("Out of Ammo"))
                     _globalManager.StartLoop(true);
 
                 //Use Speed Drug

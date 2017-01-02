@@ -19,7 +19,7 @@ namespace ZPBot.Common
         public ItemDropManager ItemDropManager { get; protected set; }
         public SkillManager SkillManager { get; protected set; }
         public ClientManager ClientManager { get; protected set; }
-        public Character Player { get; protected set; }
+        public Player Player { get; protected set; }
         public CharManager CharManager { get; protected set; }
         public InventoryManager InventoryManager { get; protected set; }
         public StorageManager StorageManager { get; protected set; }
@@ -58,7 +58,7 @@ namespace ZPBot.Common
 
             ClientManager = new ClientManager();
             Silkroadproxy = new Proxy(this);
-            Player = new Character(this);
+            Player = new Player(this);
 
             PetManager = new PetManager();
             NpcManager = new NpcManager();
@@ -111,9 +111,11 @@ namespace ZPBot.Common
             FMain.FinishLoad(Silkroad.DumpObjects(Config.SroPath + "\\media.pk2"));
         }
 
-        public bool StartBot(bool forceArea)
+        public void StartBot(bool forceArea)
         {
-            if (Player.AccountId == 0) return false;
+            if (Player.AccountId == 0) return;
+
+            Botstate = true;
 
             var charPos = Player.InGamePosition;
             var distance = Game.Distance(charPos, MonsterManager.TrainingRange);
@@ -123,13 +125,6 @@ namespace ZPBot.Common
                 distance = Game.Distance(charPos, MonsterManager.TrainingRange);
             }
 
-            Botstate = true;
-            Game.IsLooping = false;
-
-            Game.AllowCast = true;
-            Game.SelectedMonster = 0;
-            Game.SelectedNpc = 0;
-
             if (MonsterManager.Range == 0 || distance <= MonsterManager.Range)
             {
                 MonsterManager.Start();
@@ -137,27 +132,20 @@ namespace ZPBot.Common
             }
             else
             {
-                if (!InventoryManager.ReturnTown("Out of Trainingarea")) return true;
+                if (!InventoryManager.ReturnTown("Out of Trainingarea")) return;
 
                 SendMessage("Out of Trainingarea - Returning to town", EMessageType.Notice);
                 LoopManager.StartLoop(true);
             }
-
-            return true;
         }
 
         public void StopBot()
         {
-            SkillManager.Stop();
-            MonsterManager.Stop();
-
             Botstate = false;
-            Game.IsLooping = false;
 
-            Game.AllowCast = false;
-            Game.AllowSell = false;
-
-            Game.SelectedMonster = 0;
+            MonsterManager.Stop();
+            SkillManager.Stop();
+            LoopManager.StopLoop();
         }
 
         public void SetFuseState(bool state)

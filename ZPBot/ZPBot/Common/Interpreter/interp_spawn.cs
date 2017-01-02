@@ -83,8 +83,8 @@ namespace ZPBot.Common
                 return;
 
             var worldId = packet.ReadUInt32();
-            if (worldId == Game.SelectedMonster)
-                Game.SelectedMonster = 0;
+            if (worldId == MonsterManager.SelectedMonster)
+                MonsterManager.SelectedMonster = 0;
 
             MonsterManager.Remove(worldId);
             ItemDropManager.Remove(worldId);
@@ -96,7 +96,7 @@ namespace ZPBot.Common
         {
             try
             {
-                var player = new Character(this, chardata);
+                var player = new Character(chardata);
                 var mob = new Monster(chardata);
                 var npc = new Npc(chardata);
 
@@ -213,7 +213,7 @@ namespace ZPBot.Common
                         var skillId = packet.ReadUInt32();
                         packet.ReadUInt32(); // Duration
                         var skillById = Silkroad.GetSkillById(skillId);
-                        if (skillById != null && skillById.GroupSkill)
+                        if (skillById?.GroupSkill == true)
                         {
                             packet.SkipBytes(1); // IsCreator
                         }
@@ -224,7 +224,7 @@ namespace ZPBot.Common
                 {
                     case ECharType1.Player:
                         //CHARACTER
-                        player.SetCharname(packet.ReadAscii());
+                        player.Charname = packet.ReadAscii();
                         packet.ReadUInt8(); // JobType:  = None, 1 = Trader, 2 = Tief, 3 = Hunter
                         packet.ReadUInt8(); // JobLevel
                         packet.ReadUInt8(); // PVPState: 0 = White (Neutral), 1 = Purple (Assaulter), 2 = Red
@@ -263,7 +263,7 @@ namespace ZPBot.Common
 
                         //Add Player
                         player.WorldId = worldId;
-                        player.SetPosition(Game.PositionToGamePosition(position));
+                        player.InGamePosition = Game.PositionToGamePosition(position);
                         CharManager.Add(player);
 
                         if (status == 4 || status == 7)

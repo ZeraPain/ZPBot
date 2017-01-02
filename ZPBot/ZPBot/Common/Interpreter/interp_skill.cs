@@ -6,12 +6,12 @@ namespace ZPBot.Common
 {
     internal partial class GlobalManager
     {
-        private static void SkillCast([NotNull] Packet packet)
+        private void SkillCast([NotNull] Packet packet)
         {
             packet.ReadUInt8(); //type 1 = Start 2 = Stop
             var queue = packet.ReadUInt8();
 
-            Game.AllowCast = queue <= 1;
+            SkillManager.AllowCast = queue <= 1;
         }
 
         private void SkillRegister([NotNull] Packet packet)

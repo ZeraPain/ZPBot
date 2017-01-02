@@ -35,22 +35,8 @@ namespace ZPBot.Common
         public static GamePosition PositionToGamePosition(EPosition position) => new GamePosition((int)((position.XSection - 135) * 192 + position.XPosition / 10),
             (int)((position.YSection - 92) * 192 + position.YPosition / 10));
 
-        public static uint SelectedNpc = 0;
-        public static uint SelectedMonster = 0;
-        public static uint AttackBlacklist = 0;
-        public static bool Blocknpcanswer = false;
-        public static bool RecordLoop = false;
-
-        public static bool AllowCast = false;
-        public static bool AllowBuy = false;
-        public static bool AllowSell = false;
         public static bool AllowStack = false;
         public static bool AllowFuse = false;
-
-        public static bool IsPicking = false;
-        public static bool IsWalking = false;
-        public static bool IsTeleporting = false;
-        public static bool IsLooping = false;
 
         public static bool Fusing = false;
         public static byte SlotFuseitem = 0;

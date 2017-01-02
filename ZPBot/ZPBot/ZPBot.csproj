@@ -67,6 +67,7 @@
     <Compile Include="Common\Characters\CharManager.cs" />
     <Compile Include="Common\Characters\Pet.cs" />
     <Compile Include="Common\Characters\PetManager.cs" />
+    <Compile Include="Common\Characters\Player.cs" />
     <Compile Include="Common\ClientManager.cs" />
     <Compile Include="Common\ExtendedProcess.cs" />
     <Compile Include="Common\Interpreter\Helper.cs" />

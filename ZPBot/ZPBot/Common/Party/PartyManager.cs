@@ -53,9 +53,9 @@ namespace ZPBot.Common.Party
             }
         }
 
-        public void JoinParty(uint partyId, uint masterId, List<PartyMember> partyMembers)
+        public void JoinParty(uint partyId, uint masterId, byte partyType, List<PartyMember> partyMembers)
         {
-            CurrentParty = new Party(partyId, masterId, partyMembers);
+            CurrentParty = new Party(partyId, masterId, partyType, partyMembers);
             _globalManager.FMain.UpdateParty(CurrentParty.PartyMembers);
         }
 
@@ -112,6 +112,14 @@ namespace ZPBot.Common.Party
         }
 
         public bool IsValidInvite(string charname) => AcceptInviteList.Any(player => player == charname);
+
+        public bool IsPickableItem(uint owner)
+        {
+            if (CurrentParty == null)
+                return false;
+
+            return CurrentParty.PlayerInParty(owner) && CurrentParty.IsAutoShare();
+        }
 
         protected override void MyThread()
         {

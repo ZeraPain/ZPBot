@@ -39,6 +39,14 @@ namespace ZPBot.Common.Loop
         private const int Delay = 200;
         private const int Timeout = 5000;
         private readonly object _lock;
+        public bool IsTeleporting { get; set; }
+        public bool IsLooping { get; protected set; }
+        public bool IsWalking { get; set; }
+        public bool AllowBuy { get; set; }
+        public bool AllowSell { get; set; }
+        public bool BlockNpcAnswer { get; set; }
+        public uint SelectedNpc { get; set; }
+        public bool RecordLoop { get; protected set; }
 
         public LoopOption HpLoopOption { get; set; }
         public LoopOption MpLoopOption { get; set; }
@@ -68,6 +76,9 @@ namespace ZPBot.Common.Loop
         {
             foreach (var cmd in _walkScript)
             {
+                if (!IsLooping)
+                    return;
+
                 switch (cmd.Type)
                 {
                     case "walk":
@@ -92,9 +103,6 @@ namespace ZPBot.Common.Loop
                 }
 
                 Thread.Sleep(Delay);
-
-                if (!Game.IsLooping)
-                    return;
             }
 
             if (_townScript)
@@ -105,8 +113,16 @@ namespace ZPBot.Common.Loop
 
         public void StartRecord()
         {
+            RecordLoop = true;
+
             _tRecord = new Thread(Record);
             _tRecord.Start();
+        }
+
+        public void StopRecord()
+        {
+            RecordLoop = false;
+            _tRecord?.Abort();
         }
 
         private void Record()
@@ -115,7 +131,7 @@ namespace ZPBot.Common.Loop
                 checkPointYPos = _globalManager.Player.InGamePosition.YPos;
             AddPosition(checkPointXPos, checkPointYPos);
 
-            while (Game.RecordLoop)
+            while (RecordLoop)
             {
                 double distance;
                 do
@@ -123,7 +139,7 @@ namespace ZPBot.Common.Loop
                     distance = Game.Distance(_globalManager.Player.InGamePosition,
                         new GamePosition(checkPointXPos, checkPointYPos));
                     Thread.Sleep(50);
-                } while (((distance < 20)  && Game.RecordLoop) || Game.IsTeleporting);
+                } while (((distance < 20)  && RecordLoop) || IsTeleporting);
 
                 checkPointXPos = _globalManager.Player.InGamePosition.XPos;
                 checkPointYPos = _globalManager.Player.InGamePosition.YPos;
@@ -206,7 +222,7 @@ namespace ZPBot.Common.Loop
 
         public void StartLoop(bool returnTown)
         {
-            Game.IsLooping = true;
+            IsLooping = true;
             _townScript = returnTown;
 
             if (returnTown)
@@ -223,12 +239,20 @@ namespace ZPBot.Common.Loop
             }
         }
 
+        public void StopLoop()
+        {
+            IsLooping = false;
+            IsTeleporting = false;
+            _tTeleport?.Abort();
+            _tLoop?.Abort();
+        }
+
         private void TeleportDelay()
         {
-            while (Game.IsTeleporting)
+            while (IsTeleporting)
             {
                 Thread.Sleep(Delay);
-                if (!Game.IsLooping)
+                if (!IsLooping)
                     return;
             }
 
@@ -241,12 +265,12 @@ namespace ZPBot.Common.Loop
         {
             var distance = Game.Distance(_globalManager.Player.InGamePosition, new GamePosition(xPos, yPos));
 
-            Game.IsWalking = false;
+            IsWalking = false;
             _globalManager.PacketManager.MoveToCoords(xPos, yPos);
 
             if (_globalManager.Clientless)
             {
-                while (!Game.IsWalking && Game.IsLooping) Thread.Sleep(Delay);
+                while (!IsWalking && IsLooping) Thread.Sleep(Delay);
 
                 var estimatedTime = (distance / 10) * (100 / _globalManager.Player.Runspeed);
                 Thread.Sleep((int)(estimatedTime * 1000));
@@ -260,22 +284,22 @@ namespace ZPBot.Common.Loop
                     _globalManager.PacketManager.MoveToCoords(xPos, yPos);
                     realDistance = Game.Distance(_globalManager.Player.InGamePosition, new GamePosition(xPos, yPos));
                     Thread.Sleep(50);
-                } while ((realDistance > 10) && Game.IsLooping);
+                } while ((realDistance > 10) && IsLooping);
             }
         }
 
         private void Teleport(uint source, uint dest)
         {
             _globalManager.PacketManager.Teleport(source, dest);
-            Game.IsTeleporting = true;
+            IsTeleporting = true;
 
-            while (Game.IsTeleporting && Game.IsLooping)
+            while (IsTeleporting && IsLooping)
                 Thread.Sleep(Delay);
         }
 
         private void Select(uint worldId)
         {
-            Game.SelectedNpc = 0;
+            SelectedNpc = 0;
             _globalManager.PacketManager.SelectMonster(worldId);
 
             var timeout = new Stopwatch();
@@ -289,12 +313,12 @@ namespace ZPBot.Common.Loop
                     timeout.Restart();
                 }
                 Thread.Sleep(Delay);
-            } while (Game.SelectedNpc != worldId);
+            } while (SelectedNpc != worldId);
         }
 
         private void HandShake(uint worldId, byte option)
         {
-            Game.AllowBuy = false;
+            AllowBuy = false;
             _globalManager.PacketManager.TalkToNpc(worldId, option);
 
             var timeout = new Stopwatch();
@@ -308,7 +332,7 @@ namespace ZPBot.Common.Loop
                     timeout.Restart();
                 }
                 Thread.Sleep(Delay);
-            } while (!Game.AllowBuy);
+            } while (!AllowBuy);
         }
 
         private void Shop(uint npcId, byte option, ShopType type)
@@ -407,7 +431,8 @@ namespace ZPBot.Common.Loop
 
         private void Buy(uint worldId, byte tab, byte slot, ushort quantity)
         {
-            Game.AllowBuy = false;
+            AllowBuy = false;
+            BlockNpcAnswer = true;
             _globalManager.PacketManager.BuyFromNpc(worldId, tab, slot, quantity);
 
             var timeout = new Stopwatch();
@@ -417,21 +442,22 @@ namespace ZPBot.Common.Loop
             {
                 if (timeout.ElapsedMilliseconds > Timeout)
                 {
+                    BlockNpcAnswer = true;
                     _globalManager.PacketManager.BuyFromNpc(worldId, tab, slot, quantity);
                     timeout.Restart();
                 }
                 Thread.Sleep(Delay);
-            } while (!Game.AllowBuy);
+            } while (!AllowBuy);
         }
 
         private void Sell()
         {
-            Game.AllowSell = false;
+            AllowSell = false;
 
             byte slot = 0;
             while (slot != 0)
             {
-                _globalManager.PacketManager.SellItem(slot);
+                _globalManager.PacketManager.SellItem(SelectedNpc, slot);
 
                 var timeout = new Stopwatch();
                 timeout.Start();
@@ -440,11 +466,11 @@ namespace ZPBot.Common.Loop
                 {
                     if (timeout.ElapsedMilliseconds > Timeout)
                     {
-                        _globalManager.PacketManager.SellItem(slot);
+                        _globalManager.PacketManager.SellItem(SelectedNpc, slot);
                         timeout.Restart();
                     }
                     Thread.Sleep(Delay);
-                } while (!Game.AllowSell);
+                } while (!AllowSell);
 
                 //slot = _inventoryManager.GetSellItem();
             }
@@ -462,10 +488,10 @@ namespace ZPBot.Common.Loop
 
             while (quantityToBuy > 0)
             {
-                if (!Game.IsLooping)
+                if (!IsLooping)
                     return;
 
-                Game.AllowBuy = true;
+                AllowBuy = true;
 
                 if (item != null && quantityToBuy > item.MaxQuantity)
                 {

@@ -19,6 +19,7 @@ namespace ZPBot.Common.Skills
         public BindingList<Skill> ImbueList { get; protected set; }
         private Skill _speedDrug;
         private readonly object _lock;
+        public bool AllowCast { get; set; }
 
         public SkillManager(GlobalManager globalManager)
         {
@@ -188,11 +189,13 @@ namespace ZPBot.Common.Skills
 
         protected override void MyThread()
         {
+            AllowCast = true;
+
             while (BActive)
             {
                 Thread.Sleep(200);
 
-                if (!_globalManager.Botstate || Game.IsLooping || !Game.AllowCast || Game.IsPicking)
+                if (!_globalManager.Botstate || _globalManager.LoopManager.IsLooping || !AllowCast || _globalManager.ItemDropManager.IsPicking)
                     continue;
 
                 var isBuffing = false;
@@ -212,16 +215,16 @@ namespace ZPBot.Common.Skills
 
                 lock (_lock)
                 {
-                    foreach (var skill in AttackList.TakeWhile(skill => Game.SelectedMonster != 0))
+                    foreach (var skill in AttackList.TakeWhile(skill => _globalManager.MonsterManager.SelectedMonster != 0))
                     {
-                        _globalManager.PacketManager.CastSkill(skill.Id, Game.SelectedMonster);
+                        _globalManager.PacketManager.CastSkill(skill.Id, _globalManager.MonsterManager.SelectedMonster);
                         Thread.Sleep(100);
                     }
 
                     if (ImbueList.Count > 0) _globalManager.PacketManager.CastSkill(ImbueList[0].Id);
                 }
 
-                if (Game.SelectedMonster == 0)
+                if (_globalManager.MonsterManager.SelectedMonster == 0)
                     continue;
 
                 Thread.Sleep(1000);

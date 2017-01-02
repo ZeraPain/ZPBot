@@ -65,6 +65,9 @@ namespace ZPBot.Common
 
             _sroProcess = Process.GetProcessById((int)pi.DwProcessId);
 
+            var sw = new Stopwatch();
+            sw.Start();
+
             Redirect();
             SetLocalConnection(localPort);
             StartMsg("Welcome to ZPBot (v." + Config.Version + ")!\ncopyright © 2016 by ZeraPain");
@@ -72,7 +75,10 @@ namespace ZPBot.Common
             Zoomhack();
             SwearFilter();
             NudePatch();
-            SeedPatch();
+            //SeedPatch();
+
+            sw.Stop();
+            Console.WriteLine(@"Patching took " + sw.Elapsed);
 
             NativeMethods.ResumeThread(pi.HThread);
             NativeMethods.ResumeThread(pi.HProcess);
@@ -98,8 +104,8 @@ namespace ZPBot.Common
             if ((_sroProcess == null) || _sroProcess.HasExited)
                 return;
 
-            byte[] redirectIpAddressPattern = { 0x89, 0x86, 0x2C, 0x01, 0x00, 0x00, 0x8B, 0x17, 0x89, 0x56, 0x50, 0x8B, 0x47, 0x04, 0x89, 0x46, 0x54, 0x8B, 0x4F, 0x08, 0x89, 0x4E, 0x58, 0x8B, 0x57, 0x0C, 0x89, 0x56, 0x5C, 0x5E, 0xB8, 0x01, 0x00, 0x00, 0x00, 0x5D, 0xC3 };
-            var results = FindPattern(redirectIpAddressPattern, _fileArray);
+            byte[] redirectIpAddressPattern = { 0x89, 0x86, 0x2C, 0x01, 0x00, 0x00, 0x8B, 0x17, 0x89, 0x56, 0x50 };
+            var results = FindPattern(redirectIpAddressPattern);
             if (results.Count != 1)
             {
                 Console.WriteLine(@"Redirect: {0} results were returned. Only {1} were expected. Please use an updated signature.", results.Count, 1);
@@ -107,6 +113,7 @@ namespace ZPBot.Common
             }
 
             var redirectIpAddr = results[0] - 0x35;
+
             _connectionStackAddr = NativeMethods.VirtualAllocEx(_sroProcess.Handle, IntPtr.Zero, 8, 0x1000, 0x4);
             var connectionStackArray = BitConverter.GetBytes(_connectionStackAddr);
 
@@ -131,7 +138,7 @@ namespace ZPBot.Common
                 return;
 
             byte[] zoomhackPattern = { 0xDF, 0xE0, 0xF6, 0xC4, 0x41, 0x7A, 0x08, 0xD9, 0x9E };
-            var results = FindPattern(zoomhackPattern, _fileArray);
+            var results = FindPattern(zoomhackPattern);
             if (results.Count != 2)
             {
                 Console.WriteLine(@"Zoomhack: {0} results were returned. Only {1} were expected. Please use an updated signature.", results.Count, 2);
@@ -150,7 +157,7 @@ namespace ZPBot.Common
                 return;
 
             var swearFilterStringPattern = Encoding.Unicode.GetBytes("UIIT_MSG_CHATWND_MESSAGE_FILTER");
-            var results = FindStringPattern(swearFilterStringPattern, _fileArray, Push);
+            var results = FindStringPattern(swearFilterStringPattern, Push);
             if (results.Count < 4)
             {
                 Console.WriteLine(@"SwearFilter: {0} results were returned. {1} or more were expected. Please use an updated signature.", results.Count, 4);
@@ -165,7 +172,7 @@ namespace ZPBot.Common
         private void NudePatch()
         {
             byte[] nudePatchPattern = { 0x8B, 0x84, 0xEE, 0x1C, 0x01, 0x00, 0x00, 0x3B, 0x44, 0x24, 0x14 };
-            var results = FindPattern(nudePatchPattern, _fileArray);
+            var results = FindPattern(nudePatchPattern);
             if (results.Count != 1)
             {
                 Console.WriteLine(@"NudePatch: {0} results were returned. Only {1} were expected. Please use an updated signature.", results.Count, 1);
@@ -182,7 +189,7 @@ namespace ZPBot.Common
                 return;
 
             var startingMsgStringPattern = Encoding.Unicode.GetBytes("UIIT_STT_STARTING_MSG");
-            var results = FindStringPattern(startingMsgStringPattern, _fileArray, Push);
+            var results = FindStringPattern(startingMsgStringPattern, Push);
             if (results.Count == 0)
             {
                 Console.WriteLine(@"Unable to get startMsgAddr");
@@ -205,7 +212,7 @@ namespace ZPBot.Common
         private void SeedPatch()
         {
             byte[] seedPatchPattern = { 0x8B, 0x4C, 0x24, 0x04, 0x81, 0xE1, 0xFF, 0xFF, 0xFF, 0x7F };
-            var results = FindPattern(seedPatchPattern, _fileArray);
+            var results = FindPattern(seedPatchPattern);
             if (results.Count != 1)
             {
                 Console.WriteLine(@"SeedPatch: {0} results were returned. Only {1} were expected. Please use an updated signature.", results.Count, 1);
@@ -225,7 +232,7 @@ namespace ZPBot.Common
 
             //Already Program Exe
             var alreadyProgramExeStringPattern = Encoding.ASCII.GetBytes("//////////////////////////////////////////////////////////////////");
-            var results = FindStringPattern(alreadyProgramExeStringPattern, _fileArray, Push);
+            var results = FindStringPattern(alreadyProgramExeStringPattern, Push);
             if (results.Count == 0)
             {
                 Console.WriteLine(@"Unable to get alreadyProgramExeAddr");
@@ -237,7 +244,7 @@ namespace ZPBot.Common
 
             //Multiclient Error MessageBox
             var multiClientErrorStringPattern = Encoding.Default.GetBytes("½ÇÅ©·Îµå°¡ ÀÌ¹Ì ½ÇÇà Áß ÀÔ´Ï´Ù.");
-            results = FindStringPattern(multiClientErrorStringPattern, _fileArray, Push);
+            results = FindStringPattern(multiClientErrorStringPattern, Push);
             if (results.Count == 0)
             {
                 Console.WriteLine(@"Unable to get multiClientErrorAddr");
@@ -249,7 +256,7 @@ namespace ZPBot.Common
 
             //Mac Address
             byte[] macAddressPattern = { 0x6A, 0x06, 0x8D, 0x44, 0x24, 0x48, 0x50, 0x8B, 0xCF };
-            results = FindPattern(macAddressPattern, _fileArray);
+            results = FindPattern(macAddressPattern);
             if (results.Count != 1)
             {
                 Console.WriteLine(@"Mac Address: {0} results were returned. Only {1} were expected. Please use an updated signature.", results.Count, 1);
@@ -259,15 +266,15 @@ namespace ZPBot.Common
             var macAddrAddr = results[0] + 0x9;
 
             //Callforward Address
-            byte[] callForwardPattern = { 0x56, 0x8B, 0xF1, 0x0F, 0xB7, 0x86, 0x3E, 0x10, 0x00, 0x00, 0x57, 0x66, 0x8B, 0x7C, 0x24, 0x10, 0x0F, 0xB7, 0xCF, 0x8D, 0x14, 0x01, 0x3B, 0x96, 0x4C, 0x10, 0x00, 0x00 };
-            var results1 = FindPattern(callForwardPattern, _fileArray);
-            if (results1.Count != 1)
+            byte[] callForwardPattern = { 0x56, 0x8B, 0xF1, 0x0F, 0xB7, 0x86, 0x3E, 0x10, 0x00, 0x00, 0x57 };
+            results = FindPattern(callForwardPattern);
+            if (results.Count != 1)
             {
-                Console.WriteLine(@"Callforward Address: {0} results were returned. Only {1} were expected. Please use an updated signature.", results1.Count, 1);
+                Console.WriteLine(@"Callforward Address: {0} results were returned. Only {1} were expected. Please use an updated signature.", results.Count, 1);
                 return;
             }
 
-            var callforwardAddr = results1[0];
+            var callforwardAddr = results[0];
 
             //Patch
             var multiClientCodeCave = NativeMethods.VirtualAllocEx(_sroProcess.Handle, IntPtr.Zero, 45, 0x1000, 0x4);
@@ -321,36 +328,38 @@ namespace ZPBot.Common
         }
 
         [NotNull]
-        private static List<uint> FindStringPattern([NotNull] byte[] stringByteArray, [NotNull] byte[] fileArray, byte stringWorker)
+        private List<uint> FindStringPattern([NotNull] byte[] stringByteArray, byte stringWorker)
         {
-            var results = FindPattern(stringByteArray, fileArray);
-            if (results.Count == 0)
+            var results = FindPattern(stringByteArray);
+            if (results.Count != 1)
                 return new List<uint>();
 
             var bytes = BitConverter.GetBytes(results[0]);
             byte[] pattern = { stringWorker, bytes[0], bytes[1], bytes[2], bytes[3] };
 
-            return FindPattern(pattern, fileArray);
+            return FindPattern(pattern);
         }
 
         [NotNull]
-        private static List<uint> FindPattern([NotNull] byte[] pattern, [NotNull] byte[] fileByteArray)
+        private List<uint> FindPattern([NotNull] byte[] pattern)
         {
             var results = new List<uint>();
+            if (_fileArray == null)
+                return results;
 
-            for (uint i = 0; i < fileByteArray.Length; i++)
+            for (uint i = 0; i < _fileArray.Length; i++)
             {
                 var found = true;
 
                 for (var k = 0; k < pattern.Length; k++)
                 {
-                    if (i + pattern.Length >= fileByteArray.Length)
+                    if (i + pattern.Length >= _fileArray.Length)
                     {
                         found = false;
                         break;
                     }
 
-                    if (fileByteArray[i + k] != pattern[k])
+                    if (_fileArray[i + k] != pattern[k])
                     {
                         found = false;
                         break;

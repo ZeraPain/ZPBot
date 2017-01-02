@@ -107,7 +107,7 @@ namespace ZPBot.Common
                         break;
                     case 0x304E:
                         UpdateZerk(packet);
-                        if (Game.Blocknpcanswer)
+                        if (LoopManager.BlockNpcAnswer)
                             return false;
 
                         break;
@@ -127,7 +127,7 @@ namespace ZPBot.Common
                         CureStatus(packet);
                         break;
                     case 0x34B5:
-                        Game.IsTeleporting = true;
+                        LoopManager.IsTeleporting = true;
                         if (Clientless)
                             PacketManager.BeginTeleport();
 
@@ -156,7 +156,7 @@ namespace ZPBot.Common
                         break;
                     case 0xB034:
                         UpdateInventory(packet);
-                        if (Game.Blocknpcanswer)
+                        if (LoopManager.BlockNpcAnswer)
                             return false;
 
                         break;
@@ -164,9 +164,9 @@ namespace ZPBot.Common
                         SelectSuccess(packet);
                         break;
                     case 0xB046:
-                        if (Game.Blocknpcanswer)
+                        if (LoopManager.BlockNpcAnswer)
                         {
-                            Game.AllowBuy = true;
+                            LoopManager.AllowBuy = true;
                             return false;
                         }
 

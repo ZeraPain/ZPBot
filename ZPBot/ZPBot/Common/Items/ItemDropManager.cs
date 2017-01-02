@@ -12,6 +12,7 @@ namespace ZPBot.Common.Items
         public Dictionary<uint, Item> ItemFilter { get; protected set; }
         private readonly Dictionary<uint, ItemDrop> _itemList;
         public bool PickupMyItems { get; set; }
+        public bool IsPicking { get; set; }
 
         public ItemDropManager(GlobalManager globalManager)
         {
@@ -52,8 +53,11 @@ namespace ZPBot.Common.Items
             return ItemFilter.ContainsKey(item.Id);
         }
 
-        public bool AddPickup([NotNull] Item item)
+        public bool AddPickup([CanBeNull] Item item)
         {
+            if (item == null)
+                return false;
+
             if (ItemFilter.ContainsKey(item.Id))
                 return false;
 
@@ -90,7 +94,7 @@ namespace ZPBot.Common.Items
                     if (PickupMyItems && (item.Owner != _globalManager.Player.AccountId))
                         continue;
 
-                    if ((item.Owner != 0) && (item.Owner != 0xFFFFFFFF) && (item.Owner != _globalManager.Player.AccountId))
+                    if ((item.Owner != 0) && (item.Owner != 0xFFFFFFFF) && (item.Owner != _globalManager.Player.AccountId) && (!_globalManager.PartyManager.IsPickableItem(item.Owner)))
                         continue;
 
                     if ((targetItem == null) || (Game.Distance(sourcePosition, item.GetIngamePosition()) < Game.Distance(sourcePosition, targetItem.GetIngamePosition())))
@@ -103,7 +107,7 @@ namespace ZPBot.Common.Items
 
         protected override void MyThread()
         {
-            Game.IsPicking = false;
+            IsPicking = false;
             uint currenItemWorldId = 0;
             var sw = new Stopwatch();
 
@@ -119,7 +123,7 @@ namespace ZPBot.Common.Items
                 var item = GetNextItem(sourcePosition);
                 if (item == null)
                 {
-                    Game.IsPicking = false;
+                    IsPicking = false;
                     continue;
                 }
 
@@ -141,9 +145,9 @@ namespace ZPBot.Common.Items
                 }
                 else
                 {
-                    if (_globalManager.Botstate && !Game.IsLooping)
+                    if (_globalManager.Botstate && !_globalManager.LoopManager.IsLooping)
                     {
-                        Game.IsPicking = true;
+                        IsPicking = true;
                         _globalManager.PacketManager.Pickup(item.WorldId);
                     }
                 }

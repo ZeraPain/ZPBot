@@ -173,6 +173,8 @@
             this.tabPage5 = new System.Windows.Forms.TabPage();
             this.richTextBox_chat_academy = new System.Windows.Forms.RichTextBox();
             this.tab_players = new System.Windows.Forms.TabPage();
+            this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.checkBox_partyautoall = new System.Windows.Forms.CheckBox();
             this.listView_party = new System.Windows.Forms.ListView();
@@ -217,8 +219,6 @@
             this.button_stopbot = new System.Windows.Forms.Button();
             this.label_pm = new System.Windows.Forms.Label();
             this.button_save = new System.Windows.Forms.Button();
-            this.groupBox5 = new System.Windows.Forms.GroupBox();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.tabControl1.SuspendLayout();
             this.tab_main.SuspendLayout();
             this.tab_pickup.SuspendLayout();
@@ -240,11 +240,11 @@
             this.tabPage4.SuspendLayout();
             this.tabPage5.SuspendLayout();
             this.tab_players.SuspendLayout();
+            this.groupBox5.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.contextMenuStrip_party.SuspendLayout();
             this.tab_spy.SuspendLayout();
             this.tab_alchemy.SuspendLayout();
-            this.groupBox5.SuspendLayout();
             this.SuspendLayout();
             // 
             // richTextBox_events
@@ -270,7 +270,7 @@
             this.tabControl1.Controls.Add(this.tab_alchemy);
             this.tabControl1.ImageList = this.imageList1;
             this.tabControl1.ItemSize = new System.Drawing.Size(10, 20);
-            this.tabControl1.Location = new System.Drawing.Point(10, 37);
+            this.tabControl1.Location = new System.Drawing.Point(10, 38);
             this.tabControl1.Multiline = true;
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
@@ -1762,6 +1762,26 @@
             this.tab_players.Text = "Party";
             this.tab_players.UseVisualStyleBackColor = true;
             // 
+            // groupBox5
+            // 
+            this.groupBox5.Controls.Add(this.checkBox1);
+            this.groupBox5.Location = new System.Drawing.Point(18, 159);
+            this.groupBox5.Name = "groupBox5";
+            this.groupBox5.Size = new System.Drawing.Size(499, 105);
+            this.groupBox5.TabIndex = 6;
+            this.groupBox5.TabStop = false;
+            this.groupBox5.Text = "Party Matching";
+            // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Location = new System.Drawing.Point(14, 22);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(122, 17);
+            this.checkBox1.TabIndex = 0;
+            this.checkBox1.Text = "Auto Party Matching";
+            this.checkBox1.UseVisualStyleBackColor = true;
+            // 
             // groupBox4
             // 
             this.groupBox4.Controls.Add(this.checkBox_partyautoall);
@@ -1891,7 +1911,7 @@
             // 
             this.tab_spy.Controls.Add(this.listBox_players);
             this.tab_spy.Controls.Add(this.listView_player);
-            this.tab_spy.ImageIndex = 0;
+            this.tab_spy.ImageIndex = 8;
             this.tab_spy.Location = new System.Drawing.Point(4, 24);
             this.tab_spy.Name = "tab_spy";
             this.tab_spy.Size = new System.Drawing.Size(533, 289);
@@ -1924,12 +1944,12 @@
             // 
             // columnHeader5
             // 
-            this.columnHeader5.Text = "Description";
+            this.columnHeader5.Text = "Type";
             this.columnHeader5.Width = 90;
             // 
             // columnHeader6
             // 
-            this.columnHeader6.Text = "Value";
+            this.columnHeader6.Text = "Item Description";
             this.columnHeader6.Width = 260;
             // 
             // tab_alchemy
@@ -1945,7 +1965,7 @@
             this.tab_alchemy.Controls.Add(this.label20);
             this.tab_alchemy.Controls.Add(this.textBox_fuseitem);
             this.tab_alchemy.Controls.Add(this.listView_inventory);
-            this.tab_alchemy.ImageIndex = 8;
+            this.tab_alchemy.ImageIndex = 9;
             this.tab_alchemy.Location = new System.Drawing.Point(4, 24);
             this.tab_alchemy.Name = "tab_alchemy";
             this.tab_alchemy.Size = new System.Drawing.Size(533, 289);
@@ -2091,8 +2111,9 @@
             this.imageList1.Images.SetKeyName(4, "skills.jpg");
             this.imageList1.Images.SetKeyName(5, "loop.jpg");
             this.imageList1.Images.SetKeyName(6, "chat.jpg");
-            this.imageList1.Images.SetKeyName(7, "charspy.png");
-            this.imageList1.Images.SetKeyName(8, "alchemy.png");
+            this.imageList1.Images.SetKeyName(7, "icon_cha_party.png");
+            this.imageList1.Images.SetKeyName(8, "charspy.png");
+            this.imageList1.Images.SetKeyName(9, "alchemy.png");
             // 
             // button_hide
             // 
@@ -2183,32 +2204,12 @@
             this.button_save.UseVisualStyleBackColor = true;
             this.button_save.Click += new System.EventHandler(this.button_save_Click);
             // 
-            // groupBox5
-            // 
-            this.groupBox5.Controls.Add(this.checkBox1);
-            this.groupBox5.Location = new System.Drawing.Point(18, 159);
-            this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(499, 105);
-            this.groupBox5.TabIndex = 6;
-            this.groupBox5.TabStop = false;
-            this.groupBox5.Text = "Party Matching";
-            // 
-            // checkBox1
-            // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(14, 22);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(122, 17);
-            this.checkBox1.TabIndex = 0;
-            this.checkBox1.Text = "Auto Party Matching";
-            this.checkBox1.UseVisualStyleBackColor = true;
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(561, 359);
+            this.ClientSize = new System.Drawing.Size(561, 362);
             this.Controls.Add(this.button_save);
             this.Controls.Add(this.label_pm);
             this.Controls.Add(this.button_stopbot);
@@ -2257,14 +2258,14 @@
             this.tabPage4.ResumeLayout(false);
             this.tabPage5.ResumeLayout(false);
             this.tab_players.ResumeLayout(false);
+            this.groupBox5.ResumeLayout(false);
+            this.groupBox5.PerformLayout();
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
             this.contextMenuStrip_party.ResumeLayout(false);
             this.tab_spy.ResumeLayout(false);
             this.tab_alchemy.ResumeLayout(false);
             this.tab_alchemy.PerformLayout();
-            this.groupBox5.ResumeLayout(false);
-            this.groupBox5.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 

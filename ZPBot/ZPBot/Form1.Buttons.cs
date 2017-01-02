@@ -60,19 +60,18 @@ namespace ZPBot
 
         private void button_looprecord_Click(object sender, EventArgs e)
         {
-            if (Game.RecordLoop)
+            if (_globalManager.LoopManager.RecordLoop)
             {
                 var saveFileDialog1 = new SaveFileDialog { Filter = @"Walkscript|*.txt|All files (*.*)|*.*" };
                 if (saveFileDialog1.ShowDialog() == DialogResult.OK)
                 {
+                    _globalManager.LoopManager.StopRecord();
                     _globalManager.LoopManager.SaveScript(saveFileDialog1.FileName);
-                    Game.RecordLoop = false;
                     button_looprecord.Text = @"Start Record";
                 }
             }
             else
             {
-                Game.RecordLoop = true;
                 button_looprecord.Text = @"Stop Record";
                 _globalManager.LoopManager.StartRecord();
             }

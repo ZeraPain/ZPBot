@@ -25,6 +25,8 @@ namespace ZPBot.Common.Characters
 
         public bool UseZerk { get; set; }
         public int UseZerkType { get; set; }
+        public uint SelectedMonster { get; set; }
+        public uint AttackBlacklist { get; set; }
 
         private readonly GlobalManager _globalManager;
         private readonly Dictionary<uint, Monster> _monsterList;
@@ -95,9 +97,9 @@ namespace ZPBot.Common.Characters
                     if ((Range > 0) && (Game.Distance(mob.InGamePosition, TrainingRange) > Range))
                         continue;
 
-                    if (mob.WorldId == Game.AttackBlacklist)
+                    if (mob.WorldId == AttackBlacklist)
                     {
-                        Game.AttackBlacklist = 0;
+                        AttackBlacklist = 0;
                         continue;
                     }
 
@@ -114,16 +116,19 @@ namespace ZPBot.Common.Characters
 
         protected override void MyThread()
         {
+            AttackBlacklist = 0;
+            SelectedMonster = 0;
+
             while (BActive)
             {
                 Thread.Sleep(200);
 
-                if (_globalManager.Botstate && !Game.IsLooping && (Game.SelectedMonster == 0))
+                if (_globalManager.Botstate && !_globalManager.LoopManager.IsLooping && (SelectedMonster == 0))
                 {
                     var next = FindNextMonster(_globalManager.Player.InGamePosition);
                     if (next != null)
                     {
-                        Game.SelectedMonster = next.WorldId;
+                        SelectedMonster = next.WorldId;
                         //c_PacketManager.SelectMonster(next.world_id);
 
                         if (UseZerk && (_globalManager.Player.RemainHwanCount == 5) && ((((next.Type == EMonsterType.Giant) || (next.Type == EMonsterType.GiantParty)) && (UseZerkType == 1)) || (UseZerkType == 0)))

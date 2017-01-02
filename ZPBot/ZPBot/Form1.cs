@@ -169,7 +169,7 @@ namespace ZPBot
             richTextBox_chat.ScrollToCaret();
         });
 
-        public void UpdateCharacter(Character player) => BeginInvoke((MethodInvoker)delegate
+        public void UpdateCharacter(Player player) => Invoke((MethodInvoker)delegate
         {
             var healthPercent = (int)(player.Health / (float)player.MaxHealth * 100);
             var manaPercent = (int)(player.Mana / (float)player.MaxMana * 100);

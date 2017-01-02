@@ -414,7 +414,7 @@ namespace ZPBot.Common
 
             if (worldId != Player.WorldId) return;
 
-            Game.IsWalking = true;
+            LoopManager.IsWalking = true;
 
             var hasSource = packet.ReadUInt8();
             if (hasSource == 1)
@@ -440,8 +440,8 @@ namespace ZPBot.Common
             else
             {
                 var dest = packet.ReadUInt32();
-                if (LoopManager != null && Game.RecordLoop)
-                    LoopManager.AddTeleport(source, dest);
+                if (LoopManager.RecordLoop)
+                    LoopManager?.AddTeleport(source, dest);
             }
         }
 
@@ -458,7 +458,7 @@ namespace ZPBot.Common
                     switch (param2)
                     {
                         case 2: //Dead
-                            Game.SelectedMonster = 0;
+                            MonsterManager.SelectedMonster = 0;
                             MonsterManager.Remove(worldId);
                             break;
                         default:
@@ -491,7 +491,7 @@ namespace ZPBot.Common
                             break;
                         case 2: //Start spawn
                             if (worldId == Player.WorldId)
-                                Game.IsTeleporting = false;
+                                LoopManager.IsTeleporting = false;
                             break;
                         case 7: //Invisible
                             break;
@@ -518,11 +518,10 @@ namespace ZPBot.Common
                         switch (param2)
                         {
                             case 0: //End / Cancel teleport
-                                Game.IsTeleporting = false;
-                                Game.IsLooping = false;
+                                LoopManager.StopLoop();
                                 break;
                             case 1: //Start teleport
-                                Game.IsTeleporting = true;
+                                LoopManager.IsTeleporting = true;
                                 break;
                             default:
                                 PrintPacket("ChangeState 11", packet);
@@ -563,13 +562,13 @@ namespace ZPBot.Common
             }
         }
 
-        private static void SelectSuccess([NotNull] Packet packet)
+        private void SelectSuccess([NotNull] Packet packet)
         {
             var success = packet.ReadUInt8();
             if (success == 1)
             {
                 var worldId = packet.ReadUInt32();
-                Game.SelectedNpc = worldId;
+                LoopManager.SelectedNpc = worldId;
             }
         }
 
@@ -578,7 +577,7 @@ namespace ZPBot.Common
             packet.ReadUInt32(); //worldId
         }
 
-        private static void AttackResponse([NotNull] Packet packet)
+        private void AttackResponse([NotNull] Packet packet)
         {
             var success = packet.ReadUInt8();
             if (success == 2)
@@ -587,8 +586,8 @@ namespace ZPBot.Common
                 var param2 = packet.ReadUInt8();
                 if (param1 == 16 && param2 == 48) //Cannot attack due to an obstacle
                 {
-                    Game.AttackBlacklist = Game.SelectedMonster;
-                    Game.SelectedMonster = 0;
+                    MonsterManager.AttackBlacklist = MonsterManager.SelectedMonster;
+                    MonsterManager.SelectedMonster = 0;
                 }
             }
         }
@@ -626,14 +625,14 @@ namespace ZPBot.Common
             packet.SkipBytes(1); // 0xFF
             var partyId = packet.ReadUInt32();
             var masterId = packet.ReadUInt32(); // master worldID
-            packet.ReadUInt8(); // partyType
+            var partyType = packet.ReadUInt8(); // partyType
             var memberCount = packet.ReadUInt8();
 
             var partyMembers = new List<PartyMember>();
             for (var i = 0; i < memberCount; i++)
                 partyMembers.Add(ParsePartyMember(ref packet));
 
-            PartyManager.JoinParty(partyId, masterId, partyMembers);
+            PartyManager.JoinParty(partyId, masterId, partyType, partyMembers);
         }
 
         private void PartyUpdate([NotNull] Packet packet)

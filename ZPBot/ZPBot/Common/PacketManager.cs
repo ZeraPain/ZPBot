@@ -198,7 +198,6 @@ namespace ZPBot.Common
 
         public void TalkToNpc(uint npcId, byte option)
         {
-            Game.Blocknpcanswer = true;
             var packet = new Packet(0x704B, false);
             packet.WriteUInt32(npcId);
             _globalManager.Silkroadproxy.Send(packet, Proxy.EPacketdestination.AgentRemote);
@@ -214,7 +213,6 @@ namespace ZPBot.Common
             var packet = new Packet(0x704B, false);
             packet.WriteUInt32(npcId);
             _globalManager.Silkroadproxy.Send(packet, Proxy.EPacketdestination.AgentRemote);
-            Game.Blocknpcanswer = false;
         }
 
         public void BuyFromNpc(uint npcId, byte tabId, byte slotId, ushort amount)
@@ -240,13 +238,13 @@ namespace ZPBot.Common
             _globalManager.Silkroadproxy.Send(packet, Proxy.EPacketdestination.AgentLocal);
         }
 
-        public void SellItem(byte slot)
+        public void SellItem(uint npcid, byte slot)
         {
             var packet = new Packet(0x7034, false);
             packet.WriteUInt8(9);
             packet.WriteUInt8(slot);
             packet.WriteUInt16(1);
-            packet.WriteUInt32(Game.SelectedNpc);
+            packet.WriteUInt32(npcid);
             _globalManager.Silkroadproxy.Send(packet, Proxy.EPacketdestination.AgentRemote);
         }
 
