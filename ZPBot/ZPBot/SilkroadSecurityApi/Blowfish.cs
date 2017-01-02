@@ -1,4 +1,5 @@
 ﻿using System;
+using ZPBot.Annotations;
 
 namespace ZPBot.SilkroadSecurityApi
 {
@@ -223,7 +224,7 @@ namespace ZPBot.SilkroadSecurityApi
 		}
 
         // Sets up the blowfish object with this specific key.
-        public void Initialize(byte[] keyPtr) => Initialize(keyPtr, 0, keyPtr.Length);
+        public void Initialize([NotNull] byte[] keyPtr) => Initialize(keyPtr, 0, keyPtr.Length);
 
 	    // Sets up the blowfish object with this specific key.
 		public void Initialize(byte[] keyPtr, int offset, int length)
@@ -278,11 +279,12 @@ namespace ZPBot.SilkroadSecurityApi
 
 	    // Encodes a stream of data and returns a new array of the encoded data.
 		// Returns null if length is 0.
-		public byte[] Encode(byte[] stream) => Encode(stream, 0, stream.Length);
+		public byte[] Encode([NotNull] byte[] stream) => Encode(stream, 0, stream.Length);
 
 	    // Encodes a stream of data and returns a new array of the encoded data.
 		// Returns null if length is 0.
-		public byte[] Encode(byte[] stream, int offset, int length)
+	    [CanBeNull]
+	    public byte[] Encode(byte[] stream, int offset, int length)
 		{
 			if (length == 0)
 			    return null;
@@ -307,11 +309,12 @@ namespace ZPBot.SilkroadSecurityApi
 
 		// Decodes a stream of data and returns an array of the decoded data.
 		// Returns null if length is not % 8.
-		public byte[] Decode(byte[] stream) => Decode(stream, 0, stream.Length);
+		public byte[] Decode([NotNull] byte[] stream) => Decode(stream, 0, stream.Length);
 
 	    // Decodes a stream of data and returns an array of the decoded data.
 		// Returns null if length is not % 8.
-		public byte[] Decode(byte[] stream, int offset, int length)
+	    [CanBeNull]
+	    public byte[] Decode(byte[] stream, int offset, int length)
 		{
 			if ((length % 8 != 0) || (length == 0))
 			    return null;

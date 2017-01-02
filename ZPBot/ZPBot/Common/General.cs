@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using ZPBot.Annotations;
 using ZPBot.Common.Resources;
 

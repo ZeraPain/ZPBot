@@ -47,7 +47,7 @@ namespace ZPBot.Common.Items
             }
         }
 
-        public bool ExistsPickup(Item item)
+        public bool ExistsPickup([NotNull] Item item)
         {
             return ItemFilter.ContainsKey(item.Id);
         }

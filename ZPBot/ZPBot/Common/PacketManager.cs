@@ -1,4 +1,5 @@
-﻿using ZPBot.Common.Items;
+﻿using ZPBot.Annotations;
+using ZPBot.Common.Items;
 using ZPBot.Common.Resources;
 using ZPBot.SilkroadSecurityApi;
 
@@ -249,7 +250,7 @@ namespace ZPBot.Common
             _globalManager.Silkroadproxy.Send(packet, Proxy.EPacketdestination.AgentRemote);
         }
 
-        public void UseItem(InventoryItem invItem, uint worldId = 0)
+        public void UseItem([NotNull] InventoryItem invItem, uint worldId = 0)
         {
             var packet = new Packet(0x704C, true);
             packet.WriteUInt8(invItem.Slot);

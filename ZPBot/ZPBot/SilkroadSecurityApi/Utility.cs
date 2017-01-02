@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Text;
+using ZPBot.Annotations;
 
 namespace ZPBot.SilkroadSecurityApi
 {
     public class Utility
     {
-        public static string HexDump(byte[] buffer) => HexDump(buffer, 0, buffer.Length);
+        public static string HexDump([NotNull] byte[] buffer) => HexDump(buffer, 0, buffer.Length);
 
+        [NotNull]
         public static string HexDump(byte[] buffer, int offset, int count)
         {
             const int bytesPerLine = 16;

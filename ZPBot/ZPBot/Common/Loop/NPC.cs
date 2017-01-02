@@ -1,4 +1,5 @@
 ﻿
+using ZPBot.Annotations;
 using ZPBot.Common.Characters;
 using ZPBot.Common.Resources;
 
@@ -14,7 +15,7 @@ namespace ZPBot.Common.Loop
         // ReSharper disable once NotAccessedField.Local
         private EPosition _position;
 
-        public Npc(Char chardata)
+        public Npc([NotNull] Char chardata)
         {
             NpcId = chardata.Id;
             CharCode = chardata.Code;

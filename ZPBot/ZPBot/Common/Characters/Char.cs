@@ -1,4 +1,6 @@
 ﻿
+using ZPBot.Annotations;
+
 namespace ZPBot.Common.Characters
 {
     public class Char
@@ -7,7 +9,7 @@ namespace ZPBot.Common.Characters
         public uint MaxHealth;
         public string Code;
         public string Name;
-        
+
         public ECharType1 CharType1 = ECharType1.None;
         public ENpcType2 NpcType2 = ENpcType2.None;
         public EPetType3 PetType3 = EPetType3.None;
@@ -17,7 +19,7 @@ namespace ZPBot.Common.Characters
 
         }
 
-        public Char(Char chardata)
+        public Char([NotNull] Char chardata)
         {
             Id = chardata.Id;
             MaxHealth = chardata.MaxHealth;

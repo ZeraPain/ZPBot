@@ -1,4 +1,5 @@
 ﻿using System;
+using ZPBot.Annotations;
 using ZPBot.Common.Items;
 using ZPBot.SilkroadSecurityApi;
 
@@ -126,7 +127,6 @@ namespace ZPBot.Common
                                 var slot = packet.ReadUInt8();
                                 packet.ReadUInt8(); //param
                                 InventoryManager.Remove(slot);
-                                PrintPacket(@"UpdateInventory 15", packet);
                             }
                             break;
                         case 14: //Item appears
@@ -201,7 +201,7 @@ namespace ZPBot.Common
             }
         }
 
-        private void UpdateInventoryAlchemy(Packet packet)
+        private void UpdateInventoryAlchemy([NotNull] Packet packet)
         {
             var slot = packet.ReadUInt8();
             var type = packet.ReadUInt8();
@@ -212,7 +212,7 @@ namespace ZPBot.Common
             }
         }
 
-        private void UpdateInventoryItemCount(Packet packet)
+        private void UpdateInventoryItemCount([NotNull] Packet packet)
         {
             byte newItem = packet.ReadUInt8();
             if (newItem == 1)

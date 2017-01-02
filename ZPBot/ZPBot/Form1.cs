@@ -86,7 +86,7 @@ namespace ZPBot
                 _iniDef.Write("Settings", "Profil", "default.zpb");
                 _iniDef.Write("Settings", "SRFolder", Config.SroPath);
             }
-            else
+            else if (_iniDef.Read<string>("Settings", "Profil") != profil)
             {
                 _iniDef.Write("Settings", "Profil", profil);
             }
@@ -100,16 +100,13 @@ namespace ZPBot
             comboBox_profile.Text = profil;
         }
 
-        public void AddAlchemyEvent(string text)
+        public void AddAlchemyEvent(string text) => Invoke((MethodInvoker)delegate
         {
-            Invoke((MethodInvoker)delegate
-            {
-                var dt = DateTime.Now;
-                var date = $"{dt:HH:mm:ss}";
+            var dt = DateTime.Now;
+            var date = $"{dt:HH:mm:ss}";
 
-                richTextBox_alchemy.Text = date + @" " + text + Environment.NewLine + richTextBox_alchemy.Text;
-            });
-        }
+            richTextBox_alchemy.Text = date + @" " + text + Environment.NewLine + richTextBox_alchemy.Text;
+        });
 
         public void AddEvent(string text, string type, bool error = false) => Invoke((MethodInvoker)delegate
         {
@@ -172,14 +169,13 @@ namespace ZPBot
             richTextBox_chat.ScrollToCaret();
         });
 
-        public void UpdateCharacter(Character player) => Invoke((MethodInvoker)delegate
+        public void UpdateCharacter(Character player) => BeginInvoke((MethodInvoker)delegate
         {
             var healthPercent = (int)(player.Health / (float)player.MaxHealth * 100);
             var manaPercent = (int)(player.Mana / (float)player.MaxMana * 100);
             if (healthPercent <= 100) progressBar_hpdisplay.Value = healthPercent;
             if (manaPercent <= 100) progressBar_mpdisplay.Value = manaPercent;
 
-            //label_charname.Text = player.Charname;
             label_infophyatk.Text = player.MinPhydmg + @" - " + player.MaxPhydmg;
             label_infomagatk.Text = player.MinMagdmg + @" - " + player.MaxMagdmg;
             label_infophydef.Text = player.PhyDef.ToString();
@@ -199,7 +195,7 @@ namespace ZPBot
 
             foreach (var player in partyMembers)
             {
-                var listItem = new ListViewItem(player.WorldId.ToString());
+                var listItem = new ListViewItem(player.AccountId.ToString());
                 listItem.SubItems.Add(player.Charname);
                 listItem.SubItems.Add(player.Guildname);
                 listItem.SubItems.Add(player.Level.ToString());

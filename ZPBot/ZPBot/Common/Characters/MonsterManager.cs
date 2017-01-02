@@ -74,7 +74,7 @@ namespace ZPBot.Common.Characters
             lock (_monsterList)
             {
                 if (_monsterList.ContainsKey(worldId))
-                    _monsterList[worldId].SetPosition(position);
+                    _monsterList[worldId].InGamePosition = Game.PositionToGamePosition(position);
             }
         }
 
@@ -92,7 +92,7 @@ namespace ZPBot.Common.Characters
                 {
                     var mob = pair.Value;
 
-                    if ((Range > 0) && (Game.Distance(mob.GetIngamePosition(), TrainingRange) > Range))
+                    if ((Range > 0) && (Game.Distance(mob.InGamePosition, TrainingRange) > Range))
                         continue;
 
                     if (mob.WorldId == Game.AttackBlacklist)
@@ -101,7 +101,7 @@ namespace ZPBot.Common.Characters
                         continue;
                     }
 
-                    if ((targetMonster == null) || (Game.Distance(mob.GetIngamePosition(), _globalManager.Player.InGamePosition) < Game.Distance(targetMonster.GetIngamePosition(), _globalManager.Player.InGamePosition)))
+                    if ((targetMonster == null) || (Game.Distance(mob.InGamePosition, _globalManager.Player.InGamePosition) < Game.Distance(targetMonster.InGamePosition, _globalManager.Player.InGamePosition)))
                         targetMonster = mob;
 
                     if ((mob.Type == EMonsterType.Unique) || (mob.Type == EMonsterType.SubUnique))

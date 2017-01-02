@@ -50,7 +50,7 @@ namespace ZPBot.Common
             }
         }
 
-        private static void MessageCheck(Packet packet)
+        private static void MessageCheck([NotNull] Packet packet)
         {
             var success = packet.ReadUInt8();
             if (success != 1)
@@ -77,7 +77,7 @@ namespace ZPBot.Common
             }
         }
 
-        private void IncomingMessage(Packet packet)
+        private void IncomingMessage([NotNull] Packet packet)
         {
             var messagetype = packet.ReadUInt8();
 

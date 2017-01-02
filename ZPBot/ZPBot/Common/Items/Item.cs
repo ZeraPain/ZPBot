@@ -1,4 +1,5 @@
 ﻿
+using ZPBot.Annotations;
 using ZPBot.Common.Resources;
 
 namespace ZPBot.Common.Items
@@ -43,7 +44,7 @@ namespace ZPBot.Common.Items
             
         }
 
-        public Item(Item item)
+        public Item([NotNull] Item item)
         {
             Id = item.Id;
             Code = item.Code;

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using ZPBot.Annotations;
 using ZPBot.Common.Characters;
 using ZPBot.Pk2Reader;
 using ZPBot.Common.Skills;
@@ -85,68 +86,80 @@ namespace ZPBot.Common
         {
             var rFile = _pk2Reader.GetFile(path);
 
-            var bReader = new BinaryReader(new MemoryStream(rFile));
-            var lenght = (int)bReader.ReadUInt32();
-            var encryptedVersion = bReader.ReadBytes(lenght);
+            if (rFile != null)
+            {
+                var bReader = new BinaryReader(new MemoryStream(rFile));
+                var lenght = (int)bReader.ReadUInt32();
+                var encryptedVersion = bReader.ReadBytes(lenght);
 
-            var blowfishKey = System.Text.Encoding.ASCII.GetBytes("SILKROADVERSION");
-            var bf = new SilkroadSecurityApi.Blowfish();
-            bf.Initialize(blowfishKey, 0, lenght);
+                var blowfishKey = System.Text.Encoding.ASCII.GetBytes("SILKROADVERSION");
+                var bf = new SilkroadSecurityApi.Blowfish();
+                bf.Initialize(blowfishKey, 0, lenght);
 
-            var decryptedVersion = System.Text.Encoding.ASCII.GetString(bf.Decode(encryptedVersion));
+                var decryptedVersion = System.Text.Encoding.ASCII.GetString(bf.Decode(encryptedVersion));
 
-            Client.ClientVersion = ushort.Parse(decryptedVersion);
+                Client.ClientVersion = ushort.Parse(decryptedVersion);
+            }
         }
 
         public static void DumpDivisionInfo(string path)
         {
             var rFile = _pk2Reader.GetFile(path);
-            var bReader = new BinaryReader(new MemoryStream(rFile));
+            if (rFile != null)
+            {
+                var bReader = new BinaryReader(new MemoryStream(rFile));
 
-            Client.ClientLocale = bReader.ReadByte();
-            bReader.ReadByte(); //newDiv
-            var divLen = bReader.ReadInt32();
-            bReader.ReadChars(divLen); //div
-            bReader.ReadByte(); //unknown
-            bReader.ReadByte(); //newIp
-            var ipLen = bReader.ReadInt32();
-            var ip = bReader.ReadChars(ipLen);
+                Client.ClientLocale = bReader.ReadByte();
+                bReader.ReadByte(); //newDiv
+                var divLen = bReader.ReadInt32();
+                bReader.ReadChars(divLen); //div
+                bReader.ReadByte(); //unknown
+                bReader.ReadByte(); //newIp
+                var ipLen = bReader.ReadInt32();
+                var ip = bReader.ReadChars(ipLen);
 
-            Client.ServerIp = new string(ip);
+                Client.ServerIp = new string(ip);
+            }
         }
 
         public static void DumpGatePort(string path)
         {
             var rFile = _pk2Reader.GetFile(path);
-            var mTxtReader = new StreamReader(new MemoryStream(rFile));
-            Client.ServerPort = Convert.ToUInt16(mTxtReader.ReadLine());
+            if (rFile != null)
+            {
+                var mTxtReader = new StreamReader(new MemoryStream(rFile));
+                Client.ServerPort = Convert.ToUInt16(mTxtReader.ReadLine());
+            }
         }
 
         public static void DumpMultipleFiles(string path, EObjectType type)
         {
             var rFile = _pk2Reader.GetFile(path);
-            var mTxtReader = new StreamReader(new MemoryStream(rFile));
-
-            while (true)
+            if (rFile != null)
             {
-                var mFile = mTxtReader.ReadLine();
-                if (mFile == null)
-                    break;
+                var mTxtReader = new StreamReader(new MemoryStream(rFile));
 
-                switch (type)
+                while (true)
                 {
-                    case EObjectType.Char:
-                        DumpCharFiles(Level + mFile);
+                    var mFile = mTxtReader.ReadLine();
+                    if (mFile == null)
                         break;
-                    case EObjectType.Item:
-                        DumpItemFiles(Level + mFile);
-                        break;
-                    case EObjectType.Skill:
-                        DumpSkillFiles(Level + mFile);
-                        break;
-                    case EObjectType.Text:
-                        DumpNameFiles(Level + mFile);
-                        break;
+
+                    switch (type)
+                    {
+                        case EObjectType.Char:
+                            DumpCharFiles(Level + mFile);
+                            break;
+                        case EObjectType.Item:
+                            DumpItemFiles(Level + mFile);
+                            break;
+                        case EObjectType.Skill:
+                            DumpSkillFiles(Level + mFile);
+                            break;
+                        case EObjectType.Text:
+                            DumpNameFiles(Level + mFile);
+                            break;
+                    }
                 }
             }
         }
@@ -154,264 +167,270 @@ namespace ZPBot.Common
         public static void DumpCharFiles(string path)
         {
             var sFile = _pk2Reader.GetFile(path);
-            var sTxtReader = new StreamReader(new MemoryStream(sFile));
-
-            var file = sTxtReader.ReadToEnd();
-            var lines = file.Split('\n');
-
-            foreach (var line in lines)
+            if (sFile != null)
             {
-                var tmpString = line.Split('\t');
-                if (tmpString.Length <= 59 || Convert.ToUInt32(tmpString[0]) != 1)
-                    continue;
+                var sTxtReader = new StreamReader(new MemoryStream(sFile));
 
-                var param1 = IntParse(tmpString[10]);
-                var param2 = IntParse(tmpString[11]);
-                var param3 = IntParse(tmpString[12]);
+                var file = sTxtReader.ReadToEnd();
+                var lines = file.Split('\n');
 
-                var tmp = new Char
+                foreach (var line in lines)
                 {
-                    Id = Convert.ToUInt32(tmpString[1]),
-                    Code = tmpString[2],
-                    Name = GetName(tmpString[5]),
-                    CharType1 = (ECharType1) param1,
-                    MaxHealth = UintParse(tmpString[59])
-                };
+                    var tmpString = line.Split('\t');
+                    if (tmpString.Length <= 59 || Convert.ToUInt32(tmpString[0]) != 1)
+                        continue;
 
-                switch (tmp.CharType1)
-                {
-                    case ECharType1.Player:
-                        break;
-                    case ECharType1.Npc:
-                        tmp.NpcType2 = (ENpcType2) param2;
+                    var param1 = IntParse(tmpString[10]);
+                    var param2 = IntParse(tmpString[11]);
+                    var param3 = IntParse(tmpString[12]);
 
-                        switch (tmp.NpcType2)
-                        {
-                            case ENpcType2.Monster:
-                                break;
-                            case ENpcType2.Shop:
-                                break;
-                            case ENpcType2.Pet:
-                                tmp.PetType3 = (EPetType3) param3;
-                                if (!Enum.IsDefined(typeof(EPetType3), param3))
-                                    Console.WriteLine(@"Undefinded EPetType3: " + param3 + @" [" + tmp.Code + @"]");
-                                break;
-                            case ENpcType2.Guard:
-                                break;
-                            case ENpcType2.Tower:
-                                break;
-                            default:
-                                Console.WriteLine(@"Undefinded ENpcType2: " + param2 + @" [" + tmp.Id + @"]");
-                                break;
-                        }
-                        break;
-                    default:
-                        Console.WriteLine(@"Undefinded ECharType1: " + param1 + @" [" + tmp.Id + @"]");
-                        break;
+                    var tmp = new Char
+                    {
+                        Id = Convert.ToUInt32(tmpString[1]),
+                        Code = tmpString[2],
+                        Name = GetName(tmpString[5]),
+                        CharType1 = (ECharType1) param1,
+                        MaxHealth = UintParse(tmpString[59])
+                    };
+
+                    switch (tmp.CharType1)
+                    {
+                        case ECharType1.Player:
+                            break;
+                        case ECharType1.Npc:
+                            tmp.NpcType2 = (ENpcType2) param2;
+
+                            switch (tmp.NpcType2)
+                            {
+                                case ENpcType2.Monster:
+                                    break;
+                                case ENpcType2.Shop:
+                                    break;
+                                case ENpcType2.Pet:
+                                    tmp.PetType3 = (EPetType3) param3;
+                                    if (!Enum.IsDefined(typeof(EPetType3), param3))
+                                        Console.WriteLine(@"Undefinded EPetType3: " + param3 + @" [" + tmp.Code + @"]");
+                                    break;
+                                case ENpcType2.Guard:
+                                    break;
+                                case ENpcType2.Tower:
+                                    break;
+                                default:
+                                    Console.WriteLine(@"Undefinded ENpcType2: " + param2 + @" [" + tmp.Id + @"]");
+                                    break;
+                            }
+                            break;
+                        default:
+                            Console.WriteLine(@"Undefinded ECharType1: " + param1 + @" [" + tmp.Id + @"]");
+                            break;
+                    }
+
+                    RChardata.Add(tmp.Id, tmp);
                 }
-
-                RChardata.Add(tmp.Id, tmp);
             }
         }
 
         private static void DumpItemFiles(string path)
         {
             var sFile = _pk2Reader.GetFile(path);
-            var sTxtReader = new StreamReader(new MemoryStream(sFile));
-
-            var file = sTxtReader.ReadToEnd();
-            var lines = file.Split('\n');
-
-            foreach (var line in lines)
+            if (sFile != null)
             {
-                var tmpString = line.Split('\t');
-                if (tmpString.Length <= 118 || Convert.ToUInt32(tmpString[0]) != 1)
-                    continue;
+                var sTxtReader = new StreamReader(new MemoryStream(sFile));
 
-                var param1 = IntParse(tmpString[10]);
-                var param2 = IntParse(tmpString[11]);
-                var param3 = IntParse(tmpString[12]);
+                var file = sTxtReader.ReadToEnd();
+                var lines = file.Split('\n');
 
-                var tmp = new Item
+                foreach (var line in lines)
                 {
-                    Id = UintParse(tmpString[1]),
-                    Code = tmpString[2],
-                    Name = GetName(tmpString[5]),
-                    ItemType1 = (EItemType1) param1,
-                    Race = (ERace) ByteParse(tmpString[14]),
-                    IsRare = ByteParse(tmpString[15]) == 2,
-                    Level = ByteParse(tmpString[33]),
-                    MaxQuantity = UshortParse(tmpString[57]),
-                    Gender = (EGender) ByteParse(tmpString[58]),
-                    Degree = ByteParse(tmpString[61])
-                };
+                    var tmpString = line.Split('\t');
+                    if (tmpString.Length <= 118 || Convert.ToUInt32(tmpString[0]) != 1)
+                        continue;
 
-                switch (tmp.ItemType1)
-                {
-                    case EItemType1.Equipable:
-                        tmp.RareType = tmp.IsRare ? (ERareType) (tmp.Degree % 3) : ERareType.None;
-                        tmp.Degree = (byte)((tmp.Degree + 2) / 3);
-                        tmp.EquipableType2 = (EEquipableType2) param2;
+                    var param1 = IntParse(tmpString[10]);
+                    var param2 = IntParse(tmpString[11]);
+                    var param3 = IntParse(tmpString[12]);
 
-                        switch (tmp.RareType)
-                        {
-                            case ERareType.Sun:
-                                tmp.Name += " (Sun)";
-                                break;
-                            case ERareType.Star:
-                                tmp.Name += " (Star)";
-                                break;
-                            case ERareType.Moon:
-                                tmp.Name += " (Moon)";
-                                break;
-                        }
+                    var tmp = new Item
+                    {
+                        Id = UintParse(tmpString[1]),
+                        Code = tmpString[2],
+                        Name = GetName(tmpString[5]),
+                        ItemType1 = (EItemType1) param1,
+                        Race = (ERace) ByteParse(tmpString[14]),
+                        IsRare = ByteParse(tmpString[15]) == 2,
+                        Level = ByteParse(tmpString[33]),
+                        MaxQuantity = UshortParse(tmpString[57]),
+                        Gender = (EGender) ByteParse(tmpString[58]),
+                        Degree = ByteParse(tmpString[61])
+                    };
 
-                        switch (tmp.EquipableType2)
-                        {
-                            case EEquipableType2.CGarment:
-                            case EEquipableType2.CProtector:
-                            case EEquipableType2.CArmor:
-                            case EEquipableType2.EGarment:
-                            case EEquipableType2.EProtector:
-                            case EEquipableType2.EArmor:
-                                tmp.ProtectorType3 = (EProtectorType3) param3;
-                                if (!Enum.IsDefined(typeof(EProtectorType3), param3))
-                                    Console.WriteLine(@"Undefinded EProtectorType3: " + param3 + @" [" + tmp.Id + @"]");
-                                break;
-                            case EEquipableType2.Shield:
-                                tmp.ShieldType3 = (EShieldType3) param3;
-                                if (!Enum.IsDefined(typeof(EShieldType3), param3))
-                                    Console.WriteLine(@"Undefinded EShieldType3: " + param3 + @" [" + tmp.Id + @"]");
-                                break;
-                            case EEquipableType2.CAccessory:
-                            case EEquipableType2.EAccessory:
-                                tmp.AccessoryType3 = (EAccessoryType3) param3;
-                                if (!Enum.IsDefined(typeof(EAccessoryType3), param3))
-                                    Console.WriteLine(@"Undefinded EAccessoryType3: " + param3 + @" [" + tmp.Id + @"]");
-                                break;
-                            case EEquipableType2.Weapon:
-                                tmp.WeaponType3 = (EWeaponType3) param3;
-                                if (!Enum.IsDefined(typeof(EWeaponType3), param3))
-                                    Console.WriteLine(@"Undefinded EWeaponType3: " + param3 + @" [" + tmp.Id + @"]");
-                                break;
-                            case EEquipableType2.JobSuit:
-                                tmp.JobSuitType3 = (EJobSuitType3) param3;
-                                if (!Enum.IsDefined(typeof(EJobSuitType3), param3))
-                                    Console.WriteLine(@"Undefinded EJobSuitType3: " + param3 + @" [" + tmp.Id + @"]");
-                                break;
-                            case EEquipableType2.Avatar:
-                                tmp.AvatarType3 = (EAvatarType3) param3;
-                                if (!Enum.IsDefined(typeof(EAvatarType3), param3))
-                                    Console.WriteLine(@"Undefinded EAvatarType3: " + param3 + @" [" + tmp.Id + @"]");
-                                break;
-                            case EEquipableType2.Spirit:
-                                break;
-                            default:
-                                Console.WriteLine(@"Undefinded EEquipableType2: " + param2 + @" [" + tmp.Id + @"]");
-                                break;
-                        }
-                        break;
-                    case EItemType1.SummonScroll:
-                        tmp.SummonScrollType2 = (ESummonScrollType2) param2;
+                    switch (tmp.ItemType1)
+                    {
+                        case EItemType1.Equipable:
+                            tmp.RareType = tmp.IsRare ? (ERareType) (tmp.Degree % 3) : ERareType.None;
+                            tmp.Degree = (byte)((tmp.Degree + 2) / 3);
+                            tmp.EquipableType2 = (EEquipableType2) param2;
 
-                        switch (tmp.SummonScrollType2)
-                        {
-                            case ESummonScrollType2.Pet:
-                                tmp.PetType3 = (Items.EPetType3) param3;
-                                if (!Enum.IsDefined(typeof(Items.EPetType3), param3))
-                                    Console.WriteLine(@"Undefinded EPetType3: " + param3 + @" [" + tmp.Id + @"]");
-                                break;
-                            case ESummonScrollType2.Skinchange:
-                                break;
-                            case ESummonScrollType2.Cube:
-                                break;
-                            default:
-                                Console.WriteLine(@"Undefinded ESummonScrollType2: " + param2 + @" [" + tmp.Id + @"]");
-                                break;
-                        }
-                        break;
-                    case EItemType1.Consumable:
-                        tmp.ConsumableType2 = (EConsumableType2) param2;
+                            switch (tmp.RareType)
+                            {
+                                case ERareType.Sun:
+                                    tmp.Name += " (Sun)";
+                                    break;
+                                case ERareType.Star:
+                                    tmp.Name += " (Star)";
+                                    break;
+                                case ERareType.Moon:
+                                    tmp.Name += " (Moon)";
+                                    break;
+                            }
 
-                        switch (tmp.ConsumableType2)
-                        {
-                            case EConsumableType2.None:
-                                break;
-                            case EConsumableType2.Potion:
-                                tmp.PotionType3 = (EPotionType3) param3;
-                                if (!Enum.IsDefined(typeof(EPotionType3), param3))
-                                    Console.WriteLine(@"Undefinded EPotionType3: " + param3 + @" [" + tmp.Id + @"]");
-                                break;
-                            case EConsumableType2.Cure:
-                                tmp.CureType3 = (ECureType3) param3;
-                                if (!Enum.IsDefined(typeof(ECureType3), param3))
-                                    Console.WriteLine(@"Undefinded ECureType3: " + param3 + @" [" + tmp.Id + @"]");
-                                break;
-                            case EConsumableType2.Scroll:
-                                tmp.ScrollType3 = (EScrollType3) param3;
-                                if (!Enum.IsDefined(typeof(EScrollType3), param3))
-                                    Console.WriteLine(@"Undefinded EScrollType3: " + param3 + @" [" + tmp.Id + @"]");
-                                break;
-                            case EConsumableType2.Ammo:
-                                break;
-                            case EConsumableType2.Currency:
-                                tmp.CurrencyType3 = (ECurrencyType3) param3;
-                                if (!Enum.IsDefined(typeof(ECurrencyType3), param3))
-                                    Console.WriteLine(@"Undefinded ECurrencyType3: " + param3 + @" [" + tmp.Id + @"]");
-                                break;
-                            case EConsumableType2.Firework:
-                                break;
-                            case EConsumableType2.Campfire:
-                                break;
-                            case EConsumableType2.TradeGood:
-                                break;
-                            case EConsumableType2.Quest:
-                                break;
-                            case EConsumableType2.Elixir:
-                                tmp.ElixirType3 = (EElixirType3) param3;
-                                if (tmp.ElixirType3 == EElixirType3.Reinforce)
-                                    tmp.ReinforceType = (EReinforceType) IntParse(tmpString[118]);
+                            switch (tmp.EquipableType2)
+                            {
+                                case EEquipableType2.CGarment:
+                                case EEquipableType2.CProtector:
+                                case EEquipableType2.CArmor:
+                                case EEquipableType2.EGarment:
+                                case EEquipableType2.EProtector:
+                                case EEquipableType2.EArmor:
+                                    tmp.ProtectorType3 = (EProtectorType3) param3;
+                                    if (!Enum.IsDefined(typeof(EProtectorType3), param3))
+                                        Console.WriteLine(@"Undefinded EProtectorType3: " + param3 + @" [" + tmp.Id + @"]");
+                                    break;
+                                case EEquipableType2.Shield:
+                                    tmp.ShieldType3 = (EShieldType3) param3;
+                                    if (!Enum.IsDefined(typeof(EShieldType3), param3))
+                                        Console.WriteLine(@"Undefinded EShieldType3: " + param3 + @" [" + tmp.Id + @"]");
+                                    break;
+                                case EEquipableType2.CAccessory:
+                                case EEquipableType2.EAccessory:
+                                    tmp.AccessoryType3 = (EAccessoryType3) param3;
+                                    if (!Enum.IsDefined(typeof(EAccessoryType3), param3))
+                                        Console.WriteLine(@"Undefinded EAccessoryType3: " + param3 + @" [" + tmp.Id + @"]");
+                                    break;
+                                case EEquipableType2.Weapon:
+                                    tmp.WeaponType3 = (EWeaponType3) param3;
+                                    if (!Enum.IsDefined(typeof(EWeaponType3), param3))
+                                        Console.WriteLine(@"Undefinded EWeaponType3: " + param3 + @" [" + tmp.Id + @"]");
+                                    break;
+                                case EEquipableType2.JobSuit:
+                                    tmp.JobSuitType3 = (EJobSuitType3) param3;
+                                    if (!Enum.IsDefined(typeof(EJobSuitType3), param3))
+                                        Console.WriteLine(@"Undefinded EJobSuitType3: " + param3 + @" [" + tmp.Id + @"]");
+                                    break;
+                                case EEquipableType2.Avatar:
+                                    tmp.AvatarType3 = (EAvatarType3) param3;
+                                    if (!Enum.IsDefined(typeof(EAvatarType3), param3))
+                                        Console.WriteLine(@"Undefinded EAvatarType3: " + param3 + @" [" + tmp.Id + @"]");
+                                    break;
+                                case EEquipableType2.Spirit:
+                                    break;
+                                default:
+                                    Console.WriteLine(@"Undefinded EEquipableType2: " + param2 + @" [" + tmp.Id + @"]");
+                                    break;
+                            }
+                            break;
+                        case EItemType1.SummonScroll:
+                            tmp.SummonScrollType2 = (ESummonScrollType2) param2;
 
-                                if (!Enum.IsDefined(typeof(EElixirType3), param3))
-                                    Console.WriteLine(@"Undefinded EElixirType3: " + param3 + @" [" + tmp.Id + @"]");
-                                break;
-                            case EConsumableType2.Alchemy:
-                                tmp.AlchemyType3 = (EAlchemyType3) param3;
-                                if (!Enum.IsDefined(typeof(EAlchemyType3), param3))
-                                    Console.WriteLine(@"Undefinded EAlchemyType3: " + param3 + @" [" + tmp.Code + @"]");
-                                break;
-                            case EConsumableType2.Guild:
-                                break;
-                            case EConsumableType2.CharScroll:
-                                if (tmp.Code.StartsWith("ITEM_ETC_ARCHEMY_POTION_SPEED"))
-                                    tmp.ScrollType = EScrollType.Speed;
-                                break;
-                            case EConsumableType2.Card:
-                                break;
-                            case EConsumableType2.MonsterScroll:
-                                break;
-                            case EConsumableType2.PetScroll:
-                                break;
-                            default:
-                                Console.WriteLine(@"Undefinded EConsumableType2: " + param2 + @" [" + tmp.Id + @"]");
-                                break;
-                        }
-                        break;
-                    default:
-                        Console.WriteLine(@"Undefinded EItemType1: " + param1 + @" [" + tmp.Id + @"]");
-                        break;
+                            switch (tmp.SummonScrollType2)
+                            {
+                                case ESummonScrollType2.Pet:
+                                    tmp.PetType3 = (Items.EPetType3) param3;
+                                    if (!Enum.IsDefined(typeof(Items.EPetType3), param3))
+                                        Console.WriteLine(@"Undefinded EPetType3: " + param3 + @" [" + tmp.Id + @"]");
+                                    break;
+                                case ESummonScrollType2.Skinchange:
+                                    break;
+                                case ESummonScrollType2.Cube:
+                                    break;
+                                default:
+                                    Console.WriteLine(@"Undefinded ESummonScrollType2: " + param2 + @" [" + tmp.Id + @"]");
+                                    break;
+                            }
+                            break;
+                        case EItemType1.Consumable:
+                            tmp.ConsumableType2 = (EConsumableType2) param2;
+
+                            switch (tmp.ConsumableType2)
+                            {
+                                case EConsumableType2.None:
+                                    break;
+                                case EConsumableType2.Potion:
+                                    tmp.PotionType3 = (EPotionType3) param3;
+                                    if (!Enum.IsDefined(typeof(EPotionType3), param3))
+                                        Console.WriteLine(@"Undefinded EPotionType3: " + param3 + @" [" + tmp.Id + @"]");
+                                    break;
+                                case EConsumableType2.Cure:
+                                    tmp.CureType3 = (ECureType3) param3;
+                                    if (!Enum.IsDefined(typeof(ECureType3), param3))
+                                        Console.WriteLine(@"Undefinded ECureType3: " + param3 + @" [" + tmp.Id + @"]");
+                                    break;
+                                case EConsumableType2.Scroll:
+                                    tmp.ScrollType3 = (EScrollType3) param3;
+                                    if (!Enum.IsDefined(typeof(EScrollType3), param3))
+                                        Console.WriteLine(@"Undefinded EScrollType3: " + param3 + @" [" + tmp.Id + @"]");
+                                    break;
+                                case EConsumableType2.Ammo:
+                                    break;
+                                case EConsumableType2.Currency:
+                                    tmp.CurrencyType3 = (ECurrencyType3) param3;
+                                    if (!Enum.IsDefined(typeof(ECurrencyType3), param3))
+                                        Console.WriteLine(@"Undefinded ECurrencyType3: " + param3 + @" [" + tmp.Id + @"]");
+                                    break;
+                                case EConsumableType2.Firework:
+                                    break;
+                                case EConsumableType2.Campfire:
+                                    break;
+                                case EConsumableType2.TradeGood:
+                                    break;
+                                case EConsumableType2.Quest:
+                                    break;
+                                case EConsumableType2.Elixir:
+                                    tmp.ElixirType3 = (EElixirType3) param3;
+                                    if (tmp.ElixirType3 == EElixirType3.Reinforce)
+                                        tmp.ReinforceType = (EReinforceType) IntParse(tmpString[118]);
+
+                                    if (!Enum.IsDefined(typeof(EElixirType3), param3))
+                                        Console.WriteLine(@"Undefinded EElixirType3: " + param3 + @" [" + tmp.Id + @"]");
+                                    break;
+                                case EConsumableType2.Alchemy:
+                                    tmp.AlchemyType3 = (EAlchemyType3) param3;
+                                    if (!Enum.IsDefined(typeof(EAlchemyType3), param3))
+                                        Console.WriteLine(@"Undefinded EAlchemyType3: " + param3 + @" [" + tmp.Code + @"]");
+                                    break;
+                                case EConsumableType2.Guild:
+                                    break;
+                                case EConsumableType2.CharScroll:
+                                    if (tmp.Code.StartsWith("ITEM_ETC_ARCHEMY_POTION_SPEED"))
+                                        tmp.ScrollType = EScrollType.Speed;
+                                    break;
+                                case EConsumableType2.Card:
+                                    break;
+                                case EConsumableType2.MonsterScroll:
+                                    break;
+                                case EConsumableType2.PetScroll:
+                                    break;
+                                default:
+                                    Console.WriteLine(@"Undefinded EConsumableType2: " + param2 + @" [" + tmp.Id + @"]");
+                                    break;
+                            }
+                            break;
+                        default:
+                            Console.WriteLine(@"Undefinded EItemType1: " + param1 + @" [" + tmp.Id + @"]");
+                            break;
+                    }
+
+                    if (RItemdata.ContainsKey(tmp.Id))
+                        RItemdata[tmp.Id] = tmp;
+                    else
+                        RItemdata.Add(tmp.Id, tmp);
                 }
-
-                if (RItemdata.ContainsKey(tmp.Id))
-                    RItemdata[tmp.Id] = tmp;
-                else
-                    RItemdata.Add(tmp.Id, tmp);
             }
         }
 
         private static void DumpSkillFiles(string path)
         {
-            var sFile = SRODecrypt.Decrypt(_pk2Reader.GetFile(path));
+            var sFile = SroDecrypt.Decrypt(_pk2Reader.GetFile(path));
             var sTxtReader = new StreamReader(new MemoryStream(sFile));
 
             var file = sTxtReader.ReadToEnd();
@@ -443,47 +462,53 @@ namespace ZPBot.Common
         private static void DumpNameFiles(string path)
         {
             var sFile = _pk2Reader.GetFile(path);
-            var sTxtReader = new StreamReader(new MemoryStream(sFile));
-
-            var file = sTxtReader.ReadToEnd();
-            var lines = file.Split('\n');
-
-            foreach (var line in lines)
+            if (sFile != null)
             {
-                var tmpString = line.Split('\t');
-                if (tmpString.Length <= Client.Language)
-                    continue;
+                var sTxtReader = new StreamReader(new MemoryStream(sFile));
 
-                if (tmpString[1].Length == 0 || tmpString[Client.Language].Length == 0 || RTextdata.ContainsKey(tmpString[1]))
-                    continue;
+                var file = sTxtReader.ReadToEnd();
+                var lines = file.Split('\n');
 
-                RTextdata.Add(tmpString[1], tmpString[Client.Language]);
+                foreach (var line in lines)
+                {
+                    var tmpString = line.Split('\t');
+                    if (tmpString.Length <= Client.Language)
+                        continue;
+
+                    if (tmpString[1].Length == 0 || tmpString[Client.Language].Length == 0 || RTextdata.ContainsKey(tmpString[1]))
+                        continue;
+
+                    RTextdata.Add(tmpString[1], tmpString[Client.Language]);
+                }
             }
         }
 
         private static void DumpTeleportFiles(string path)
         {
             var sFile = _pk2Reader.GetFile(path);
-            var sTxtReader = new StreamReader(new MemoryStream(sFile));
-
-            var file = sTxtReader.ReadToEnd();
-            var lines = file.Split('\n');
-
-            foreach (var line in lines)
+            if (sFile != null)
             {
-                if (line == "") continue;
+                var sTxtReader = new StreamReader(new MemoryStream(sFile));
 
-                var tmpString = line.Split('\t');
-                if (tmpString.Length <= 12) continue;
+                var file = sTxtReader.ReadToEnd();
+                var lines = file.Split('\n');
 
-                var tmp = new Teleport
+                foreach (var line in lines)
                 {
-                    Id = Convert.ToUInt32(tmpString[1]),
-                    Code = tmpString[2],
-                    Name = tmpString[5]
-                };
+                    if (line == "") continue;
 
-                RTeleportdata.Add(tmp.Id, tmp);
+                    var tmpString = line.Split('\t');
+                    if (tmpString.Length <= 12) continue;
+
+                    var tmp = new Teleport
+                    {
+                        Id = Convert.ToUInt32(tmpString[1]),
+                        Code = tmpString[2],
+                        Name = tmpString[5]
+                    };
+
+                    RTeleportdata.Add(tmp.Id, tmp);
+                }
             }
         }
 
@@ -493,55 +518,64 @@ namespace ZPBot.Common
             CreateTempShop("refscrapofpackageitem.txt", Refscrapofpackageitem);
 
             var sFile = _pk2Reader.GetFile(Level + "refshopgroup.txt");
-            var sTxtReader = new StreamReader(new MemoryStream(sFile));
-
-            var file = sTxtReader.ReadToEnd();
-            var lines = file.Split('\n');
-
-            foreach (var line in lines)
+            if (sFile != null)
             {
-                if (line == "") continue;
+                var sTxtReader = new StreamReader(new MemoryStream(sFile));
 
-                var tmpString = line.Split('\t');
-                if (tmpString.Length <= 4 || ByteParse(tmpString[0]) != 1)
-                    continue;
+                var file = sTxtReader.ReadToEnd();
+                var lines = file.Split('\n');
 
-                var npc = GetCharDataByCode(tmpString[4]);
-                if (npc != null && npc.Id > 0)
-                    GroupToStore(tmpString[3], npc.Id);
+                foreach (var line in lines)
+                {
+                    if (line == "") continue;
+
+                    var tmpString = line.Split('\t');
+                    if (tmpString.Length <= 4 || ByteParse(tmpString[0]) != 1)
+                        continue;
+
+                    var npc = GetCharDataByCode(tmpString[4]);
+                    if (npc != null && npc.Id > 0)
+                        GroupToStore(tmpString[3], npc.Id);
+                }
             }
         }
 
         private static void CreateTempShop(string path, List<TempShop> temp)
         {
             var sFile = _pk2Reader.GetFile(Level + path);
-            var sTxtReader = new StreamReader(new MemoryStream(sFile));
+            if (sFile != null)
+            {
+                var sTxtReader = new StreamReader(new MemoryStream(sFile));
 
-            var file = sTxtReader.ReadToEnd();
-            var lines = file.Split('\n');
+                var file = sTxtReader.ReadToEnd();
+                var lines = file.Split('\n');
 
-            temp.AddRange(from line in lines
-                where line != ""
-                select line.Split('\t')
-                into tmpString
-                where tmpString.Length > 4 && ByteParse(tmpString[0]) == 1
-                select new TempShop
-                {
-                    Code1 = tmpString[2], Code2 = tmpString[3], Slot = ByteParse(tmpString[4])
-                });
+                temp.AddRange(from line in lines
+                    where line != ""
+                    select line.Split('\t')
+                    into tmpString
+                    where tmpString.Length > 4 && ByteParse(tmpString[0]) == 1
+                    select new TempShop
+                    {
+                        Code1 = tmpString[2], Code2 = tmpString[3], Slot = ByteParse(tmpString[4])
+                    });
+            }
         }
 
         private static void GroupToStore(string group, uint npcId)
         {
             var sFile = _pk2Reader.GetFile(Level + "refmappingshopgroup.txt");
-            var sTxtReader = new StreamReader(new MemoryStream(sFile));
-
-            var file = sTxtReader.ReadToEnd();
-            var lines = file.Split('\n');
-
-            foreach (var tmpString in lines.Where(line => line != "").Select(line => line.Split('\t')).Where(tmpString => tmpString.Length > 3 && ByteParse(tmpString[0]) == 1 && @group.StartsWith(tmpString[2])))
+            if (sFile != null)
             {
-                StoreToStoreGroup(tmpString[3], npcId);
+                var sTxtReader = new StreamReader(new MemoryStream(sFile));
+
+                var file = sTxtReader.ReadToEnd();
+                var lines = file.Split('\n');
+
+                foreach (var tmpString in lines.Where(line => line != "").Select(line => line.Split('\t')).Where(tmpString => tmpString.Length > 3 && ByteParse(tmpString[0]) == 1 && group.StartsWith(tmpString[2])))
+                {
+                    StoreToStoreGroup(tmpString[3], npcId);
+                }
             }
         }
 
@@ -550,30 +584,36 @@ namespace ZPBot.Common
             byte tabIndex = 0;
 
             var sFile = _pk2Reader.GetFile(Level + "refmappingshopwithtab.txt");
-            var sTxtReader = new StreamReader(new MemoryStream(sFile));
-
-            var file = sTxtReader.ReadToEnd();
-            var lines = file.Split('\n');
-
-            foreach (var tmpString in lines.Where(line => line != "").Select(line => line.Split('\t')).Where(tmpString => ByteParse(tmpString[0]) == 1 && store.StartsWith(tmpString[2])))
+            if (sFile != null)
             {
-                StoreGroupToTab(tmpString[3], npcId, tabIndex);
-                tabIndex += 3;
+                var sTxtReader = new StreamReader(new MemoryStream(sFile));
+
+                var file = sTxtReader.ReadToEnd();
+                var lines = file.Split('\n');
+
+                foreach (var tmpString in lines.Where(line => line != "").Select(line => line.Split('\t')).Where(tmpString => ByteParse(tmpString[0]) == 1 && store.StartsWith(tmpString[2])))
+                {
+                    StoreGroupToTab(tmpString[3], npcId, tabIndex);
+                    tabIndex += 3;
+                }
             }
         }
 
         private static void StoreGroupToTab(string storegroup, uint npcId, byte tabIndex)
         {
             var sFile = _pk2Reader.GetFile(Level + "refshoptab.txt");
-            var sTxtReader = new StreamReader(new MemoryStream(sFile));
-
-            var file = sTxtReader.ReadToEnd();
-            var lines = file.Split('\n');
-
-            foreach (var tmpString in lines.Where(line => line != "").Select(line => line.Split('\t')).Where(tmpString => ByteParse(tmpString[0]) == 1 && storegroup.StartsWith(tmpString[4])))
+            if (sFile != null)
             {
-                GetPackageByTab(tmpString[3], npcId, tabIndex);
-                tabIndex++;
+                var sTxtReader = new StreamReader(new MemoryStream(sFile));
+
+                var file = sTxtReader.ReadToEnd();
+                var lines = file.Split('\n');
+
+                foreach (var tmpString in lines.Where(line => line != "").Select(line => line.Split('\t')).Where(tmpString => ByteParse(tmpString[0]) == 1 && storegroup.StartsWith(tmpString[4])))
+                {
+                    GetPackageByTab(tmpString[3], npcId, tabIndex);
+                    tabIndex++;
+                }
             }
         }
 
@@ -583,9 +623,11 @@ namespace ZPBot.Common
                 where shopGood.Code1 == tab
                 let itemCode = GetItemByPackage(shopGood.Code2)
                 where itemCode != null
+                let itemByCode = GetItemByCode(itemCode)
+                where itemByCode != null
                 select new Shop
                 {
-                    NpcId = npcId, TabIndex = tabIndex, SlotIndex = shopGood.Slot, ItemId = GetItemByCode(itemCode).Id
+                    NpcId = npcId, TabIndex = tabIndex, SlotIndex = shopGood.Slot, ItemId = itemByCode.Id
                 })
             {
                 RShopdata.Add(tmp);
@@ -593,8 +635,9 @@ namespace ZPBot.Common
         }
 
         private static string GetItemByPackage(string package) => Refscrapofpackageitem.Find(temp => temp.Code1 == package).Code2;
-        private static string GetName(string itemCode) => RTextdata.ContainsKey(itemCode) ? RTextdata[itemCode] : "Error";
+        private static string GetName([NotNull] string itemCode) => RTextdata.ContainsKey(itemCode) ? RTextdata[itemCode] : "Error";
 
+        [CanBeNull]
         public static Item GetItemFromShop(uint npcId, byte tabIndex, byte slotIndex)
         {
             var itemId = RShopdata.Find(temp => temp.NpcId == npcId && temp.TabIndex == tabIndex && temp.SlotIndex == slotIndex).ItemId;
@@ -602,11 +645,16 @@ namespace ZPBot.Common
             return RItemdata.ContainsKey(itemId) ? RItemdata[itemId] : null;
         }
 
+        [NotNull]
         public static List<Item> GetLoopData()
         {
             var loopdata = new List<Item>();
 
-            foreach (var item in RShopdata.Select(shop => GetItemById(shop.ItemId)).Where(item => item.PotionType3 == EPotionType3.Health || item.PotionType3 == EPotionType3.Mana || item.CureType3 == ECureType3.Univsersal || item.ConsumableType2 == EConsumableType2.Ammo || item.ScrollType == EScrollType.Speed || item.ScrollType3 == EScrollType3.Return).Where(item => loopdata.Find(delegate(Item temp) { return temp.Id == item.Id; }) == null))
+            foreach (var item in RShopdata.Select(shop => GetItemById(shop.ItemId))
+                        .Where(item => item != null && (item.PotionType3 == EPotionType3.Health || item.PotionType3 == EPotionType3.Mana ||
+                        item.CureType3 == ECureType3.Univsersal || item.ConsumableType2 == EConsumableType2.Ammo ||
+                        item.ScrollType == EScrollType.Speed || item.ScrollType3 == EScrollType3.Return))
+                        .Where(item => loopdata.Find(delegate(Item temp) { return temp.Id == item.Id; }) == null))
             {
                 loopdata.Add(item);
             }
@@ -614,12 +662,25 @@ namespace ZPBot.Common
             return loopdata;
         }
 
+        [CanBeNull]
         public static Char GetCharById(uint searchValue) => RChardata.ContainsKey(searchValue) ? RChardata[searchValue] : null;
+
+        [CanBeNull]
         private static Char GetCharDataByCode(string searchValue) => (from search in RChardata where search.Value.Code == searchValue select search.Value).FirstOrDefault();
+
+        [CanBeNull]
         public static Item GetItemById(uint searchValue) => RItemdata.ContainsKey(searchValue) ? RItemdata[searchValue] : null;
+
+        [CanBeNull]
         private static Item GetItemByCode(string searchValue) => (from search in RItemdata where search.Value.Code == searchValue select search.Value).FirstOrDefault();
+
+        [CanBeNull]
         public static Teleport GetTeleportById(uint searchValue) => RTeleportdata.ContainsKey(searchValue) ? RTeleportdata[searchValue] : null;
+
+        [CanBeNull]
         public static Skill GetSkillById(uint searchValue) => RSkilldata.ContainsKey(searchValue) ? RSkilldata[searchValue] : null;
+
+        [NotNull]
         public static List<Shop> GetShopData(uint npcId) => RShopdata.Where(shopData => shopData.NpcId == npcId).ToList();
 
         private static int IntParse(string input)

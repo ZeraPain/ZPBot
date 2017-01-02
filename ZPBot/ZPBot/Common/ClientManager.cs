@@ -50,11 +50,11 @@ namespace ZPBot.Common
             //IntPtr Launcher = CreateMutex(IntPtr.Zero, false, "Silkroad Online Launcher");
             //IntPtr Launcher_Ready = CreateMutex(IntPtr.Zero, false, "Ready");
 
-            PROCESS_INFORMATION pi;
-            var si = new STARTUPINFO();
+            ProcessInformation pi;
+            var si = new Startupinfo();
             var success = NativeMethods.CreateProcess(null, Config.SroPath + "\\sro_client.exe 0 /" + Client.ClientLocale + " 0 0", //Arguments = "0 /22 0 0"
                 IntPtr.Zero, IntPtr.Zero, false,
-                ProcessCreationFlags.CREATE_SUSPENDED,
+                ProcessCreationFlags.CreateSuspended,
                 IntPtr.Zero, null, ref si, out pi);
 
             if (!success)
@@ -63,7 +63,7 @@ namespace ZPBot.Common
                 return;
             }
 
-            _sroProcess = Process.GetProcessById((int)pi.dwProcessId);
+            _sroProcess = Process.GetProcessById((int)pi.DwProcessId);
 
             Redirect();
             SetLocalConnection(localPort);
@@ -74,8 +74,8 @@ namespace ZPBot.Common
             NudePatch();
             SeedPatch();
 
-            NativeMethods.ResumeThread(pi.hThread);
-            NativeMethods.ResumeThread(pi.hProcess);
+            NativeMethods.ResumeThread(pi.HThread);
+            NativeMethods.ResumeThread(pi.HProcess);
         }
 
         public void SetLocalConnection(int localPort)
@@ -321,7 +321,7 @@ namespace ZPBot.Common
         }
 
         [NotNull]
-        private static List<uint> FindStringPattern(byte[] stringByteArray, byte[] fileArray, byte stringWorker)
+        private static List<uint> FindStringPattern([NotNull] byte[] stringByteArray, [NotNull] byte[] fileArray, byte stringWorker)
         {
             var results = FindPattern(stringByteArray, fileArray);
             if (results.Count == 0)

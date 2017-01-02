@@ -5,56 +5,56 @@ namespace ZPBot.Common
 {
     public class ExtendedProcess
     {
-        public struct STARTUPINFO
+        public struct Startupinfo
         {
-            public uint cb;
-            public string lpReserved;
-            public string lpDesktop;
-            public string lpTitle;
-            public uint dwX;
-            public uint dwY;
-            public uint dwXSize;
-            public uint dwYSize;
-            public uint dwXCountChars;
-            public uint dwYCountChars;
-            public uint dwFillAttribute;
-            public uint dwFlags;
-            public short wShowWindow;
-            public short cbReserved2;
-            public IntPtr lpReserved2;
-            public IntPtr hStdInput;
-            public IntPtr hStdOutput;
-            public IntPtr hStdError;
+            public uint Cb;
+            public string LpReserved;
+            public string LpDesktop;
+            public string LpTitle;
+            public uint DwX;
+            public uint DwY;
+            public uint DwXSize;
+            public uint DwYSize;
+            public uint DwXCountChars;
+            public uint DwYCountChars;
+            public uint DwFillAttribute;
+            public uint DwFlags;
+            public short WShowWindow;
+            public short CbReserved2;
+            public IntPtr LpReserved2;
+            public IntPtr HStdInput;
+            public IntPtr HStdOutput;
+            public IntPtr HStdError;
         }
 
-        public struct PROCESS_INFORMATION
+        public struct ProcessInformation
         {
-            public IntPtr hProcess;
-            public IntPtr hThread;
-            public uint dwProcessId;
-            public uint dwThreadId;
+            public IntPtr HProcess;
+            public IntPtr HThread;
+            public uint DwProcessId;
+            public uint DwThreadId;
         }
 
         [Flags]
         public enum ProcessCreationFlags : uint
         {
-            ZERO_FLAG = 0x00000000,
-            CREATE_BREAKAWAY_FROM_JOB = 0x01000000,
-            CREATE_DEFAULT_ERROR_MODE = 0x04000000,
-            CREATE_NEW_CONSOLE = 0x00000010,
-            CREATE_NEW_PROCESS_GROUP = 0x00000200,
-            CREATE_NO_WINDOW = 0x08000000,
-            CREATE_PROTECTED_PROCESS = 0x00040000,
-            CREATE_PRESERVE_CODE_AUTHZ_LEVEL = 0x02000000,
-            CREATE_SEPARATE_WOW_VDM = 0x00001000,
-            CREATE_SHARED_WOW_VDM = 0x00001000,
-            CREATE_SUSPENDED = 0x00000004,
-            CREATE_UNICODE_ENVIRONMENT = 0x00000400,
-            DEBUG_ONLY_THIS_PROCESS = 0x00000002,
-            DEBUG_PROCESS = 0x00000001,
-            DETACHED_PROCESS = 0x00000008,
-            EXTENDED_STARTUPINFO_PRESENT = 0x00080000,
-            INHERIT_PARENT_AFFINITY = 0x00010000
+            ZeroFlag = 0x00000000,
+            CreateBreakawayFromJob = 0x01000000,
+            CreateDefaultErrorMode = 0x04000000,
+            CreateNewConsole = 0x00000010,
+            CreateNewProcessGroup = 0x00000200,
+            CreateNoWindow = 0x08000000,
+            CreateProtectedProcess = 0x00040000,
+            CreatePreserveCodeAuthzLevel = 0x02000000,
+            CreateSeparateWowVdm = 0x00001000,
+            CreateSharedWowVdm = 0x00001000,
+            CreateSuspended = 0x00000004,
+            CreateUnicodeEnvironment = 0x00000400,
+            DebugOnlyThisProcess = 0x00000002,
+            DebugProcess = 0x00000001,
+            DetachedProcess = 0x00000008,
+            ExtendedStartupinfoPresent = 0x00080000,
+            InheritParentAffinity = 0x00010000
         }
 
         internal static class NativeMethods
@@ -65,8 +65,8 @@ namespace ZPBot.Common
                    IntPtr lpThreadAttributes,
                    bool bInheritHandles, ProcessCreationFlags dwCreationFlags,
                    IntPtr lpEnvironment, string lpCurrentDirectory,
-                   ref STARTUPINFO lpStartupInfo,
-                   out PROCESS_INFORMATION lpProcessInformation);
+                   ref Startupinfo lpStartupInfo,
+                   out ProcessInformation lpProcessInformation);
 
             [DllImport("kernel32.dll")]
             internal static extern uint ResumeThread(IntPtr hThread);

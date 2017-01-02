@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using ZPBot.Annotations;
 using ZPBot.Common.Resources;
 
 namespace ZPBot.Common.Party
@@ -12,6 +13,8 @@ namespace ZPBot.Common.Party
         public bool AcceptInviteAll { get; set; }
         public int PartyType { get; set; }
         public List<string> AcceptInviteList { get; protected set; }
+
+        [CanBeNull]
         public Party CurrentParty { get; protected set; }
 
         private readonly GlobalManager _globalManager;
@@ -71,17 +74,18 @@ namespace ZPBot.Common.Party
             _globalManager.FMain.UpdateParty(CurrentParty.PartyMembers);
         }
 
-        public void Leave(uint worldId)
+        public void Leave(uint accountId)
         {
-            if (CurrentParty == null)
-                return;
-
-            if (worldId == _globalManager.Player.WorldId)
+            if (accountId == _globalManager.Player.AccountId)
                 Dismiss();
             else
-                CurrentParty.Remove(worldId);
-
-            _globalManager.FMain.UpdateParty(CurrentParty.PartyMembers);
+            {
+                if (CurrentParty != null)
+                {
+                    CurrentParty.Remove(accountId);
+                    _globalManager.FMain.UpdateParty(CurrentParty.PartyMembers);
+                }
+            }
         }
 
         public void SetPartyMaster(uint worldId)
@@ -115,16 +119,8 @@ namespace ZPBot.Common.Party
             {
                 if (AutoInvite)
                 {
-                    foreach (var player in _globalManager.CharManager.PlayerList)
-                    {
-                        if (AcceptInviteList.Contains(player.Charname))
-                        {
-                            if ((CurrentParty == null) || (CurrentParty?.PlayerInParty(player.Charname) == false))
-                            {
-                                _globalManager.PacketManager.SendPartyInvite(player.WorldId, (byte)PartyType);
-                            }
-                        }
-                    }
+                    foreach (var player in _globalManager.CharManager.PlayerList.Where(player => AcceptInviteList.Contains(player.Charname)).Where(player => (CurrentParty == null) || (CurrentParty?.PlayerInParty(player.Charname) == false)))
+                        _globalManager.PacketManager.SendPartyInvite(player.WorldId, (byte)PartyType);
                 }
 
                 Thread.Sleep(5000);

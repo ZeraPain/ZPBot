@@ -17,23 +17,23 @@ namespace ZPBot.Common.Party
             PartyMembers = partyMembers;
         }
 
-        public void UpdateHpMp(uint worldId, byte hpMpInfo)
+        public void UpdateHpMp(uint accountId, byte hpMpInfo)
         {
-            foreach (var partyMember in PartyMembers.Where(partyMember => partyMember.WorldId == worldId))
+            foreach (var partyMember in PartyMembers.Where(partyMember => partyMember.AccountId == accountId))
                 partyMember.HpMpInfo = hpMpInfo;
         }
 
-        public void UpdatePosition(uint worldId, GamePosition inGamePosition)
+        public void UpdatePosition(uint accountId, GamePosition inGamePosition)
         {
-            foreach (var partyMember in PartyMembers.Where(partyMember => partyMember.WorldId == worldId))
+            foreach (var partyMember in PartyMembers.Where(partyMember => partyMember.AccountId == accountId))
                 partyMember.InGamePosition = inGamePosition;
         }
 
         public void Add(PartyMember partyMember) => PartyMembers.Add(partyMember);
 
-        public void Remove(uint worldId)
+        public void Remove(uint accountId)
         {
-            foreach (var partyMember in PartyMembers.Where(partyMember => partyMember.WorldId == worldId))
+            foreach (var partyMember in PartyMembers.Where(partyMember => partyMember.AccountId == accountId))
             {
                 PartyMembers.Remove(partyMember);
                 break;

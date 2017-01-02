@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
+using ZPBot.Annotations;
 
 namespace ZPBot.SilkroadSecurityApi
 {
@@ -31,9 +32,10 @@ namespace ZPBot.SilkroadSecurityApi
         }
 
         // Returns a byte from a SecurityFlags object.
-        private static byte FromSecurityFlags(SecurityFlags flags) => (byte)(flags.none | (flags.blowfish << 1) | (flags.security_bytes << 2) | (flags.handshake << 3) | (flags.handshake_response << 4) | (flags._6 << 5) | (flags._7 << 6) | (flags._8 << 7));
+        private static byte FromSecurityFlags([NotNull] SecurityFlags flags) => (byte)(flags.none | (flags.blowfish << 1) | (flags.security_bytes << 2) | (flags.handshake << 3) | (flags.handshake_response << 4) | (flags._6 << 5) | (flags._7 << 6) | (flags._8 << 7));
 
         // Returns a SecurityFlags object from a byte.
+        [NotNull]
         private static SecurityFlags ToSecurityFlags(byte value)
         {
             var flags = new SecurityFlags {none = (byte) (value & 1)};
@@ -57,6 +59,7 @@ namespace ZPBot.SilkroadSecurityApi
 
         #region SecurityTable
         // Generates the crc bytes lookup table
+        [NotNull]
         private static uint[] GenerateSecurityTable()
         {
             var securityTable = new uint[0x10000];
@@ -345,7 +348,7 @@ namespace ZPBot.SilkroadSecurityApi
             return (byte)(((checksum >> 24) & 0xFF) + ((checksum >> 8) & 0xFF) + ((checksum >> 16) & 0xFF) + (checksum & 0xFF));
         }
 
-        private byte GenerateCheckByte(byte[] stream) => GenerateCheckByte(stream, 0, stream.Length);
+        private byte GenerateCheckByte([NotNull] byte[] stream) => GenerateCheckByte(stream, 0, stream.Length);
 
         #endregion
 
@@ -584,7 +587,7 @@ namespace ZPBot.SilkroadSecurityApi
             }
         }
 
-        private byte[] FormatPacket(ushort opcode, byte[] data, bool encrypted)
+        private byte[] FormatPacket(ushort opcode, [NotNull] byte[] data, bool encrypted)
         {
             // Sanity check
             if (data.Length >= 0x8000)
@@ -850,7 +853,7 @@ namespace ZPBot.SilkroadSecurityApi
 
         // Queues a packet for processing to be sent. The data is simply formatted and processed during
         // the next call to TransferOutgoing.
-        public void Send(Packet packet)
+        public void Send([NotNull] Packet packet)
         {
             if ((packet.Opcode == 0x5000) || (packet.Opcode == 0x9000))
             {
@@ -1112,6 +1115,7 @@ namespace ZPBot.SilkroadSecurityApi
 
         // Returns a list of buffers that is ready to be sent. These buffers must be sent in order.
         // If no buffers are available for sending, null is returned.
+        [CanBeNull]
         public List<KeyValuePair<TransferBuffer, Packet>> TransferOutgoing()
         {
             List<KeyValuePair<TransferBuffer, Packet>> buffers = null;
@@ -1131,6 +1135,7 @@ namespace ZPBot.SilkroadSecurityApi
 
         // Returns a list of all packets that are ready for processing. If no packets are available,
         // null is returned.
+        [CanBeNull]
         public List<Packet> TransferIncoming()
         {
             List<Packet> packets = null;

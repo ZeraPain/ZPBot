@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Windows.Forms;
 using ZPBot.Annotations;
 using ZPBot.Common.Characters;
 using ZPBot.Common.Party;
@@ -202,11 +201,12 @@ namespace ZPBot.Common
             {
                 var skillId = packet.ReadUInt32();
                 packet.ReadUInt32(); // Duration
-                if (Silkroad.GetSkillById(skillId).GroupSkill)
+                var skillById = Silkroad.GetSkillById(skillId);
+                if (skillById?.GroupSkill == true)
                     packet.SkipBytes(1); // IsCreator
             }
 
-            FMain.Invoke((MethodInvoker) (() => Player.Charname = packet.ReadAscii()));
+            Player.SetCharname(packet.ReadAscii());
 
             packet.ReadAscii(); // JobName
             packet.ReadUInt8(); // JobType
@@ -321,10 +321,13 @@ namespace ZPBot.Common
             var chardata = Silkroad.GetCharById(charId);
             var health = packet.ReadUInt32();
             packet.SkipBytes(4);
-            PetManager.Add(new Pet(chardata, worldId, health));
+            if (chardata != null)
+            {
+                PetManager.Add(new Pet(chardata, worldId, health));
 
-            if (chardata.PetType3 != EPetType3.Grab)
-                return;
+                if (chardata.PetType3 != EPetType3.Grab)
+                    return;
+            }
 
             packet.SkipBytes(4);
             packet.ReadAscii(); //pet name
@@ -596,7 +599,7 @@ namespace ZPBot.Common
             var partyMember = new PartyMember();
 
             packet.SkipBytes(1); // 0xFF
-            partyMember.WorldId = packet.ReadUInt32(); // worldID
+            partyMember.AccountId = packet.ReadUInt32(); // accountId
             partyMember.Charname = packet.ReadAscii(); // charname
             partyMember.Model = packet.ReadUInt32(); // model
             partyMember.Level = packet.ReadUInt8(); // level
@@ -637,7 +640,7 @@ namespace ZPBot.Common
         {
             var type = packet.ReadUInt8();
 
-            uint worldId;
+            uint accountId;
             switch (type)
             {
                 case 1: // Dismiss
@@ -648,17 +651,17 @@ namespace ZPBot.Common
                     PartyManager.Join(partyMember);
                     break;
                 case 3: // Leave / Kick
-                    worldId = packet.ReadUInt32();
-                    PartyManager.Leave(worldId);
+                    accountId = packet.ReadUInt32();
+                    PartyManager.Leave(accountId);
                     break;
                 case 6: // Update
-                    worldId = packet.ReadUInt32();
+                    accountId = packet.ReadUInt32();
                     var action = packet.ReadUInt8();
                     switch (action)
                     {
                         case 0x4: // HP MP
-                            var hpMpInfo = packet.ReadUInt8();;
-                            PartyManager.CurrentParty?.UpdateHpMp(worldId, hpMpInfo);
+                            var hpMpInfo = packet.ReadUInt8();
+                            PartyManager.CurrentParty?.UpdateHpMp(accountId, hpMpInfo);
                             break;
                         case 0x20: // Position
                             var inGamePosition = Game.PositionToGamePosition(new EPosition()
@@ -669,13 +672,13 @@ namespace ZPBot.Common
                                 ZPosition = packet.ReadUInt16(),
                                 YPosition = packet.ReadUInt16()
                             });
-                            PartyManager.CurrentParty?.UpdatePosition(worldId, inGamePosition);
+                            PartyManager.CurrentParty?.UpdatePosition(accountId, inGamePosition);
                             break;
                     }
                     break;
                 case 9: // New Party Master
-                    worldId = packet.ReadUInt32(); // worldID
-                    PartyManager.SetPartyMaster(worldId);
+                    accountId = packet.ReadUInt32();
+                    PartyManager.SetPartyMaster(accountId);
                     break;
             }
         }

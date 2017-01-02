@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using ZPBot.Annotations;
 
 namespace ZPBot.Common.Items
 {
@@ -42,6 +43,7 @@ namespace ZPBot.Common.Items
             }
         }
 
+        [CanBeNull]
         public InventoryItem GetItembySlot(byte slot)
         {
             InventoryItem item = null;
@@ -66,20 +68,23 @@ namespace ZPBot.Common.Items
 
                 if (invTo == null)
                 {
-                    if (invFrom.Quantity == quantity) // Simple Move
+                    if (invFrom != null && invFrom.Quantity == quantity) // Simple Move
                     {
                         invFrom.Slot = toSlot;
                     }
                     else // Split Item
                     {
-                        invFrom.Quantity -= quantity;
-                        _itemList.Add(new InventoryItem(invFrom, toSlot, quantity));
+                        if (invFrom != null)
+                        {
+                            invFrom.Quantity -= quantity;
+                            _itemList.Add(new InventoryItem(invFrom, toSlot, quantity));
+                        }
                     }
                 }
-                else if (invFrom.Id == invTo.Id) // Stack Items
+                else if (invFrom != null && invFrom.Id == invTo.Id) // Stack Items
                 {
                     var item = Silkroad.GetItemById(invTo.Id);
-                    if (invTo.Quantity + quantity > item.MaxQuantity) // Fill new slot with rest
+                    if (item != null && invTo.Quantity + quantity > item.MaxQuantity) // Fill new slot with rest
                     {
                         var rest = (ushort)(invTo.Quantity + quantity - item.MaxQuantity);
 
@@ -94,9 +99,12 @@ namespace ZPBot.Common.Items
                 }
                 else // Switch Items
                 {
-                    var tmpSlot = invFrom.Slot;
-                    invFrom.Slot = invTo.Slot;
-                    invTo.Slot = tmpSlot;
+                    if (invFrom != null)
+                    {
+                        var tmpSlot = invFrom.Slot;
+                        invFrom.Slot = invTo.Slot;
+                        invTo.Slot = tmpSlot;
+                    }
                 }
             }
         }

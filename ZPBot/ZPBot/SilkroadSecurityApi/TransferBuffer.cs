@@ -1,4 +1,6 @@
-﻿namespace ZPBot.SilkroadSecurityApi
+﻿using ZPBot.Annotations;
+
+namespace ZPBot.SilkroadSecurityApi
 {
     public class TransferBuffer
     {
@@ -25,7 +27,7 @@
             set { lock (_mLock) { _mSize = value; } }
         }
 
-        public TransferBuffer(TransferBuffer rhs)
+        public TransferBuffer([NotNull] TransferBuffer rhs)
         {
             lock (rhs._mLock)
             {

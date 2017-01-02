@@ -1,4 +1,6 @@
 ﻿
+using ZPBot.Annotations;
+
 namespace ZPBot.Common.Items
 {
     public class InventoryItem : Item
@@ -17,7 +19,7 @@ namespace ZPBot.Common.Items
             Plus = plus;
         }
 
-        public InventoryItem(InventoryItem item) : base(item)
+        public InventoryItem([NotNull] InventoryItem item) : base(item)
         {
             Slot = item.Slot;
             Quantity = item.Quantity;

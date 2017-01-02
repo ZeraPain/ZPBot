@@ -16,7 +16,7 @@ namespace ZPBot.Common.Characters
         private readonly object _lock;
 
 
-        public Pet(Char chardata, uint worldId, uint curHealth)
+        public Pet([NotNull] Char chardata, uint worldId, uint curHealth)
         {
             Id = chardata.Id;
             MaxHealth = chardata.MaxHealth;
@@ -66,6 +66,7 @@ namespace ZPBot.Common.Characters
             }
         }
 
+        [CanBeNull]
         public InventoryItem GetItembySlot(byte slot)
         {
             InventoryItem item = null;
@@ -90,20 +91,23 @@ namespace ZPBot.Common.Characters
 
                 if (invTo == null)
                 {
-                    if (invFrom.Quantity == quantity) // Simple Move
+                    if (invFrom != null && invFrom.Quantity == quantity) // Simple Move
                     {
                         invFrom.Slot = toSlot;
                     }
                     else // Split Item
                     {
-                        invFrom.Quantity -= quantity;
-                        _itemList.Add(new InventoryItem(invFrom, toSlot, quantity));
+                        if (invFrom != null)
+                        {
+                            invFrom.Quantity -= quantity;
+                            _itemList.Add(new InventoryItem(invFrom, toSlot, quantity));
+                        }
                     }
                 }
-                else if (invFrom.Id == invTo.Id) // Stack Items
+                else if (invFrom != null && invFrom.Id == invTo.Id) // Stack Items
                 {
                     var item = Silkroad.GetItemById(invTo.Id);
-                    if (invTo.Quantity + quantity > item.MaxQuantity) // Fill new slot with rest
+                    if (item != null && invTo.Quantity + quantity > item.MaxQuantity) // Fill new slot with rest
                     {
                         var rest = (ushort)(invTo.Quantity + quantity - item.MaxQuantity);
 
@@ -118,9 +122,12 @@ namespace ZPBot.Common.Characters
                 }
                 else // Switch Items
                 {
-                    var tmpSlot = invFrom.Slot;
-                    invFrom.Slot = invTo.Slot;
-                    invTo.Slot = tmpSlot;
+                    if (invFrom != null)
+                    {
+                        var tmpSlot = invFrom.Slot;
+                        invFrom.Slot = invTo.Slot;
+                        invTo.Slot = tmpSlot;
+                    }
                 }
             }
         }

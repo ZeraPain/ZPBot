@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using ZPBot.Annotations;
 using ZPBot.Common.Resources;
 
 namespace ZPBot.Common.Loop
@@ -158,7 +159,7 @@ namespace ZPBot.Common.Loop
             }
         }
 
-        public void SaveScript(string path)
+        public void SaveScript([NotNull] string path)
         {
             TextWriter tw = new StreamWriter(path);
 
@@ -456,7 +457,8 @@ namespace ZPBot.Common.Loop
 
             var item = Silkroad.GetItemById(data.ItemId);
             var quantityToBuy = quantity - _globalManager.InventoryManager.GetItemCount(data.ItemId);
-            if (Config.Debug) Console.WriteLine(@"Buying " + item.Code + @" (" + quantityToBuy + @")");
+            if (Config.Debug)
+                if (item != null) Console.WriteLine(@"Buying " + item.Code + @" (" + quantityToBuy + @")");
 
             while (quantityToBuy > 0)
             {
@@ -465,7 +467,7 @@ namespace ZPBot.Common.Loop
 
                 Game.AllowBuy = true;
 
-                if (quantityToBuy > item.MaxQuantity)
+                if (item != null && quantityToBuy > item.MaxQuantity)
                 {
                     Buy(worldId, data.TabIndex, data.SlotIndex, item.MaxQuantity);
                     quantityToBuy -= item.MaxQuantity;
@@ -478,6 +480,6 @@ namespace ZPBot.Common.Loop
             }
         }
 
-        private static Silkroad.Shop GetItemDataToBuy(List<Silkroad.Shop> shopdata, uint itemId) => shopdata.Find(temp => temp.ItemId == itemId);
+        private static Silkroad.Shop GetItemDataToBuy([NotNull] List<Silkroad.Shop> shopdata, uint itemId) => shopdata.Find(temp => temp.ItemId == itemId);
     }
 }

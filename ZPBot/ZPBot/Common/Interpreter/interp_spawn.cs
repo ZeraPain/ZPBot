@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Windows.Forms;
+using ZPBot.Annotations;
 using ZPBot.Common.Items;
 using ZPBot.Common.Loop;
 using ZPBot.Common.Characters;
@@ -13,7 +13,7 @@ namespace ZPBot.Common
 {
     internal partial class GlobalManager
     {
-        private void MultipleSpawn(Packet packet)
+        private void MultipleSpawn([NotNull] Packet packet)
         {
             switch (_spawnType)
             {
@@ -40,7 +40,7 @@ namespace ZPBot.Common
                 PrintPacket(@"MultipleSpawn", packet);
         }
 
-        private void MultipleSpawnHelper(Packet packet)
+        private void MultipleSpawnHelper([NotNull] Packet packet)
         {
             _spawnType = packet.ReadUInt8();
             _spawnAmount = packet.ReadUInt8();
@@ -52,7 +52,7 @@ namespace ZPBot.Common
             _spawnAmount = 0;
         }
 
-        private bool SingleSpawn(Packet packet)
+        private bool SingleSpawn([NotNull] Packet packet)
         {
             var objectId = packet.ReadUInt32();
             if (objectId == 0xFFFFFFFF)
@@ -77,7 +77,7 @@ namespace ZPBot.Common
             return false;
         }
 
-        private void SingleDeSpawn(Packet packet)
+        private void SingleDeSpawn([NotNull] Packet packet)
         {
             if (packet.RemainingRead() == 0)
                 return;
@@ -92,7 +92,7 @@ namespace ZPBot.Common
             CharManager.Remove(worldId);
         }
 
-        private bool SingleSpawnChar(Char chardata, Packet packet)
+        private bool SingleSpawnChar([NotNull] Char chardata, Packet packet)
         {
             try
             {
@@ -115,7 +115,7 @@ namespace ZPBot.Common
                     {
                         var itemId = packet.ReadUInt32();
                         var item = Silkroad.GetItemById(itemId);
-                        if (item.ItemType1 == EItemType1.Equipable)
+                        if (item != null && item.ItemType1 == EItemType1.Equipable)
                         {
                             var optLevel = packet.ReadUInt8();
                             player.ItemList.Add(new InventoryItem(item, 0, 1, optLevel));
@@ -133,7 +133,7 @@ namespace ZPBot.Common
                     {
                         var itemId = packet.ReadUInt32();
                         var item = Silkroad.GetItemById(itemId);
-                        if (item.ItemType1 == EItemType1.Equipable)
+                        if (item != null && item.ItemType1 == EItemType1.Equipable)
                         {
                             var optLevel = packet.ReadUInt8();
                             player.ItemList.Add(new InventoryItem(item, 0, 1, optLevel));
@@ -146,7 +146,7 @@ namespace ZPBot.Common
                     {
                         var maskCharId = packet.ReadUInt32();
                         var maskChar = Silkroad.GetCharById(maskCharId);
-                        if (maskChar.CharType1 == chardata.CharType1)
+                        if (maskChar != null && maskChar.CharType1 == chardata.CharType1)
                         {
                             //Duplicate
                             packet.ReadUInt8(); // Scale
@@ -212,7 +212,8 @@ namespace ZPBot.Common
                     {
                         var skillId = packet.ReadUInt32();
                         packet.ReadUInt32(); // Duration
-                        if (Silkroad.GetSkillById(skillId).GroupSkill)
+                        var skillById = Silkroad.GetSkillById(skillId);
+                        if (skillById != null && skillById.GroupSkill)
                         {
                             packet.SkipBytes(1); // IsCreator
                         }
@@ -223,7 +224,7 @@ namespace ZPBot.Common
                 {
                     case ECharType1.Player:
                         //CHARACTER
-                        player.Charname = packet.ReadAscii();
+                        player.SetCharname(packet.ReadAscii());
                         packet.ReadUInt8(); // JobType:  = None, 1 = Trader, 2 = Tief, 3 = Hunter
                         packet.ReadUInt8(); // JobLevel
                         packet.ReadUInt8(); // PVPState: 0 = White (Neutral), 1 = Purple (Assaulter), 2 = Red
@@ -294,7 +295,7 @@ namespace ZPBot.Common
                                 }*/
                                 mob.WorldId = worldId;
                                 mob.Name = chardata.Name;
-                                mob.SetPosition(position);
+                                mob.InGamePosition = Game.PositionToGamePosition(position);
                                 MonsterManager.Add(mob);
 
                                 if (chardata.NpcType2 == ENpcType2.Monster && mob.Type == EMonsterType.Unique)

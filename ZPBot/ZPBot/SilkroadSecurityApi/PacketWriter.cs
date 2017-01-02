@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using ZPBot.Annotations;
 
 namespace ZPBot.SilkroadSecurityApi
 {
@@ -12,6 +13,7 @@ namespace ZPBot.SilkroadSecurityApi
             OutStream = _mMs;
         }
 
+        [NotNull]
         public byte[] GetBytes() => _mMs.ToArray();
     }
 }

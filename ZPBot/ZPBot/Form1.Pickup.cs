@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Windows.Forms;
+using ZPBot.Annotations;
 using ZPBot.Common;
 using ZPBot.Common.Items;
 using ZPBot.Common.Resources;
@@ -10,7 +11,7 @@ namespace ZPBot
 {
     internal partial class Form1
     {
-        private bool FilterCheck(Item item, string pattern)
+        private bool FilterCheck(Item item, [NotNull] string pattern)
         {
             var typeFilter = comboBox_itemtype.SelectedIndex;
             var degreeFilter = comboBox_itemdegree.SelectedIndex;
@@ -106,7 +107,8 @@ namespace ZPBot
             return true;
         }
 
-        private ListViewItem GenerateItem(Item item)
+        [NotNull]
+        private ListViewItem GenerateItem([NotNull] Item item)
         {
             var listViewItem = new ListViewItem(item.Id.ToString());
 

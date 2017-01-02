@@ -1,4 +1,5 @@
 ﻿using System;
+using ZPBot.Annotations;
 using ZPBot.Common.Items;
 using ZPBot.Common.Resources;
 using ZPBot.SilkroadSecurityApi;
@@ -10,6 +11,7 @@ namespace ZPBot.Common
 {
     internal partial class GlobalManager
     {
+        [CanBeNull]
         private static InventoryItem ReadInvItem(ref Packet packet)
         {
             var slot = packet.ReadUInt8();
@@ -39,93 +41,95 @@ namespace ZPBot.Common
             var itemId = packet.ReadUInt32();
             var item = Silkroad.GetItemById(itemId);
 
-            switch (item.ItemType1)
-            {
-                case EItemType1.Equipable:
-                    var optLevel = packet.ReadUInt8();
-                    packet.ReadUInt64(); // Variance
-                    packet.ReadUInt32(); // Durability
-                    var magParamNum1 = packet.ReadUInt8();
-                    for (var paramIndex = 0; paramIndex < magParamNum1; paramIndex++)
-                    {
-                        packet.ReadUInt32(); // Type
-                        packet.ReadUInt32(); // Value
-                    }
+            if (item != null)
+                switch (item.ItemType1)
+                {
+                    case EItemType1.Equipable:
+                        var optLevel = packet.ReadUInt8();
+                        packet.ReadUInt64(); // Variance
+                        packet.ReadUInt32(); // Durability
+                        var magParamNum1 = packet.ReadUInt8();
+                        for (var paramIndex = 0; paramIndex < magParamNum1; paramIndex++)
+                        {
+                            packet.ReadUInt32(); // Type
+                            packet.ReadUInt32(); // Value
+                        }
 
-                    packet.ReadUInt8(); // bindingOptionType: 1 = Socket
-                    var bindingOptionCount = packet.ReadUInt8();
-                    for (var bindingOptionIndex = 0; bindingOptionIndex < bindingOptionCount; bindingOptionIndex++)
-                    {
-                        packet.ReadUInt8(); // Slot
-                        packet.ReadUInt32(); // ID
-                        packet.ReadUInt32(); // nParam1
-                    }
+                        packet.ReadUInt8(); // bindingOptionType: 1 = Socket
+                        var bindingOptionCount = packet.ReadUInt8();
+                        for (var bindingOptionIndex = 0; bindingOptionIndex < bindingOptionCount; bindingOptionIndex++)
+                        {
+                            packet.ReadUInt8(); // Slot
+                            packet.ReadUInt32(); // ID
+                            packet.ReadUInt32(); // nParam1
+                        }
 
-                    packet.ReadUInt8(); // bindingOptionType: 2 = Advanced Elixir
-                    bindingOptionCount = packet.ReadUInt8();
-                    for (var bindingOptionIndex = 0; bindingOptionIndex < bindingOptionCount; bindingOptionIndex++)
-                    {
-                        packet.ReadUInt8(); // Slot
-                        packet.ReadUInt32(); // ID
-                        packet.ReadUInt32(); // OptValue
-                    }
+                        packet.ReadUInt8(); // bindingOptionType: 2 = Advanced Elixir
+                        bindingOptionCount = packet.ReadUInt8();
+                        for (var bindingOptionIndex = 0; bindingOptionIndex < bindingOptionCount; bindingOptionIndex++)
+                        {
+                            packet.ReadUInt8(); // Slot
+                            packet.ReadUInt32(); // ID
+                            packet.ReadUInt32(); // OptValue
+                        }
 
-                    return new InventoryItem(item, slot, 1, optLevel);
-                case EItemType1.SummonScroll:
-                    switch (item.SummonScrollType2)
-                    {
-                        case ESummonScrollType2.Pet:
-                            var statusFlag = packet.ReadUInt8(); // State
-                            if (statusFlag == 2 || statusFlag == 3 || statusFlag == 4)
-                            {
-                                packet.ReadUInt32(); // RefObjId
-                                packet.ReadAscii(); // Name
-
-                                if (item.PetType3 == EPetType3.Grab)
+                        return new InventoryItem(item, slot, 1, optLevel);
+                    case EItemType1.SummonScroll:
+                        switch (item.SummonScrollType2)
+                        {
+                            case ESummonScrollType2.Pet:
+                                var statusFlag = packet.ReadUInt8(); // State
+                                if (statusFlag == 2 || statusFlag == 3 || statusFlag == 4)
                                 {
-                                    packet.ReadUInt32(); // SecondsToRentEndTime
+                                    packet.ReadUInt32(); // RefObjId
+                                    packet.ReadAscii(); // Name
+
+                                    if (item.PetType3 == EPetType3.Grab)
+                                    {
+                                        packet.ReadUInt32(); // SecondsToRentEndTime
+                                    }
+
+                                    packet.SkipBytes(1);
                                 }
+                                break;
+                            case ESummonScrollType2.Skinchange:
+                                packet.ReadUInt32(); // RefObjId
+                                break;
+                            case ESummonScrollType2.Cube:
+                                packet.ReadUInt32(); // Quantity
+                                break;
+                        }
 
-                                packet.SkipBytes(1);
-                            }
-                            break;
-                        case ESummonScrollType2.Skinchange:
-                            packet.ReadUInt32(); // RefObjId
-                            break;
-                        case ESummonScrollType2.Cube:
-                            packet.ReadUInt32(); // Quantity
-                            break;
-                    }
+                        return new InventoryItem(item, slot, 1);
+                    case EItemType1.Consumable:
+                        var stackCount = packet.ReadUInt16();
+                        switch (item.ConsumableType2)
+                        {
+                            case EConsumableType2.Alchemy:
+                                if (item.AlchemyType3 == EAlchemyType3.MagicStone ||
+                                    item.AlchemyType3 == EAlchemyType3.AttributeStone)
+                                {
+                                    packet.ReadUInt8(); // AttributeAssimilationProbability
+                                }
+                                break;
+                            case EConsumableType2.Card:
+                                var magParamNum2 = packet.ReadUInt8();
+                                for (var paramIndex = 0; paramIndex < magParamNum2; paramIndex++)
+                                {
+                                    packet.ReadUInt32(); // Type
+                                    packet.ReadUInt32(); // Value
+                                }
+                                break;
+                        }
 
-                    return new InventoryItem(item, slot, 1);
-                case EItemType1.Consumable:
-                    var stackCount = packet.ReadUInt16();
-                    switch (item.ConsumableType2)
-                    {
-                        case EConsumableType2.Alchemy:
-                            if (item.AlchemyType3 == EAlchemyType3.MagicStone ||
-                                item.AlchemyType3 == EAlchemyType3.AttributeStone)
-                            {
-                                packet.ReadUInt8(); // AttributeAssimilationProbability
-                            }
-                            break;
-                        case EConsumableType2.Card:
-                            var magParamNum2 = packet.ReadUInt8();
-                            for (var paramIndex = 0; paramIndex < magParamNum2; paramIndex++)
-                            {
-                                packet.ReadUInt32(); // Type
-                                packet.ReadUInt32(); // Value
-                            }
-                            break;
-                    }
-
-                    return new InventoryItem(item, slot, stackCount);
-            }
+                        return new InventoryItem(item, slot, stackCount);
+                }
 
             return null;
         }
 
 
+        [CanBeNull]
         private static InventoryItem ReadInventoryItem(ref Packet packet, byte success = 1)
         {
             try
@@ -149,6 +153,8 @@ namespace ZPBot.Common
 
                 var itemId = packet.ReadUInt32();
                 var item = Silkroad.GetItemById(itemId);
+                if (item == null) throw new NullReferenceException();
+
                 if (item.ItemType1 == EItemType1.Equipable)
                 {
                     var plus = packet.ReadUInt8();

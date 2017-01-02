@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using ZPBot.Annotations;
 using ZPBot.Common;
 using ZPBot.Common.Resources;
 using ZPBot.Common.Skills;
@@ -30,7 +31,7 @@ namespace ZPBot
             }
         }
 
-        private void RemoveSkill(ListBox listbox, ESkillType skillType)
+        private void RemoveSkill([NotNull] ListBox listbox, ESkillType skillType)
         {
             var index = listbox.SelectedIndex;
             if (index < 0)

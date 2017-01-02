@@ -217,6 +217,8 @@
             this.button_stopbot = new System.Windows.Forms.Button();
             this.label_pm = new System.Windows.Forms.Label();
             this.button_save = new System.Windows.Forms.Button();
+            this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.tabControl1.SuspendLayout();
             this.tab_main.SuspendLayout();
             this.tab_pickup.SuspendLayout();
@@ -242,6 +244,7 @@
             this.contextMenuStrip_party.SuspendLayout();
             this.tab_spy.SuspendLayout();
             this.tab_alchemy.SuspendLayout();
+            this.groupBox5.SuspendLayout();
             this.SuspendLayout();
             // 
             // richTextBox_events
@@ -1749,6 +1752,7 @@
             // 
             // tab_players
             // 
+            this.tab_players.Controls.Add(this.groupBox5);
             this.tab_players.Controls.Add(this.groupBox4);
             this.tab_players.ImageIndex = 7;
             this.tab_players.Location = new System.Drawing.Point(4, 24);
@@ -2179,6 +2183,26 @@
             this.button_save.UseVisualStyleBackColor = true;
             this.button_save.Click += new System.EventHandler(this.button_save_Click);
             // 
+            // groupBox5
+            // 
+            this.groupBox5.Controls.Add(this.checkBox1);
+            this.groupBox5.Location = new System.Drawing.Point(18, 159);
+            this.groupBox5.Name = "groupBox5";
+            this.groupBox5.Size = new System.Drawing.Size(499, 105);
+            this.groupBox5.TabIndex = 6;
+            this.groupBox5.TabStop = false;
+            this.groupBox5.Text = "Party Matching";
+            // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Location = new System.Drawing.Point(14, 22);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(122, 17);
+            this.checkBox1.TabIndex = 0;
+            this.checkBox1.Text = "Auto Party Matching";
+            this.checkBox1.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -2239,6 +2263,8 @@
             this.tab_spy.ResumeLayout(false);
             this.tab_alchemy.ResumeLayout(false);
             this.tab_alchemy.PerformLayout();
+            this.groupBox5.ResumeLayout(false);
+            this.groupBox5.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -2433,6 +2459,8 @@
         private System.Windows.Forms.ColumnHeader c_autoacceptinvite;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip_party;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem_add;
+        private System.Windows.Forms.GroupBox groupBox5;
+        private System.Windows.Forms.CheckBox checkBox1;
     }
 }
 

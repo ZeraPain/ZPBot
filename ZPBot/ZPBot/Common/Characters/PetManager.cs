@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using ZPBot.Annotations;
 using ZPBot.Common.Items;
 using ZPBot.Common.Resources;
 
@@ -29,6 +30,7 @@ namespace ZPBot.Common.Characters
             }
         }
 
+        [CanBeNull]
         public Pet GetGrabPet()
         {
             lock (_petList)
@@ -42,6 +44,7 @@ namespace ZPBot.Common.Characters
             return null;
         }
 
+        [CanBeNull]
         public Pet GetHealPet()
         {
             lock (_petList)
@@ -111,6 +114,7 @@ namespace ZPBot.Common.Characters
             }
         }
 
+        [CanBeNull]
         public InventoryItem GetItembySlot(uint worldId, byte slot)
         {
             InventoryItem item = null;

@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
+using ZPBot.Annotations;
 using ZPBot.Common.Resources;
 
 namespace ZPBot.Common.Skills
@@ -32,7 +33,7 @@ namespace ZPBot.Common.Skills
             _lock = new object();
         }
 
-        private static bool Contains(IEnumerable<Skill> list, Skill skill) => list.Any(skillItem => skillItem.Id == skill.Id);
+        private static bool Contains([NotNull] IEnumerable<Skill> list, Skill skill) => list.Any(skillItem => skillItem.Id == skill.Id);
 
         public bool Add(Skill skill, ESkillType skillType)
         {
@@ -121,7 +122,8 @@ namespace ZPBot.Common.Skills
             }
         }
 
-        private Skill GetSkill(Skill skill, IEnumerable<Skill> list)
+        [CanBeNull]
+        private Skill GetSkill(Skill skill, [NotNull] IEnumerable<Skill> list)
         {
             lock (_lock)
             {
@@ -154,7 +156,7 @@ namespace ZPBot.Common.Skills
             }
         }
 
-        public void RegBuff(Skill regSkill)
+        public void RegBuff([NotNull] Skill regSkill)
         {
             lock (_lock)
             {

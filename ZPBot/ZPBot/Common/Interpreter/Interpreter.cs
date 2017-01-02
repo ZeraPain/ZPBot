@@ -1,4 +1,5 @@
 ﻿using System;
+using ZPBot.Annotations;
 using ZPBot.SilkroadSecurityApi;
 
 // ReSharper disable once CheckNamespace
@@ -206,7 +207,7 @@ namespace ZPBot.Common
             }
         }
 
-        public void ServerStats(Packet packet)
+        public void ServerStats([NotNull] Packet packet)
         {
             Player.AccountId = 0;
 
@@ -231,7 +232,7 @@ namespace ZPBot.Common
             }
         }
 
-        private static void PrintPacket(string sender, Packet packet)
+        private static void PrintPacket(string sender, [NotNull] Packet packet)
         {
             var opcodeC = packet.Opcode.ToString("x").ToUpper();
             var data = packet.GetBytes();

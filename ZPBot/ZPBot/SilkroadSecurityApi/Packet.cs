@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using ZPBot.Annotations;
 
 namespace ZPBot.SilkroadSecurityApi
 {
@@ -16,7 +17,7 @@ namespace ZPBot.SilkroadSecurityApi
         public bool Encrypted { get; }
         public bool Massive { get; }
 
-        public Packet(Packet rhs)
+        public Packet([NotNull] Packet rhs)
         {
             lock (rhs._mLock)
             {
@@ -75,7 +76,7 @@ namespace ZPBot.SilkroadSecurityApi
             _mReader = null;
             _mReaderBytes = null;
         }
-        public Packet(ushort opcode, bool encrypted, bool massive, byte[] bytes)
+        public Packet(ushort opcode, bool encrypted, bool massive, [NotNull] byte[] bytes)
         {
             if (encrypted && massive)
                 throw new Exception("[Packet::Packet] Packets cannot both be massive and encrypted!");
@@ -89,7 +90,7 @@ namespace ZPBot.SilkroadSecurityApi
             _mReader = null;
             _mReaderBytes = null;
         }
-        public Packet(ushort opcode, bool encrypted, bool massive, byte[] bytes, int offset, int length)
+        public Packet(ushort opcode, bool encrypted, bool massive, [NotNull] byte[] bytes, int offset, int length)
         {
             if (encrypted && massive)
                 throw new Exception("[Packet::Packet] Packets cannot both be massive and encrypted!");
@@ -137,7 +138,7 @@ namespace ZPBot.SilkroadSecurityApi
             }
         }
 
-        public void Override(byte[] data)
+        public void Override([NotNull] byte[] data)
         {
             lock (_mLock)
             {
@@ -286,6 +287,8 @@ namespace ZPBot.SilkroadSecurityApi
         {
             return ReadAscii(1252);
         }
+
+        [NotNull]
         public string ReadAscii(int codepage)
         {
             lock (_mLock)
@@ -299,6 +302,8 @@ namespace ZPBot.SilkroadSecurityApi
                 return Encoding.GetEncoding(codepage).GetString(bytes);
             }
         }
+
+        [NotNull]
         public string ReadUnicode()
         {
             lock (_mLock)
@@ -313,6 +318,7 @@ namespace ZPBot.SilkroadSecurityApi
             }
         }
 
+        [NotNull]
         public byte[] ReadUInt8Array(int count)
         {
             lock (_mLock)
@@ -327,6 +333,8 @@ namespace ZPBot.SilkroadSecurityApi
                 return values;
             }
         }
+
+        [NotNull]
         public sbyte[] ReadInt8Array(int count)
         {
             lock (_mLock)
@@ -341,6 +349,8 @@ namespace ZPBot.SilkroadSecurityApi
                 return values;
             }
         }
+
+        [NotNull]
         public ushort[] ReadUInt16Array(int count)
         {
             lock (_mLock)
@@ -355,6 +365,8 @@ namespace ZPBot.SilkroadSecurityApi
                 return values;
             }
         }
+
+        [NotNull]
         public short[] ReadInt16Array(int count)
         {
             lock (_mLock)
@@ -369,6 +381,8 @@ namespace ZPBot.SilkroadSecurityApi
                 return values;
             }
         }
+
+        [NotNull]
         public uint[] ReadUInt32Array(int count)
         {
             lock (_mLock)
@@ -383,6 +397,8 @@ namespace ZPBot.SilkroadSecurityApi
                 return values;
             }
         }
+
+        [NotNull]
         public int[] ReadInt32Array(int count)
         {
             lock (_mLock)
@@ -397,6 +413,8 @@ namespace ZPBot.SilkroadSecurityApi
                 return values;
             }
         }
+
+        [NotNull]
         public ulong[] ReadUInt64Array(int count)
         {
             lock (_mLock)
@@ -411,6 +429,8 @@ namespace ZPBot.SilkroadSecurityApi
                 return values;
             }
         }
+
+        [NotNull]
         public long[] ReadInt64Array(int count)
         {
             lock (_mLock)
@@ -425,6 +445,8 @@ namespace ZPBot.SilkroadSecurityApi
                 return values;
             }
         }
+
+        [NotNull]
         public float[] ReadSingleArray(int count)
         {
             lock (_mLock)
@@ -439,6 +461,8 @@ namespace ZPBot.SilkroadSecurityApi
                 return values;
             }
         }
+
+        [NotNull]
         public double[] ReadDoubleArray(int count)
         {
             lock (_mLock)
@@ -454,6 +478,7 @@ namespace ZPBot.SilkroadSecurityApi
             }
         }
 
+        [NotNull]
         public string[] ReadAsciiArray(int codepage, int count)
         {
             lock (_mLock)
@@ -472,6 +497,8 @@ namespace ZPBot.SilkroadSecurityApi
                 return values;
             }
         }
+
+        [NotNull]
         public string[] ReadUnicodeArray(int count)
         {
             lock (_mLock)
@@ -606,7 +633,7 @@ namespace ZPBot.SilkroadSecurityApi
         {
             WriteAscii(value, 1252);
         }
-        public void WriteAscii(string value, int codePage)
+        public void WriteAscii([NotNull] string value, int codePage)
         {
             lock (_mLock)
             {
@@ -621,7 +648,7 @@ namespace ZPBot.SilkroadSecurityApi
                 _mWriter.Write(bytes);
             }
         }
-        public void WriteUnicode(string value)
+        public void WriteUnicode([NotNull] string value)
         {
             lock (_mLock)
             {
@@ -739,7 +766,7 @@ namespace ZPBot.SilkroadSecurityApi
         {
             WriteAscii(value, 1252);
         }
-        public void WriteAscii(object value, int codePage)
+        public void WriteAscii([NotNull] object value, int codePage)
         {
             lock (_mLock)
             {
@@ -754,7 +781,7 @@ namespace ZPBot.SilkroadSecurityApi
                 _mWriter.Write(bytes);
             }
         }
-        public void WriteUnicode(object value)
+        public void WriteUnicode([NotNull] object value)
         {
             lock (_mLock)
             {
@@ -768,7 +795,7 @@ namespace ZPBot.SilkroadSecurityApi
             }
         }
 
-        public void WriteUInt8Array(byte[] values)
+        public void WriteUInt8Array([NotNull] byte[] values)
         {
             if (_mLocked)
                 throw new Exception("Cannot Write to a locked Packet.");
@@ -786,7 +813,7 @@ namespace ZPBot.SilkroadSecurityApi
                     _mWriter.Write(values[x]);
             }
         }
-        public void WriteUInt16Array(ushort[] values)
+        public void WriteUInt16Array([NotNull] ushort[] values)
         {
             WriteUInt16Array(values, 0, values.Length);
         }
@@ -801,7 +828,7 @@ namespace ZPBot.SilkroadSecurityApi
                     _mWriter.Write(values[x]);
             }
         }
-        public void WriteInt16Array(short[] values)
+        public void WriteInt16Array([NotNull] short[] values)
         {
             WriteInt16Array(values, 0, values.Length);
         }
@@ -816,7 +843,7 @@ namespace ZPBot.SilkroadSecurityApi
                     _mWriter.Write(values[x]);
             }
         }
-        public void WriteUInt32Array(uint[] values)
+        public void WriteUInt32Array([NotNull] uint[] values)
         {
             WriteUInt32Array(values, 0, values.Length);
         }
@@ -831,7 +858,7 @@ namespace ZPBot.SilkroadSecurityApi
                     _mWriter.Write(values[x]);
             }
         }
-        public void WriteInt32Array(int[] values)
+        public void WriteInt32Array([NotNull] int[] values)
         {
             WriteInt32Array(values, 0, values.Length);
         }
@@ -846,7 +873,7 @@ namespace ZPBot.SilkroadSecurityApi
                     _mWriter.Write(values[x]);
             }
         }
-        public void WriteUInt64Array(ulong[] values)
+        public void WriteUInt64Array([NotNull] ulong[] values)
         {
             WriteUInt64Array(values, 0, values.Length);
         }
@@ -861,7 +888,7 @@ namespace ZPBot.SilkroadSecurityApi
                     _mWriter.Write(values[x]);
             }
         }
-        public void WriteInt64Array(long[] values)
+        public void WriteInt64Array([NotNull] long[] values)
         {
             WriteInt64Array(values, 0, values.Length);
         }
@@ -876,7 +903,7 @@ namespace ZPBot.SilkroadSecurityApi
                     _mWriter.Write(values[x]);
             }
         }
-        public void WriteSingleArray(float[] values)
+        public void WriteSingleArray([NotNull] float[] values)
         {
             WriteSingleArray(values, 0, values.Length);
         }
@@ -891,7 +918,7 @@ namespace ZPBot.SilkroadSecurityApi
                     _mWriter.Write(values[x]);
             }
         }
-        public void WriteDoubleArray(double[] values)
+        public void WriteDoubleArray([NotNull] double[] values)
         {
             WriteDoubleArray(values, 0, values.Length);
         }
@@ -906,7 +933,7 @@ namespace ZPBot.SilkroadSecurityApi
                     _mWriter.Write(values[x]);
             }
         }
-        public void WriteAsciiArray(string[] values, int codepage)
+        public void WriteAsciiArray([NotNull] string[] values, int codepage)
         {
             WriteAsciiArray(values, 0, values.Length, codepage);
         }
@@ -921,7 +948,7 @@ namespace ZPBot.SilkroadSecurityApi
                     WriteAscii(values[x], codepage);
             }
         }
-        public void WriteAsciiArray(string[] values)
+        public void WriteAsciiArray([NotNull] string[] values)
         {
             WriteAsciiArray(values, 0, values.Length, 1252);
         }
@@ -929,7 +956,7 @@ namespace ZPBot.SilkroadSecurityApi
         {
             WriteAsciiArray(values, index, count, 1252);
         }
-        public void WriteUnicodeArray(string[] values)
+        public void WriteUnicodeArray([NotNull] string[] values)
         {
             WriteUnicodeArray(values, 0, values.Length);
         }
@@ -945,7 +972,7 @@ namespace ZPBot.SilkroadSecurityApi
             }
         }
 
-        public void WriteUInt8Array(object[] values)
+        public void WriteUInt8Array([NotNull] object[] values)
         {
             WriteUInt8Array(values, 0, values.Length);
         }
@@ -960,7 +987,7 @@ namespace ZPBot.SilkroadSecurityApi
                     WriteUInt8(values[x]);
             }
         }
-        public void WriteInt8Array(object[] values)
+        public void WriteInt8Array([NotNull] object[] values)
         {
             WriteInt8Array(values, 0, values.Length);
         }
@@ -975,7 +1002,7 @@ namespace ZPBot.SilkroadSecurityApi
                     WriteInt8(values[x]);
             }
         }
-        public void WriteUInt16Array(object[] values)
+        public void WriteUInt16Array([NotNull] object[] values)
         {
             WriteUInt16Array(values, 0, values.Length);
         }
@@ -990,7 +1017,7 @@ namespace ZPBot.SilkroadSecurityApi
                     WriteUInt16(values[x]);
             }
         }
-        public void WriteInt16Array(object[] values)
+        public void WriteInt16Array([NotNull] object[] values)
         {
             WriteInt16Array(values, 0, values.Length);
         }
@@ -1005,7 +1032,7 @@ namespace ZPBot.SilkroadSecurityApi
                     WriteInt16(values[x]);
             }
         }
-        public void WriteUInt32Array(object[] values)
+        public void WriteUInt32Array([NotNull] object[] values)
         {
             WriteUInt32Array(values, 0, values.Length);
         }
@@ -1020,7 +1047,7 @@ namespace ZPBot.SilkroadSecurityApi
                     WriteUInt32(values[x]);
             }
         }
-        public void WriteInt32Array(object[] values)
+        public void WriteInt32Array([NotNull] object[] values)
         {
             WriteInt32Array(values, 0, values.Length);
         }
@@ -1035,7 +1062,7 @@ namespace ZPBot.SilkroadSecurityApi
                     WriteInt32(values[x]);
             }
         }
-        public void WriteUInt64Array(object[] values)
+        public void WriteUInt64Array([NotNull] object[] values)
         {
             WriteUInt64Array(values, 0, values.Length);
         }
@@ -1050,7 +1077,7 @@ namespace ZPBot.SilkroadSecurityApi
                     WriteUInt64(values[x]);
             }
         }
-        public void WriteInt64Array(object[] values)
+        public void WriteInt64Array([NotNull] object[] values)
         {
             WriteInt64Array(values, 0, values.Length);
         }
@@ -1065,7 +1092,7 @@ namespace ZPBot.SilkroadSecurityApi
                     WriteInt64(values[x]);
             }
         }
-        public void WriteSingleArray(object[] values)
+        public void WriteSingleArray([NotNull] object[] values)
         {
             WriteSingleArray(values, 0, values.Length);
         }
@@ -1080,7 +1107,7 @@ namespace ZPBot.SilkroadSecurityApi
                     WriteSingle(values[x]);
             }
         }
-        public void WriteDoubleArray(object[] values)
+        public void WriteDoubleArray([NotNull] object[] values)
         {
             WriteDoubleArray(values, 0, values.Length);
         }
@@ -1095,7 +1122,7 @@ namespace ZPBot.SilkroadSecurityApi
                     WriteDouble(values[x]);
             }
         }
-        public void WriteAsciiArray(object[] values, int codepage)
+        public void WriteAsciiArray([NotNull] object[] values, int codepage)
         {
             WriteAsciiArray(values, 0, values.Length, codepage);
         }
@@ -1110,7 +1137,7 @@ namespace ZPBot.SilkroadSecurityApi
                     WriteAscii(values[x].ToString(), codepage);
             }
         }
-        public void WriteAsciiArray(object[] values)
+        public void WriteAsciiArray([NotNull] object[] values)
         {
             WriteAsciiArray(values, 0, values.Length, 1252);
         }
@@ -1118,7 +1145,7 @@ namespace ZPBot.SilkroadSecurityApi
         {
             WriteAsciiArray(values, index, count, 1252);
         }
-        public void WriteUnicodeArray(object[] values)
+        public void WriteUnicodeArray([NotNull] object[] values)
         {
             WriteUnicodeArray(values, 0, values.Length);
         }

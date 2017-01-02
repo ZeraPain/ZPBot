@@ -252,7 +252,6 @@ namespace ZPBot.Pk2Reader
 
         //Custom functions to get Files,Images etc...
 
-        [NotNull]
         public byte[] GetFile(SFile file)
         {
             byte[] buffer;

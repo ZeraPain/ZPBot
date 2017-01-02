@@ -1,11 +1,12 @@
-﻿using ZPBot.SilkroadSecurityApi;
+﻿using ZPBot.Annotations;
+using ZPBot.SilkroadSecurityApi;
 
 // ReSharper disable once CheckNamespace
 namespace ZPBot.Common
 {
     internal partial class GlobalManager
     {
-        private static void SkillCast(Packet packet)
+        private static void SkillCast([NotNull] Packet packet)
         {
             packet.ReadUInt8(); //type 1 = Start 2 = Stop
             var queue = packet.ReadUInt8();
@@ -13,7 +14,7 @@ namespace ZPBot.Common
             Game.AllowCast = queue <= 1;
         }
 
-        private void SkillRegister(Packet packet)
+        private void SkillRegister([NotNull] Packet packet)
         {
             var worldId = packet.ReadUInt32();
 
@@ -23,12 +24,15 @@ namespace ZPBot.Common
                 var skillWorldId = packet.ReadUInt32();
 
                 var skill = Silkroad.GetSkillById(skillId);
-                skill.WorldId = skillWorldId;
-                SkillManager.RegBuff(skill);
+                if (skill != null)
+                {
+                    skill.WorldId = skillWorldId;
+                    SkillManager.RegBuff(skill);
+                }
             }
         }
 
-        private void SkillUnRegister(Packet packet)
+        private void SkillUnRegister([NotNull] Packet packet)
         {
             var amount = packet.ReadUInt8();
 
@@ -39,7 +43,7 @@ namespace ZPBot.Common
             }
         }
 
-        private void UpdateSkill(Packet packet)
+        private void UpdateSkill([NotNull] Packet packet)
         {
             var newSkill = packet.ReadUInt8();
             if (newSkill != 1) return;
