@@ -323,25 +323,33 @@ namespace ZPBot
             }
         }
 
-        public void UpdateInventory(List<InventoryItem> inventoryList) => Invoke((MethodInvoker) delegate
+        private void UpdateInventoryListView([NotNull] Dictionary<byte, InventoryItem> inventoryList)
         {
             listView_inventory.Items.Clear();
 
-            foreach (var item in inventoryList.Where(item => item.Slot > 12))
+            foreach (var kvp in inventoryList.OrderBy(k => k.Key).Where(k => k.Value.Slot > 12))
             {
+                var item = kvp.Value;
                 var listItem = new ListViewItem(item.Slot.ToString());
                 listItem.SubItems.Add(item.Name);
                 listItem.SubItems.Add(item.Plus.ToString());
+                listItem.SubItems.Add(item.Quantity.ToString());
 
-                if (item.ItemType1 != EItemType1.Equipable)
-                    listItem.ForeColor = Color.DarkGray;
-
+                listItem.ForeColor = item.ItemType1 != EItemType1.Equipable ? Color.Red : Color.Green;
                 listView_inventory.Items.Add(listItem);
 
                 if (item.Slot == Game.SlotFuseitem)
                     textBox_fuseitem.Text = item.Name + @" (+" + item.Plus + @")";
             }
-        });
+        }
+
+        public void UpdateInventory([NotNull] Dictionary<byte, InventoryItem> inventoryList)
+        {
+            if (listView_inventory.InvokeRequired)
+                Invoke((MethodInvoker) (() => UpdateInventoryListView(inventoryList)));
+            else
+                UpdateInventoryListView(inventoryList);
+        }
 
         private void listView_inventory_SelectedIndexChanged(object sender, EventArgs e)
         {

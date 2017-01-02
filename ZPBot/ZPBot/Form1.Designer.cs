@@ -206,9 +206,10 @@
             this.label20 = new System.Windows.Forms.Label();
             this.textBox_fuseitem = new System.Windows.Forms.TextBox();
             this.listView_inventory = new System.Windows.Forms.ListView();
-            this.columnHeader7 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader8 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader9 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.c_slot = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.c_itemname = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.c_plus = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.c_quantity = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.button_hide = new System.Windows.Forms.Button();
             this.label7 = new System.Windows.Forms.Label();
@@ -1975,7 +1976,7 @@
             // 
             // richTextBox_alchemy
             // 
-            this.richTextBox_alchemy.Location = new System.Drawing.Point(339, 157);
+            this.richTextBox_alchemy.Location = new System.Drawing.Point(350, 157);
             this.richTextBox_alchemy.Name = "richTextBox_alchemy";
             this.richTextBox_alchemy.Size = new System.Drawing.Size(168, 104);
             this.richTextBox_alchemy.TabIndex = 26;
@@ -1983,7 +1984,7 @@
             // 
             // button_stopfuse
             // 
-            this.button_stopfuse.Location = new System.Drawing.Point(425, 129);
+            this.button_stopfuse.Location = new System.Drawing.Point(436, 129);
             this.button_stopfuse.Name = "button_stopfuse";
             this.button_stopfuse.Size = new System.Drawing.Size(80, 23);
             this.button_stopfuse.TabIndex = 25;
@@ -1993,7 +1994,7 @@
             // button_startfuse
             // 
             this.button_startfuse.Enabled = false;
-            this.button_startfuse.Location = new System.Drawing.Point(339, 129);
+            this.button_startfuse.Location = new System.Drawing.Point(350, 129);
             this.button_startfuse.Name = "button_startfuse";
             this.button_startfuse.Size = new System.Drawing.Size(80, 23);
             this.button_startfuse.TabIndex = 24;
@@ -2004,7 +2005,7 @@
             // 
             this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(464, 102);
+            this.comboBox1.Location = new System.Drawing.Point(475, 102);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(41, 21);
             this.comboBox1.TabIndex = 23;
@@ -2012,7 +2013,7 @@
             // checkBox2
             // 
             this.checkBox2.AutoSize = true;
-            this.checkBox2.Location = new System.Drawing.Point(343, 104);
+            this.checkBox2.Location = new System.Drawing.Point(354, 104);
             this.checkBox2.Name = "checkBox2";
             this.checkBox2.Size = new System.Drawing.Size(115, 17);
             this.checkBox2.TabIndex = 22;
@@ -2031,7 +2032,7 @@
             "5",
             "6",
             "7"});
-            this.comboBox_plustoreach.Location = new System.Drawing.Point(464, 77);
+            this.comboBox_plustoreach.Location = new System.Drawing.Point(475, 77);
             this.comboBox_plustoreach.Name = "comboBox_plustoreach";
             this.comboBox_plustoreach.Size = new System.Drawing.Size(41, 21);
             this.comboBox_plustoreach.TabIndex = 21;
@@ -2039,7 +2040,7 @@
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(340, 80);
+            this.label13.Location = new System.Drawing.Point(351, 80);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(72, 13);
             this.label13.TabIndex = 20;
@@ -2048,7 +2049,7 @@
             // label_itemtype
             // 
             this.label_itemtype.AutoSize = true;
-            this.label_itemtype.Location = new System.Drawing.Point(413, 51);
+            this.label_itemtype.Location = new System.Drawing.Point(424, 51);
             this.label_itemtype.Name = "label_itemtype";
             this.label_itemtype.Size = new System.Drawing.Size(43, 13);
             this.label_itemtype.TabIndex = 19;
@@ -2057,7 +2058,7 @@
             // label20
             // 
             this.label20.AutoSize = true;
-            this.label20.Location = new System.Drawing.Point(340, 51);
+            this.label20.Location = new System.Drawing.Point(351, 51);
             this.label20.Name = "label20";
             this.label20.Size = new System.Drawing.Size(54, 13);
             this.label20.TabIndex = 18;
@@ -2065,7 +2066,7 @@
             // 
             // textBox_fuseitem
             // 
-            this.textBox_fuseitem.Location = new System.Drawing.Point(344, 25);
+            this.textBox_fuseitem.Location = new System.Drawing.Point(355, 25);
             this.textBox_fuseitem.Name = "textBox_fuseitem";
             this.textBox_fuseitem.Size = new System.Drawing.Size(161, 20);
             this.textBox_fuseitem.TabIndex = 5;
@@ -2073,32 +2074,38 @@
             // listView_inventory
             // 
             this.listView_inventory.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeader7,
-            this.columnHeader8,
-            this.columnHeader9});
+            this.c_slot,
+            this.c_itemname,
+            this.c_plus,
+            this.c_quantity});
             this.listView_inventory.FullRowSelect = true;
-            this.listView_inventory.Location = new System.Drawing.Point(29, 23);
+            this.listView_inventory.Location = new System.Drawing.Point(19, 23);
             this.listView_inventory.Name = "listView_inventory";
-            this.listView_inventory.Size = new System.Drawing.Size(279, 238);
+            this.listView_inventory.Size = new System.Drawing.Size(312, 238);
             this.listView_inventory.TabIndex = 2;
             this.listView_inventory.UseCompatibleStateImageBehavior = false;
             this.listView_inventory.View = System.Windows.Forms.View.Details;
             this.listView_inventory.SelectedIndexChanged += new System.EventHandler(this.listView_inventory_SelectedIndexChanged);
             // 
-            // columnHeader7
+            // c_slot
             // 
-            this.columnHeader7.Text = "Slot";
-            this.columnHeader7.Width = 39;
+            this.c_slot.Text = "Slot";
+            this.c_slot.Width = 30;
             // 
-            // columnHeader8
+            // c_itemname
             // 
-            this.columnHeader8.Text = "Item Name";
-            this.columnHeader8.Width = 175;
+            this.c_itemname.Text = "Item Name";
+            this.c_itemname.Width = 170;
             // 
-            // columnHeader9
+            // c_plus
             // 
-            this.columnHeader9.Text = "Plus";
-            this.columnHeader9.Width = 36;
+            this.c_plus.Text = "Plus";
+            this.c_plus.Width = 35;
+            // 
+            // c_quantity
+            // 
+            this.c_quantity.Text = "Quantity";
+            this.c_quantity.Width = 55;
             // 
             // imageList1
             // 
@@ -2412,9 +2419,9 @@
         private System.Windows.Forms.Label label20;
         private System.Windows.Forms.TextBox textBox_fuseitem;
         private System.Windows.Forms.ListView listView_inventory;
-        private System.Windows.Forms.ColumnHeader columnHeader7;
-        private System.Windows.Forms.ColumnHeader columnHeader8;
-        private System.Windows.Forms.ColumnHeader columnHeader9;
+        private System.Windows.Forms.ColumnHeader c_slot;
+        private System.Windows.Forms.ColumnHeader c_itemname;
+        private System.Windows.Forms.ColumnHeader c_plus;
         private System.Windows.Forms.Label label_clientless;
         private System.Windows.Forms.Label label16;
         private System.Windows.Forms.ListView listView_items;
@@ -2462,6 +2469,7 @@
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem_add;
         private System.Windows.Forms.GroupBox groupBox5;
         private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.ColumnHeader c_quantity;
     }
 }
 

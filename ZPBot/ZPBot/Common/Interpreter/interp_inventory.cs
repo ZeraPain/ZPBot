@@ -92,7 +92,6 @@ namespace ZPBot.Common
                                     {
                                         PacketManager.FakePickup(item.Id, slotInventory, amount);
                                         LoopManager.AllowBuy = true;
-                                        LoopManager.BlockNpcAnswer = false;
                                     }
                                     //Console.WriteLine("Item From Shop - " + item.item_code + " Tab: " + tab_index + " Slot: " + slot_index);
                                 }

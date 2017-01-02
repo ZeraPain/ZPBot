@@ -156,6 +156,21 @@ namespace ZPBot.Common.Characters
 
         public event PropertyChangedEventHandler PropertyChanged;
         [NotifyPropertyChangedInvocator]
-        protected void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        protected void OnPropertyChanged(string propertyName)
+        {
+            var handler = PropertyChanged;
+            if (handler != null)
+            {
+                var mainForm = _globalManager.FMain;
+                if (mainForm == null) return; // No main form - no calls
+
+                if (mainForm.InvokeRequired)
+                    mainForm.Invoke(handler, this, new PropertyChangedEventArgs(propertyName));
+                else
+                    handler(this, new PropertyChangedEventArgs(propertyName));
+            }
+
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
 }

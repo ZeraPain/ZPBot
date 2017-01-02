@@ -1,5 +1,6 @@
 ﻿using ZPBot.Annotations;
 using ZPBot.Common.Items;
+using ZPBot.Common.Loop;
 using ZPBot.Common.Resources;
 using ZPBot.SilkroadSecurityApi;
 
@@ -198,6 +199,8 @@ namespace ZPBot.Common
 
         public void TalkToNpc(uint npcId, byte option)
         {
+            _globalManager.LoopManager.BlockNpcAnswer = true;
+
             var packet = new Packet(0x704B, false);
             packet.WriteUInt32(npcId);
             _globalManager.Silkroadproxy.Send(packet, Proxy.EPacketdestination.AgentRemote);
@@ -210,6 +213,8 @@ namespace ZPBot.Common
 
         public void CancelNpcTalk(uint npcId)
         {
+            _globalManager.LoopManager.BlockNpcAnswer = false;
+
             var packet = new Packet(0x704B, false);
             packet.WriteUInt32(npcId);
             _globalManager.Silkroadproxy.Send(packet, Proxy.EPacketdestination.AgentRemote);

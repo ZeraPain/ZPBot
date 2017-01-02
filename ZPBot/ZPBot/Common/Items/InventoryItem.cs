@@ -8,7 +8,6 @@ namespace ZPBot.Common.Items
         public byte Slot;
         public uint RentType;
 
-
         public ushort Quantity;
         public byte Plus;
 

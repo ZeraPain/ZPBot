@@ -284,7 +284,7 @@ namespace ZPBot.Common.Loop
                     _globalManager.PacketManager.MoveToCoords(xPos, yPos);
                     realDistance = Game.Distance(_globalManager.Player.InGamePosition, new GamePosition(xPos, yPos));
                     Thread.Sleep(50);
-                } while ((realDistance > 10) && IsLooping);
+                } while ((realDistance > 5) && IsLooping);
             }
         }
 
@@ -432,7 +432,6 @@ namespace ZPBot.Common.Loop
         private void Buy(uint worldId, byte tab, byte slot, ushort quantity)
         {
             AllowBuy = false;
-            BlockNpcAnswer = true;
             _globalManager.PacketManager.BuyFromNpc(worldId, tab, slot, quantity);
 
             var timeout = new Stopwatch();
@@ -442,7 +441,6 @@ namespace ZPBot.Common.Loop
             {
                 if (timeout.ElapsedMilliseconds > Timeout)
                 {
-                    BlockNpcAnswer = true;
                     _globalManager.PacketManager.BuyFromNpc(worldId, tab, slot, quantity);
                     timeout.Restart();
                 }

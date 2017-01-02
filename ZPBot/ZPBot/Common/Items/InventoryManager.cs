@@ -9,7 +9,7 @@ namespace ZPBot.Common.Items
 {
     internal class InventoryManager : ThreadManager
     {
-        private readonly List<InventoryItem> _itemList;
+        private readonly Dictionary<byte, InventoryItem> _itemList;
         private readonly GlobalManager _globalManager;
         private readonly object _lock;
         private Thread _fuseThread;
@@ -26,15 +26,15 @@ namespace ZPBot.Common.Items
         {
             _globalManager = globalManager;
 
-            _itemList = new List<InventoryItem>();
+            _itemList = new Dictionary<byte, InventoryItem>();
             _lock = new object();
         }
 
-        public void Add(InventoryItem item)
+        public void Add([NotNull] InventoryItem item)
         {
             lock (_lock)
             {
-                _itemList.Add(item);
+                _itemList.Add(item.Slot, item);
                 _globalManager.FMain.UpdateInventory(_itemList);
             }
         }
@@ -43,12 +43,11 @@ namespace ZPBot.Common.Items
         {
             lock (_lock)
             {
-                foreach (var item in _itemList.Where(item => item.Slot == slot))
+                if (_itemList.ContainsKey(slot))
                 {
-                    _itemList.Remove(item);
-                    break;
+                    _itemList.Remove(slot);
+                    _globalManager.FMain.UpdateInventory(_itemList);
                 }
-                _globalManager.FMain.UpdateInventory(_itemList);
             }
         }
 
@@ -64,52 +63,42 @@ namespace ZPBot.Common.Items
         [CanBeNull]
         public InventoryItem GetItembySlot(byte slot)
         {
-            InventoryItem item = null;
-
             lock (_lock)
             {
-                foreach (var invItem in _itemList.Where(invItem => invItem.Slot == slot))
-                {
-                    item = invItem;
-                }
+                return _itemList.ContainsKey(slot) ? _itemList[slot] : null;
             }
-
-            return item;
         }
 
         public void Update([NotNull] InventoryItem item)
         {
-            var invItem = GetItembySlot(item.Slot);
-
             lock (_lock)
             {
-                if (invItem == null) // New Item
+                if (_itemList.ContainsKey(item.Slot))
                 {
-                    _itemList.Add(item);
+                    _itemList[item.Slot].Quantity = item.Quantity;
+                    _itemList[item.Slot].Plus = item.Plus;
                 }
-                else // Update Item
+                else
                 {
-                    _itemList[_itemList.IndexOf(invItem)].Quantity = item.Quantity;
-                    _itemList[_itemList.IndexOf(invItem)].Plus = item.Plus;
+                    _itemList.Add(item.Slot, item);
                 }
+
                 _globalManager.FMain.UpdateInventory(_itemList);
             }
         }
 
         public void UpdateQuantity(byte slot, ushort quantity)
         {
-            var invItem = GetItembySlot(slot);
-
-            if (invItem == null) // New Item
+            lock (_lock)
             {
-                Console.WriteLine(@"UpdateQuantity - Cannot find Item");
-            }
-            else // Update Item
-            {
-                lock (_lock)
+                if (_itemList.ContainsKey(slot))
                 {
-                    _itemList[_itemList.IndexOf(invItem)].Quantity = quantity;
+                    _itemList[slot].Quantity = quantity;
                     _globalManager.FMain.UpdateInventory(_itemList);
+                }
+                else
+                {
+                    Console.WriteLine(@"UpdateQuantity - Cannot find Item");
                 }
             }
         }
@@ -118,50 +107,73 @@ namespace ZPBot.Common.Items
         {
             lock (_lock)
             {
-                var invFrom = GetItembySlot(fromSlot);
-                var invTo = GetItembySlot(toSlot);
-
-                if (invTo == null)
+                var exchange = new Action(delegate
                 {
-                    if (invFrom != null && (invFrom.Quantity == quantity || toSlot < 13 || fromSlot < 13)) // Simple Move
+                    var itemFrom = new InventoryItem(_itemList[fromSlot]) { Slot = toSlot };
+                    var itemTo = new InventoryItem(_itemList[toSlot]) { Slot = fromSlot };
+
+                    _itemList.Remove(fromSlot);
+                    _itemList.Remove(toSlot);
+
+                    _itemList.Add(toSlot, itemFrom);
+                    _itemList.Add(fromSlot, itemTo);
+                });
+
+                var move = new Action<ushort> (delegate (ushort amount)
+                {
+                    var item = new InventoryItem(_itemList[fromSlot])
                     {
-                        invFrom.Slot = toSlot;
+                        Slot = toSlot,
+                        Quantity = amount
+                    };
+
+                    _itemList[fromSlot].Quantity -= amount;
+                    if (_itemList[fromSlot].Quantity == 0) _itemList.Remove(fromSlot);
+                    _itemList.Add(toSlot, item);
+                });
+
+                if (_itemList.ContainsKey(fromSlot)) // move to / from equipped
+                {
+                    if (toSlot < 13 || fromSlot < 13)
+                    {
+                        if (quantity == 0) quantity = _itemList[fromSlot].Quantity;
+
+                        if (_itemList.ContainsKey(toSlot)) // Exchange
+                            exchange();
+                        else // move
+                            move(quantity);
                     }
-                    else // Split Item
+                    else if (!_itemList.ContainsKey(toSlot)) // simple move or split
                     {
-                        if (invFrom != null)
+                        move(quantity);
+                    }
+                    else // exchange or stack
+                    {
+                        if (_itemList[fromSlot].Id == _itemList[toSlot].Id) // Stack
                         {
-                            invFrom.Quantity -= quantity;
-                            _itemList.Add(new InventoryItem(invFrom, toSlot, quantity));
+                            if (_itemList[toSlot].Quantity + quantity > _itemList[toSlot].MaxQuantity) // exchange
+                            {
+                                exchange();
+                            }
+                            else // stack all from fromSlot to toSlot
+                            {
+                                _itemList[toSlot].Quantity += quantity;
+                                _itemList[fromSlot].Quantity -= quantity;
+                                if (_itemList[fromSlot].Quantity == 0) _itemList.Remove(fromSlot);
+                            }
+                        }
+                        else // exchange
+                        {
+                            exchange();
                         }
                     }
-                }
-                else if (invFrom != null && invFrom.Id == invTo.Id) // Stack Items
-                {
-                    var item = Silkroad.GetItemById(invTo.Id);
-                    if (item != null && invTo.Quantity + quantity > item.MaxQuantity) // Fill new slot with rest
-                    {
-                        var rest = (ushort)(invTo.Quantity + quantity - item.MaxQuantity);
 
-                        invFrom.Quantity = rest;
-                        invTo.Quantity = item.MaxQuantity;
-                    }
-                    else // Fill new slot
-                    {
-                        invTo.Quantity += quantity;
-                        _itemList.Remove(invFrom);
-                    }
+                    _globalManager.FMain.UpdateInventory(_itemList);
                 }
-                else // Switch Items
+                else
                 {
-                    if (invFrom != null)
-                    {
-                        var tmpSlot = invFrom.Slot;
-                        invFrom.Slot = invTo.Slot;
-                        invTo.Slot = tmpSlot;
-                    }
+                    Console.WriteLine(@"MoveItem - Cannot find Item");
                 }
-                _globalManager.FMain.UpdateInventory(_itemList);
             }
         }
 
@@ -198,9 +210,9 @@ namespace ZPBot.Common.Items
             {
                 lock (_lock)
                 {
-                    foreach (var item in _itemList.Where(item => item.ReinforceType == elixirtype))
+                    foreach (var item in _itemList.Where(item => item.Value.ReinforceType == elixirtype))
                     {
-                        invItem = item;
+                        invItem = item.Value;
                     }
                 }
             }
@@ -215,9 +227,9 @@ namespace ZPBot.Common.Items
 
             lock (_lock)
             {
-                foreach (var item in _itemList.Where(item => item.ElixirType3 == EElixirType3.LuckyPowder && item.Degree == degree))
+                foreach (var kvp in _itemList.Where(k => k.Value.ElixirType3 == EElixirType3.LuckyPowder && k.Value.Degree == degree))
                 {
-                    invItem = item;
+                    invItem = kvp.Value;
                 }
             }
 
@@ -231,9 +243,9 @@ namespace ZPBot.Common.Items
 
             lock (_lock)
             {
-                foreach (var item in _itemList.Where(item => item.PotionType3 == potion))
+                foreach (var kvp in _itemList.Where(k => k.Value.PotionType3 == potion))
                 {
-                    invItem = item;
+                    invItem = kvp.Value;
                 }
             }
 
@@ -247,9 +259,9 @@ namespace ZPBot.Common.Items
 
             lock (_lock)
             {
-                foreach (var item in _itemList.Where(item => item.CureType3 == ECureType3.Univsersal))
+                foreach (var kvp in _itemList.Where(k => k.Value.CureType3 == ECureType3.Univsersal))
                 {
-                    invItem = item;
+                    invItem = kvp.Value;
                 }
             }
 
@@ -263,9 +275,9 @@ namespace ZPBot.Common.Items
 
             lock (_lock)
             {
-                foreach (var item in _itemList.Where(item => item.ScrollType3 == EScrollType3.Return))
+                foreach (var kvp in _itemList.Where(k => k.Value.ScrollType3 == EScrollType3.Return))
                 {
-                    invItem = item;
+                    invItem = kvp.Value;
                 }
             }
 
@@ -279,9 +291,9 @@ namespace ZPBot.Common.Items
 
             lock (_lock)
             {
-                foreach (var item in _itemList.Where(item => item.ScrollType == EScrollType.Speed))
+                foreach (var kvp in _itemList.Where(k => k.Value.ScrollType == EScrollType.Speed))
                 {
-                    invItem = item;
+                    invItem = kvp.Value;
                 }
             }
 
@@ -294,7 +306,7 @@ namespace ZPBot.Common.Items
 
             lock (_lock)
             {
-                quantity = _itemList.Where(item => item.Slot > 12 && item.Id == itemId).Aggregate(quantity, (current, item) => (ushort) (current + item.Quantity));
+                quantity = _itemList.Where(k => k.Value.Slot > 12 && k.Value.Id == itemId).Aggregate(quantity, (current, k) => (ushort) (current + k.Value.Quantity));
             }
 
             return quantity;
@@ -306,7 +318,7 @@ namespace ZPBot.Common.Items
 
             lock (_lock)
             {
-                quantity = _itemList.Where(item => item.Slot > 12 && item.ConsumableType2 == EConsumableType2.Ammo).Aggregate(quantity, (current, item) => (ushort)(current + item.Quantity));
+                quantity = _itemList.Where(item => item.Value.Slot > 12 && item.Value.ConsumableType2 == EConsumableType2.Ammo).Aggregate(quantity, (current, item) => (ushort)(current + item.Value.Quantity));
             }
 
             return quantity;
@@ -318,7 +330,7 @@ namespace ZPBot.Common.Items
 
             lock (_lock)
             {
-                quantity = _itemList.Where(item => item.Slot > 12 && item.PotionType3 == potion).Aggregate(quantity, (current, item) => (ushort)(current + item.Quantity));
+                quantity = _itemList.Where(k => k.Value.Slot > 12 && k.Value.PotionType3 == potion).Aggregate(quantity, (current, k) => (ushort)(current + k.Value.Quantity));
             }
 
             return quantity;
@@ -330,7 +342,7 @@ namespace ZPBot.Common.Items
 
             lock (_lock)
             {
-                quantity = _itemList.Where(item => item.Slot > 12 && item.CureType3 == ECureType3.Univsersal).Aggregate(quantity, (current, item) => (ushort)(current + item.Quantity));
+                quantity = _itemList.Where(k => k.Value.Slot > 12 && k.Value.CureType3 == ECureType3.Univsersal).Aggregate(quantity, (current, k) => (ushort)(current + k.Value.Quantity));
             }
 
             return quantity;
@@ -355,27 +367,42 @@ namespace ZPBot.Common.Items
             return false;
         }
 
+        private bool Stack()
+        {
+            lock (_lock)
+            {
+                foreach (var kvp in _itemList)
+                {
+                    var invItem = kvp.Value;
+                    if (invItem.Slot <= 12 || invItem.Quantity >= invItem.MaxQuantity) continue;
+
+                    var item = invItem;
+                    foreach (var kvp2 in _itemList.Where(k => k.Value.Slot > item.Slot && item.Id == k.Value.Id && k.Value.Quantity < k.Value.MaxQuantity))
+                    {
+                        var invItem2 = kvp2.Value;
+                        _globalManager.PacketManager.StackItems(invItem2.Slot, invItem.Slot, (ushort)(invItem.MaxQuantity - invItem.Quantity));
+                        Game.AllowStack = false;
+
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+        }
+
         public void StackInventoryItems()
         {
-            // ReSharper disable once InconsistentlySynchronizedField
-            foreach (var invItem in _itemList)
+            var stackable = true;
+
+            while (stackable)
             {
-                if (invItem.Slot <= 12 || invItem.Quantity >= invItem.MaxQuantity) continue;
-
-                var item = invItem;
-                foreach (var invItem2 in _itemList.Where(invItem2 => invItem2.Slot > item.Slot && item.Id == invItem2.Id && invItem2.Quantity < invItem2.MaxQuantity))
+                stackable = Stack();
+                while (stackable && !Game.AllowStack)
                 {
-                    _globalManager.PacketManager.StackItems(invItem2.Slot, invItem.Slot, (ushort) (invItem.MaxQuantity - invItem.Quantity));
-                    Game.AllowStack = false;
-
-                    while (!Game.AllowStack)
-                    {
-                        Thread.Sleep(500);
-                        if (!_globalManager.LoopManager.IsLooping)
-                            return;
-                    }
-
-                    return;
+                    Thread.Sleep(500);
+                    if (!_globalManager.LoopManager.IsLooping)
+                        return;
                 }
             }
         }
@@ -409,7 +436,7 @@ namespace ZPBot.Common.Items
                     }
                     if (_globalManager.Botstate && ReturntownNoPotion && !_globalManager.LoopManager.IsLooping && GetPotionCount(EPotionType3.Health) < 20 && ReturnTown("No Health Potion"))
                         _globalManager.StartLoop(true);
-     
+
                 }
 
                 var manaPercent = _globalManager.Player.Mana / (float)_globalManager.Player.MaxMana * 100;

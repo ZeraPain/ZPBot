@@ -1,25 +1,25 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System;
+using System.Collections.Generic;
 using ZPBot.Annotations;
 
 namespace ZPBot.Common.Items
 {
     public class StorageManager
     {
-        private readonly List<InventoryItem> _itemList;
+        private readonly Dictionary<byte, InventoryItem> _itemList;
         private readonly object _lock;
 
         public StorageManager()
         {
-            _itemList = new List<InventoryItem>();
+            _itemList = new Dictionary<byte, InventoryItem>();
             _lock = new object();
         }
 
-        public void Add(InventoryItem item)
+        public void Add([NotNull] InventoryItem item)
         {
             lock (_lock)
             {
-                _itemList.Add(item);
+                _itemList.Add(item.Slot, item);
             }
         }
 
@@ -27,10 +27,9 @@ namespace ZPBot.Common.Items
         {
             lock (_lock)
             {
-                foreach (var item in _itemList.Where(item => item.Slot == slot))
+                if (_itemList.ContainsKey(slot))
                 {
-                    _itemList.Remove(item);
-                    break;
+                    _itemList.Remove(slot);
                 }
             }
         }
@@ -46,65 +45,68 @@ namespace ZPBot.Common.Items
         [CanBeNull]
         public InventoryItem GetItembySlot(byte slot)
         {
-            InventoryItem item = null;
-
             lock (_lock)
             {
-                foreach (var invItem in _itemList.Where(invItem => invItem.Slot == slot))
-                {
-                    item = invItem;
-                }
+                return _itemList.ContainsKey(slot) ? _itemList[slot] : null;
             }
-
-            return item;
         }
 
         public void MoveItem(byte fromSlot, byte toSlot, ushort quantity)
         {
             lock (_lock)
             {
-                var invFrom = GetItembySlot(fromSlot);
-                var invTo = GetItembySlot(toSlot);
-
-                if (invTo == null)
+                if (_itemList.ContainsKey(fromSlot))
                 {
-                    if (invFrom != null && invFrom.Quantity == quantity) // Simple Move
+                    if (!_itemList.ContainsKey(toSlot) || toSlot < 13 || fromSlot < 13) // simple move
                     {
-                        invFrom.Slot = toSlot;
-                    }
-                    else // Split Item
-                    {
-                        if (invFrom != null)
+                        var item = new InventoryItem(_itemList[fromSlot])
                         {
-                            invFrom.Quantity -= quantity;
-                            _itemList.Add(new InventoryItem(invFrom, toSlot, quantity));
+                            Slot = toSlot,
+                            Quantity = quantity
+                        };
+
+                        _itemList[fromSlot].Quantity -= quantity;
+                        if (_itemList[fromSlot].Quantity == 0) _itemList.Remove(fromSlot);
+                        _itemList.Add(toSlot, item);
+                    }
+                    else // exchange or stack
+                    {
+                        if (_itemList[fromSlot].Id == _itemList[toSlot].Id) // Stack
+                        {
+                            if (_itemList[toSlot].Quantity + quantity > _itemList[toSlot].MaxQuantity) // exchange
+                            {
+                                var itemFrom = new InventoryItem(_itemList[fromSlot]) { Slot = toSlot };
+                                var itemTo = new InventoryItem(_itemList[toSlot]) { Slot = fromSlot };
+
+                                _itemList.Remove(fromSlot);
+                                _itemList.Remove(toSlot);
+
+                                _itemList.Add(toSlot, itemFrom);
+                                _itemList.Add(fromSlot, itemTo);
+                            }
+                            else // stack all from fromSlot to toSlot
+                            {
+                                _itemList[toSlot].Quantity += quantity;
+                                _itemList[fromSlot].Quantity -= quantity;
+                                if (_itemList[fromSlot].Quantity == 0) _itemList.Remove(fromSlot);
+                            }
+                        }
+                        else // exchange
+                        {
+                            var itemFrom = new InventoryItem(_itemList[fromSlot]) { Slot = toSlot };
+                            var itemTo = new InventoryItem(_itemList[toSlot]) { Slot = fromSlot };
+
+                            _itemList.Remove(fromSlot);
+                            _itemList.Remove(toSlot);
+
+                            _itemList.Add(toSlot, itemFrom);
+                            _itemList.Add(fromSlot, itemTo);
                         }
                     }
                 }
-                else if (invFrom != null && invFrom.Id == invTo.Id) // Stack Items
+                else
                 {
-                    var item = Silkroad.GetItemById(invTo.Id);
-                    if (item != null && invTo.Quantity + quantity > item.MaxQuantity) // Fill new slot with rest
-                    {
-                        var rest = (ushort)(invTo.Quantity + quantity - item.MaxQuantity);
-
-                        invFrom.Quantity = rest;
-                        invTo.Quantity = item.MaxQuantity;
-                    }
-                    else // Fill new slot
-                    {
-                        invTo.Quantity += quantity;
-                        _itemList.Remove(invFrom);
-                    }
-                }
-                else // Switch Items
-                {
-                    if (invFrom != null)
-                    {
-                        var tmpSlot = invFrom.Slot;
-                        invFrom.Slot = invTo.Slot;
-                        invTo.Slot = tmpSlot;
-                    }
+                    Console.WriteLine(@"MoveItem - Cannot find Item");
                 }
             }
         }
