@@ -44,6 +44,9 @@ namespace ZPBot
             var binding = new Binding("Text", _globalManager.Player, "InGamePosition", false, DataSourceUpdateMode.OnPropertyChanged);
             binding.Format += PositionConverter;
             label_position.DataBindings.Add(binding);
+
+            progressBar_hpdisplay.DataBindings.Add("Value", _globalManager.Player, "HealthPercent", false, DataSourceUpdateMode.OnPropertyChanged);
+            progressBar_mpdisplay.DataBindings.Add("Value", _globalManager.Player, "ManaPercent", false, DataSourceUpdateMode.OnPropertyChanged);
         }
 
         private void SetMainBindings()

@@ -102,24 +102,34 @@ namespace ZPBot
 
         public void AddAlchemyEvent(string text) => Invoke((MethodInvoker)delegate
         {
-            var dt = DateTime.Now;
-            var date = $"{dt:HH:mm:ss}";
+            if (richTextBox_alchemy.InvokeRequired)
+                Invoke((MethodInvoker) (() => AddAlchemyEvent(text)));
+            else
+            {
+                var dt = DateTime.Now;
+                var date = $"{dt:HH:mm:ss}";
 
-            richTextBox_alchemy.Text = date + @" " + text + Environment.NewLine + richTextBox_alchemy.Text;
+                richTextBox_alchemy.Text = date + @" " + text + Environment.NewLine + richTextBox_alchemy.Text;
+            }
         });
 
         public void AddEvent(string text, string type, bool error = false) => Invoke((MethodInvoker)delegate
         {
-            var dt = DateTime.Now;
-            var date = $"{dt:HH:mm:ss}";
+            if (richTextBox_events.InvokeRequired)
+                Invoke((MethodInvoker)(() => AddEvent(text, type, error)));
+            else
+            {
+                var dt = DateTime.Now;
+                var date = $"{dt:HH:mm:ss}";
 
-            richTextBox_events.SelectionColor = error ? Color.Red : Color.Black;
-            richTextBox_events.SelectedText = date + " [" + type + "] " + text + Environment.NewLine;
-            richTextBox_events.ScrollToCaret();
+                richTextBox_events.SelectionColor = error ? Color.Red : Color.Black;
+                richTextBox_events.SelectedText = date + " [" + type + "] " + text + Environment.NewLine;
+                richTextBox_events.ScrollToCaret();
 
-            var windir = Environment.GetEnvironmentVariable("SystemRoot");
-            var player = new SoundPlayer {SoundLocation = windir + "\\Media\\chimes.wav"};
-            player.Play();
+                var windir = Environment.GetEnvironmentVariable("SystemRoot");
+                var player = new SoundPlayer { SoundLocation = windir + "\\Media\\chimes.wav" };
+                player.Play();
+            }
         });
 
         public void AddMessage(string text, EMessageType type) => Invoke((MethodInvoker)delegate
@@ -171,11 +181,6 @@ namespace ZPBot
 
         public void UpdateCharacter(Player player) => Invoke((MethodInvoker)delegate
         {
-            var healthPercent = (int)(player.Health / (float)player.MaxHealth * 100);
-            var manaPercent = (int)(player.Mana / (float)player.MaxMana * 100);
-            if (healthPercent <= 100) progressBar_hpdisplay.Value = healthPercent;
-            if (manaPercent <= 100) progressBar_mpdisplay.Value = manaPercent;
-
             label_infophyatk.Text = player.MinPhydmg + @" - " + player.MaxPhydmg;
             label_infomagatk.Text = player.MinMagdmg + @" - " + player.MaxMagdmg;
             label_infophydef.Text = player.PhyDef.ToString();
@@ -184,26 +189,6 @@ namespace ZPBot
             label_infoparry.Text = player.ParryRate.ToString();
             label_infozerk.Text = player.RemainHwanCount.ToString();
             label_infospeed.Text = ((int)player.Runspeed).ToString();
-        });
-
-        public void UpdateParty(List<PartyMember> partyMembers) => Invoke((MethodInvoker)delegate
-        {
-            listView_party.Items.Clear();
-
-            if (partyMembers == null)
-                return;
-
-            foreach (var player in partyMembers)
-            {
-                var listItem = new ListViewItem(player.AccountId.ToString());
-                listItem.SubItems.Add(player.Charname);
-                listItem.SubItems.Add(player.Guildname);
-                listItem.SubItems.Add(player.Level.ToString());
-                listItem.SubItems.Add(_globalManager.PartyManager.IsValidInvite(player.Charname) ? "X" : "");
-                listView_party.Items.Add(listItem);
-            }
-
-            UpdatePartyCfg();
         });
 
         private void PartyInviteSettings()
@@ -247,6 +232,8 @@ namespace ZPBot
                 lvItem.SubItems[4].Text = _globalManager.PartyManager.ToggleInviteList(lvItem.SubItems[1].Text) ? @"X" : "";
 
             listView_party.EndUpdate();
+
+            UpdatePartyCfg();
         }
 
         public void FinishLoad(bool state) => Invoke((MethodInvoker)delegate
@@ -323,32 +310,52 @@ namespace ZPBot
             }
         }
 
-        private void UpdateInventoryListView([NotNull] Dictionary<byte, InventoryItem> inventoryList)
+        public void UpdateParty(List<PartyMember> partyMembers)
         {
-            listView_inventory.Items.Clear();
-
-            foreach (var kvp in inventoryList.OrderBy(k => k.Key).Where(k => k.Value.Slot > 12))
+            if (listView_party.InvokeRequired)
+                Invoke((MethodInvoker) (() => UpdateParty(partyMembers)));
+            else
             {
-                var item = kvp.Value;
-                var listItem = new ListViewItem(item.Slot.ToString());
-                listItem.SubItems.Add(item.Name);
-                listItem.SubItems.Add(item.Plus.ToString());
-                listItem.SubItems.Add(item.Quantity.ToString());
+                listView_party.Items.Clear();
 
-                listItem.ForeColor = item.ItemType1 != EItemType1.Equipable ? Color.Red : Color.Green;
-                listView_inventory.Items.Add(listItem);
+                if (partyMembers == null)
+                    return;
 
-                if (item.Slot == Game.SlotFuseitem)
-                    textBox_fuseitem.Text = item.Name + @" (+" + item.Plus + @")";
+                foreach (var player in partyMembers)
+                {
+                    var listItem = new ListViewItem(player.AccountId.ToString());
+                    listItem.SubItems.Add(player.Charname);
+                    listItem.SubItems.Add(player.Guildname);
+                    listItem.SubItems.Add(player.Level.ToString());
+                    listItem.SubItems.Add(_globalManager.PartyManager.IsValidInvite(player.Charname) ? "X" : "");
+                    listView_party.Items.Add(listItem);
+                }
             }
         }
 
         public void UpdateInventory([NotNull] Dictionary<byte, InventoryItem> inventoryList)
         {
             if (listView_inventory.InvokeRequired)
-                Invoke((MethodInvoker) (() => UpdateInventoryListView(inventoryList)));
+                Invoke((MethodInvoker) (() => UpdateInventory(inventoryList)));
             else
-                UpdateInventoryListView(inventoryList);
+            {
+                listView_inventory.Items.Clear();
+
+                foreach (var kvp in inventoryList.OrderBy(k => k.Key).Where(k => k.Value.Slot > 12))
+                {
+                    var item = kvp.Value;
+                    var listItem = new ListViewItem(item.Slot.ToString());
+                    listItem.SubItems.Add(item.Name);
+                    listItem.SubItems.Add(item.Plus.ToString());
+                    listItem.SubItems.Add(item.Quantity.ToString());
+
+                    listItem.ForeColor = item.ItemType1 != EItemType1.Equipable ? Color.Red : Color.Green;
+                    listView_inventory.Items.Add(listItem);
+
+                    if (item.Slot == Game.SlotFuseitem)
+                        textBox_fuseitem.Text = item.Name + @" (+" + item.Plus + @")";
+                }
+            }
         }
 
         private void listView_inventory_SelectedIndexChanged(object sender, EventArgs e)

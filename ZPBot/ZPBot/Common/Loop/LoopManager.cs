@@ -243,6 +243,7 @@ namespace ZPBot.Common.Loop
         {
             IsLooping = false;
             IsTeleporting = false;
+            BlockNpcAnswer = false;
             _tTeleport?.Abort();
             _tLoop?.Abort();
         }

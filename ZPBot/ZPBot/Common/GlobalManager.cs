@@ -182,11 +182,18 @@ namespace ZPBot.Common
                         if (Botstate) LoopManager.StartLoop(true);
                     }
                 }
+                else
+                {
+                    if (Autologin && Silkroadproxy.AllowLoginRequest)
+                    {
+                        Silkroadproxy.AllowLoginRequest = false;
+                        PacketManager.SendLoginRequest();
+                    }
+                }
 
-                if (Clientless)
-                    PacketManager.KeepAlive();
+                //if (Clientless) PacketManager.KeepAlive();
 
-                Thread.Sleep(5000);
+                Thread.Sleep(2000);
             }
         }
 

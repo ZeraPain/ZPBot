@@ -15,6 +15,16 @@ namespace ZPBot.Common
             _globalManager = globalManager;
         }
 
+        public void SendLoginRequest()
+        {
+            var packet = new Packet(0x6102, true);
+            packet.WriteUInt8(Client.ClientLocale);
+            packet.WriteAscii(_globalManager.LoginId);
+            packet.WriteAscii(_globalManager.LoginPw);
+            packet.WriteUInt16(Client.ServerId);
+            _globalManager.Silkroadproxy.Send(packet, Proxy.EPacketdestination.GatewayRemote);
+        }
+
         public void RequestStats()
         {
             var packet = new Packet(0x6101, true);
@@ -25,12 +35,6 @@ namespace ZPBot.Common
         {
             var packet = new Packet(0x6323, false);
             packet.WriteAscii(Client.ImageCode);
-            _globalManager.Silkroadproxy.Send(packet, Proxy.EPacketdestination.AgentRemote);
-        }
-
-        public void KeepAlive()
-        {
-            var packet = new Packet(0x2002, false);
             _globalManager.Silkroadproxy.Send(packet, Proxy.EPacketdestination.AgentRemote);
         }
 

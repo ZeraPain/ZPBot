@@ -69,9 +69,8 @@ namespace ZPBot.Common.Characters
                         XPosition = _globalManager.ClientManager.ReadSingle(0xEED1CC),
                         YPosition = _globalManager.ClientManager.ReadSingle(0xEED1D4)
                     };
-                    _globalManager.Player.SetPosition(Game.PositionToGamePosition(position));
 
-                    _globalManager.FMain.UpdateCharacter(_globalManager.Player);
+                    _globalManager.Player.InGamePosition = Game.PositionToGamePosition(position);
                 }
 
                 Thread.Sleep(50);

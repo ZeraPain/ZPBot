@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
@@ -56,6 +57,7 @@ namespace ZPBot.SilkroadSecurityApi
         private readonly GlobalManager _globalManager;
 
         public bool LogPackets { get; set; }
+        public bool AllowLoginRequest { get; set; }
 
         public Proxy(GlobalManager globalManager)
         {
@@ -92,7 +94,6 @@ namespace ZPBot.SilkroadSecurityApi
                         {
                             //Console.WriteLine(@"[Gateway] [S->P][{0:X4}][{1} bytes]{2}{3}{4}{5}{6}", packet.Opcode, packet.GetBytes().Length, packet.Encrypted ? "[Encrypted]" : "", packet.Massive ? "[Massive]" : "", Environment.NewLine, Utility.HexDump(packet.GetBytes()), Environment.NewLine);
 
-                            Packet newPacket;
                             switch (packet.Opcode)
                             {
                                 // Do not pass through these packets.
@@ -108,50 +109,29 @@ namespace ZPBot.SilkroadSecurityApi
                                     break;
                                 case 0xA101:
                                     _globalManager.ServerStats(packet);
-                                    if (_globalManager.Autologin)
-                                    {
-                                        newPacket = new Packet(0x6102, true);
-                                        newPacket.WriteUInt8(Client.ClientLocale);
-                                        newPacket.WriteAscii(_globalManager.LoginId);
-                                        newPacket.WriteAscii(_globalManager.LoginPw);
-                                        newPacket.WriteUInt16(Client.ServerId);
-                                        Send(newPacket, EPacketdestination.GatewayRemote);
-                                    }
+                                    AllowLoginRequest = true;
                                     break;
                                 case 0xA102:
                                     var result = packet.ReadUInt8();
-
-                                    switch (result)
+                                    if (result == 1)
                                     {
-                                        case 1:
-                                            _globalManager.ClientManager.SetLocalConnection(Client.LocalAgentPort);
-                                            Client.ServerLoginid = packet.ReadUInt32();
-                                            var ip = packet.ReadAscii();
-                                            var port = packet.ReadUInt16();
+                                        AllowLoginRequest = false;
+                                        _globalManager.ClientManager.SetLocalConnection(Client.LocalAgentPort);
+                                        Client.ServerLoginid = packet.ReadUInt32();
+                                        var ip = packet.ReadAscii();
+                                        var port = packet.ReadUInt16();
 
-                                            _xferRemoteIp = ip;
-                                            _xferRemotePort = port;
+                                        _xferRemoteIp = ip;
+                                        _xferRemotePort = port;
 
-                                            newPacket = new Packet(0xA102, true);
-                                            newPacket.WriteUInt8(result);
-                                            newPacket.WriteUInt32(Client.ServerLoginid);
-                                            newPacket.WriteAscii("127.0.0.1");
-                                            newPacket.WriteUInt16(Client.LocalAgentPort);
+                                        var newPacket = new Packet(0xA102, true);
+                                        newPacket.WriteUInt8(result);
+                                        newPacket.WriteUInt32(Client.ServerLoginid);
+                                        newPacket.WriteAscii("127.0.0.1");
+                                        newPacket.WriteUInt16(Client.LocalAgentPort);
 
-                                            _gwLocalSecurity.Send(newPacket);
-                                            continue;
-                                        case 2:
-                                            if (_globalManager.Autologin)
-                                            {
-                                                newPacket = new Packet(0x6102, true);
-                                                newPacket.WriteUInt8(Client.ClientLocale);
-                                                newPacket.WriteAscii(_globalManager.LoginId);
-                                                newPacket.WriteAscii(_globalManager.LoginPw);
-                                                newPacket.WriteUInt16(Client.ServerId);
-                                                Send(newPacket, EPacketdestination.GatewayRemote);
-                                                Thread.Sleep(1000);
-                                            }
-                                            break;
+                                        _gwLocalSecurity.Send(newPacket);
+                                        continue;
                                     }
 
                                     break;
@@ -196,6 +176,9 @@ namespace ZPBot.SilkroadSecurityApi
         {
             try
             {
+                var timeout = new Stopwatch();
+                timeout.Start();
+
                 while (true)
                 {
                     lock (_exitLock)
@@ -232,6 +215,14 @@ namespace ZPBot.SilkroadSecurityApi
 
                             _gwRemoteSecurity.Send(packet);
                         }
+
+                        timeout.Restart();
+                    }
+
+                    if (timeout.ElapsedMilliseconds > 4000)
+                    {
+                        _gwRemoteSecurity.Send(new Packet(0x2002, false));
+                        timeout.Restart();
                     }
 
                     lock (_gwRemoteBuffer)
@@ -461,6 +452,9 @@ namespace ZPBot.SilkroadSecurityApi
         {
             try
             {
+                var timeout = new Stopwatch();
+                timeout.Start();
+
                 while (true)
                 {
                     lock (_exitLock)
@@ -513,6 +507,14 @@ namespace ZPBot.SilkroadSecurityApi
 
                             _agRemoteSecurity.Send(packet);
                         }
+
+                        timeout.Restart();
+                    }
+
+                    if (timeout.ElapsedMilliseconds > 4000)
+                    {
+                        _gwRemoteSecurity.Send(new Packet(0x2002, false));
+                        timeout.Restart();
                     }
 
                     lock (_agRemoteBuffer)

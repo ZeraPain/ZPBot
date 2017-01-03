@@ -56,7 +56,7 @@ namespace ZPBot.Common
             for (var i = 0; i < Player.InventoryItemCount; i++)
             {
                 var invItem = ReadInvItem(ref packet);
-                InventoryManager.Add(invItem);
+                if (invItem != null) InventoryManager.AddOrUpdate(invItem);
             }
 
             if (Config.Debug) Console.WriteLine(@"CharUpdate - Parsed Items");
@@ -159,7 +159,7 @@ namespace ZPBot.Common
 
             //Main
             Player.WorldId = packet.ReadUInt32();
-            Player.SetPosition(Game.PositionToGamePosition(GetPosition(ref packet)));
+            Player.InGamePosition = Game.PositionToGamePosition(GetPosition(ref packet));
 
             var hasDestination = packet.ReadUInt8();
             packet.ReadUInt8(); // movementType
@@ -206,7 +206,7 @@ namespace ZPBot.Common
                     packet.SkipBytes(1); // IsCreator
             }
 
-            Player.SetCharname(packet.ReadAscii());
+            Player.Charname = packet.ReadAscii();
 
             packet.ReadAscii(); // JobName
             packet.ReadUInt8(); // JobType
@@ -292,8 +292,6 @@ namespace ZPBot.Common
                     PetManager.UpdateHealth(worldId, health);
                     break;
             }
-
-            FMain.UpdateCharacter(Player);
         }
 
         private void UpdateStats([NotNull] Packet packet)
@@ -396,8 +394,7 @@ namespace ZPBot.Common
                 {
                     if (Clientless)
                     {
-                        Player.SetPosition(Game.PositionToGamePosition(position));
-                        FMain.UpdateCharacter(Player);
+                        Player.InGamePosition = Game.PositionToGamePosition(position);
                     }
                 }
                 else

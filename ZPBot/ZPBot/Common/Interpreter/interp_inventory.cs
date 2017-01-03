@@ -58,7 +58,7 @@ namespace ZPBot.Common
                                 if (storageItem != null)
                                 {
                                     var invItem = new InventoryItem(storageItem) { Slot = packet.ReadUInt8() };
-                                    InventoryManager.Add(invItem);
+                                    InventoryManager.AddOrUpdate(invItem);
                                     StorageManager.Remove(storageSlot);
                                 }
                             }
@@ -66,7 +66,7 @@ namespace ZPBot.Common
                         case 6: //Pickup
                             {
                                 var invItem = ReadInventoryItem(ref packet);
-                                if (invItem != null) InventoryManager.Add(invItem);
+                                InventoryManager.AddOrUpdate(invItem);
                             }
                             break;
                         case 7: //Drop item
@@ -87,7 +87,7 @@ namespace ZPBot.Common
                                 var item = Silkroad.GetItemFromShop(NpcManager.GetNpcid(LoopManager.SelectedNpc), tabIndex, slotIndex);
                                 if (item != null)
                                 {
-                                    InventoryManager.Update(new InventoryItem(item, slotInventory, amount));
+                                    InventoryManager.AddOrUpdate(new InventoryItem(item, slotInventory, amount));
                                     if (LoopManager.BlockNpcAnswer)
                                     {
                                         PacketManager.FakePickup(item.Id, slotInventory, amount);
@@ -132,7 +132,7 @@ namespace ZPBot.Common
                         case 14: //Item appears
                             {
                                 var invItem = ReadInventoryItem(ref packet, 0);
-                                if (invItem != null) InventoryManager.Add(invItem);
+                                InventoryManager.AddOrUpdate(invItem);
                             }
                             break;
                         case 16: //Move Item in Pet
@@ -159,7 +159,7 @@ namespace ZPBot.Common
                                 if (petItem != null)
                                 {
                                     var invItem = new InventoryItem(petItem) { Slot = packet.ReadUInt8() };
-                                    InventoryManager.Add(invItem);
+                                    InventoryManager.AddOrUpdate(invItem);
                                     PetManager.RemoveItem(worldId, petSlot);
                                 }
                             }
@@ -237,7 +237,7 @@ namespace ZPBot.Common
                 var invItem = ReadInventoryItem(ref packet, success);
                 if (invItem != null)
                 {
-                    InventoryManager.Update(invItem);
+                    InventoryManager.AddOrUpdate(invItem);
                     if (invItem.Slot == Game.SlotFuseitem)
                     {
                         switch (success)

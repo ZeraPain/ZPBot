@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
-using System.Windows.Forms;
 using ZPBot.Annotations;
 using ZPBot.Common.Items;
 using ZPBot.Common.Resources;
@@ -20,8 +19,31 @@ namespace ZPBot.Common.Characters
         public ushort RemainStatPoint { get; set; }
         public byte RemainHwanCount { get; set; }
         public uint GatheredExpPoint { get; set; }
-        public uint Health { get; set; }
-        public uint Mana { get; set; }
+
+        private uint _health;
+        public uint Health
+        {
+            get { return _health; }
+            set
+            {
+                if (value == _health) return;
+                _health = value;
+                UpdateHealthPercent();
+            }
+        }
+
+        private uint _mana;
+        public uint Mana
+        {
+            get { return _mana; }
+            set
+            {
+                if (value == _mana) return;
+                _mana = value;
+                UpdateManaPercent();
+            }
+        }
+
         public byte AutoInverstExp { get; set; }
         public byte DailyPk { get; set; }
         public ushort TotalPk { get; set; }
@@ -31,14 +53,16 @@ namespace ZPBot.Common.Characters
         public byte InventorySize { get; set; }
         public byte InventoryItemCount { get; set; }
 
-        public string Charname { get; protected set; }
-        public void SetCharname(string charname)
+        private string _charname;
+        public string Charname
         {
-            _globalManager.FMain.BeginInvoke((MethodInvoker)delegate
+            get { return _charname; }
+            set
             {
-                Charname = charname;
+                if (value == _charname) return;
+                _charname = value;
                 OnPropertyChanged(nameof(Charname));
-            });
+            }
         }
 
         public double Walkspeed { get; set; }
@@ -52,7 +76,31 @@ namespace ZPBot.Common.Characters
         public ushort MagDef { get; set; }
         public ushort HitRate { get; set; }
         public ushort ParryRate { get; set; }
-        public uint MaxMana { get; set; }
+
+        private uint _maxHealth;
+        public new uint MaxHealth
+        {
+            get { return _maxHealth; }
+            set
+            {
+                if (value == _maxHealth) return;
+                _maxHealth = value;
+                UpdateHealthPercent();
+            }
+        }
+
+        private uint _maxMana;
+        public uint MaxMana
+        {
+            get { return _maxMana; }
+            set
+            {
+                if (value == _maxMana) return;
+                _maxMana = value;
+                UpdateManaPercent();
+            }
+        }
+
         public ushort Strength { get; set; }
         public ushort Intelligence { get; set; }
 
@@ -63,34 +111,51 @@ namespace ZPBot.Common.Characters
         public bool UsingJobFlag { get; set; }
         public bool Dead { get; set; }
 
-        public List<InventoryItem> ItemList { get; protected set; }
-
-        public GamePosition InGamePosition { get; protected set; }
-        public void SetPosition(GamePosition position)
+        public int HealthPercent { get; protected set; }
+        private void UpdateHealthPercent()
         {
-            _globalManager.FMain.BeginInvoke((MethodInvoker)delegate
+            var healthPercent = (int)(Health / (float)MaxHealth * 100);
+            if (healthPercent < 0) healthPercent = 0;
+            if (healthPercent > 100) healthPercent = 100;
+            if (healthPercent == HealthPercent) return;
+            HealthPercent = healthPercent;
+            OnPropertyChanged(nameof(HealthPercent));
+        }
+
+        public int ManaPercent { get; protected set; }
+        private void UpdateManaPercent()
+        {
+            var manaPercent = (int)(Mana / (float)MaxMana * 100);
+            if (manaPercent < 0) manaPercent = 0;
+            if (manaPercent > 100) manaPercent = 100;
+            if (manaPercent == ManaPercent) return;
+            ManaPercent = manaPercent;
+            OnPropertyChanged(nameof(ManaPercent));
+        }
+
+
+        private GamePosition _inGamePosition;
+        public GamePosition InGamePosition
+        {
+            get { return _inGamePosition; }
+            set
             {
-                InGamePosition = position;
+                if (value == null) return;
+                if (value.XPos == _inGamePosition.XPos && value.YPos == _inGamePosition.YPos) return;
+                _inGamePosition = value;
                 OnPropertyChanged(nameof(InGamePosition));
-            });
+            }
         }
 
         private readonly GlobalManager _globalManager;
+        public List<InventoryItem> ItemList { get; protected set; }
 
         public Player(GlobalManager globalManager)
         {
             _globalManager = globalManager;
             ItemList = new List<InventoryItem>();
-            InGamePosition = new GamePosition(0, 0);
+            _inGamePosition = new GamePosition(0, 0);
             Charname = "<no character>";
-            UsingJobFlag = false;
-        }
-
-        public Player(GlobalManager globalManager, [NotNull] Char chardata) : base(chardata)
-        {
-            _globalManager = globalManager;
-            ItemList = new List<InventoryItem>();
-            InGamePosition = new GamePosition(0, 0);
             UsingJobFlag = false;
         }
 

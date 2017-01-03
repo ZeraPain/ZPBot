@@ -30,11 +30,23 @@ namespace ZPBot.Common.Items
             _lock = new object();
         }
 
-        public void Add([NotNull] InventoryItem item)
+        public void AddOrUpdate([CanBeNull] InventoryItem item)
         {
             lock (_lock)
             {
-                _itemList.Add(item.Slot, item);
+                if (item == null)
+                    return;
+
+                if (_itemList.ContainsKey(item.Slot))
+                {
+                    _itemList[item.Slot].Quantity = item.Quantity;
+                    _itemList[item.Slot].Plus = item.Plus;
+                }
+                else
+                {
+                    _itemList.Add(item.Slot, item);
+                }
+
                 _globalManager.FMain.UpdateInventory(_itemList);
             }
         }
@@ -66,24 +78,6 @@ namespace ZPBot.Common.Items
             lock (_lock)
             {
                 return _itemList.ContainsKey(slot) ? _itemList[slot] : null;
-            }
-        }
-
-        public void Update([NotNull] InventoryItem item)
-        {
-            lock (_lock)
-            {
-                if (_itemList.ContainsKey(item.Slot))
-                {
-                    _itemList[item.Slot].Quantity = item.Quantity;
-                    _itemList[item.Slot].Plus = item.Plus;
-                }
-                else
-                {
-                    _itemList.Add(item.Slot, item);
-                }
-
-                _globalManager.FMain.UpdateInventory(_itemList);
             }
         }
 
@@ -425,8 +419,7 @@ namespace ZPBot.Common.Items
                         _globalManager.StartLoop(true);
                 }
 
-                var healthPercent = _globalManager.Player.Health / (float)_globalManager.Player.MaxHealth * 100;
-                if (EnableHp && healthPercent <= HpPercent) //HP Recovery
+                if (EnableHp && _globalManager.Player.HealthPercent <= HpPercent) //HP Recovery
                 {
                     var invItem = GetPotion(EPotionType3.Health);
                     if (invItem != null)
@@ -439,8 +432,7 @@ namespace ZPBot.Common.Items
 
                 }
 
-                var manaPercent = _globalManager.Player.Mana / (float)_globalManager.Player.MaxMana * 100;
-                if (EnableMp && manaPercent <= MpPercent) //MP Recovery
+                if (EnableMp && _globalManager.Player.ManaPercent <= MpPercent) //MP Recovery
                 {
                     var invItem = GetPotion(EPotionType3.Mana);
                     if (invItem != null)
