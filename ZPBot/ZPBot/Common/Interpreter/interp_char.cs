@@ -600,14 +600,32 @@ namespace ZPBot.Common
             partyMember.Model = packet.ReadUInt32(); // model
             partyMember.Level = packet.ReadUInt8(); // level
             partyMember.HpMpInfo = packet.ReadUInt8(); // hp mp info
-            partyMember.InGamePosition = Game.PositionToGamePosition(new EPosition()
+
+            var xSection = packet.ReadUInt8();
+            var ySection = packet.ReadUInt8();
+            if (ySection < 128)
             {
-                XSection = packet.ReadUInt8(),
-                YSection = packet.ReadUInt8(),
-                XPosition = packet.ReadUInt16(),
-                ZPosition = packet.ReadUInt16(),
-                YPosition = packet.ReadUInt16()
-            });
+                partyMember.InGamePosition = Game.PositionToGamePosition(new EPosition()
+                {
+                    XSection = xSection,
+                    YSection = ySection,
+                    XPosition = packet.ReadUInt16(),
+                    ZPosition = packet.ReadUInt16(),
+                    YPosition = packet.ReadUInt16()
+                });
+            }
+            else
+            {
+                partyMember.InGamePosition = Game.PositionToGamePosition(new EPosition()
+                {
+                    XSection = xSection,
+                    YSection = ySection,
+                    XPosition = packet.ReadSingle(),
+                    ZPosition = packet.ReadSingle(),
+                    YPosition = packet.ReadSingle()
+                });
+            }
+
             packet.SkipBytes(4);
             partyMember.Guildname = packet.ReadAscii(); // guildname
             packet.SkipBytes(1);

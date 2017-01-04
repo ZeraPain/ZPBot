@@ -113,25 +113,29 @@ namespace ZPBot.SilkroadSecurityApi
                                     break;
                                 case 0xA102:
                                     var result = packet.ReadUInt8();
-                                    if (result == 1)
+                                    switch (result)
                                     {
-                                        AllowLoginRequest = false;
-                                        _globalManager.ClientManager.SetLocalConnection(Client.LocalAgentPort);
-                                        Client.ServerLoginid = packet.ReadUInt32();
-                                        var ip = packet.ReadAscii();
-                                        var port = packet.ReadUInt16();
+                                        case 1:
+                                            AllowLoginRequest = false;
+                                            _globalManager.ClientManager.SetLocalConnection(Client.LocalAgentPort);
+                                            Client.ServerLoginid = packet.ReadUInt32();
+                                            var ip = packet.ReadAscii();
+                                            var port = packet.ReadUInt16();
 
-                                        _xferRemoteIp = ip;
-                                        _xferRemotePort = port;
+                                            _xferRemoteIp = ip;
+                                            _xferRemotePort = port;
 
-                                        var newPacket = new Packet(0xA102, true);
-                                        newPacket.WriteUInt8(result);
-                                        newPacket.WriteUInt32(Client.ServerLoginid);
-                                        newPacket.WriteAscii("127.0.0.1");
-                                        newPacket.WriteUInt16(Client.LocalAgentPort);
+                                            var newPacket = new Packet(0xA102, true);
+                                            newPacket.WriteUInt8(result);
+                                            newPacket.WriteUInt32(Client.ServerLoginid);
+                                            newPacket.WriteAscii("127.0.0.1");
+                                            newPacket.WriteUInt16(Client.LocalAgentPort);
 
-                                        _gwLocalSecurity.Send(newPacket);
-                                        continue;
+                                            _gwLocalSecurity.Send(newPacket);
+                                            continue;
+                                        case 2:
+                                            AllowLoginRequest = true;
+                                            break;
                                     }
 
                                     break;

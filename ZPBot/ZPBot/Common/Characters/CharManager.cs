@@ -50,6 +50,18 @@ namespace ZPBot.Common.Characters
             return null;
         }
 
+        [CanBeNull]
+        public Character GetCharIdByName(string charname)
+        {
+            lock (PlayerList)
+            {
+                foreach (var player in PlayerList.Where(player => player.Charname == charname))
+                    return player;
+            }
+
+            return null;
+        }
+
         protected override void MyThread()
         {
             while (BActive)

@@ -127,8 +127,10 @@ namespace ZPBot.Common.Party
             {
                 if (AutoInvite)
                 {
-                    foreach (var player in _globalManager.CharManager.PlayerList.Where(player => AcceptInviteList.Contains(player.Charname)).Where(player => (CurrentParty == null) || (CurrentParty?.PlayerInParty(player.Charname) == false)))
+                    foreach (var player in AcceptInviteList.Select(charname => _globalManager.CharManager.GetCharIdByName(charname)).Where(player => player != null))
+                    {
                         _globalManager.PacketManager.SendPartyInvite(player.WorldId, (byte)PartyType);
+                    }
                 }
 
                 Thread.Sleep(5000);

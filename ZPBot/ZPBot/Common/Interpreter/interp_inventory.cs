@@ -65,6 +65,7 @@ namespace ZPBot.Common
                             break;
                         case 6: //Pickup
                             {
+                                PrintPacket("UpdateInventory", packet);
                                 var invItem = ReadInventoryItem(ref packet);
                                 InventoryManager.AddOrUpdate(invItem);
                             }
