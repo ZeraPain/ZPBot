@@ -13,15 +13,14 @@ namespace ZPBot.Common.Party
         public bool AcceptInviteAll { get; set; }
         public int PartyType { get; set; }
         public List<string> AcceptInviteList { get; protected set; }
-
-        [CanBeNull]
-        public Party CurrentParty { get; protected set; }
+        public Party Party { get; protected set; }
 
         private readonly GlobalManager _globalManager;
 
         public PartyManager(GlobalManager globalManager)
         {
             _globalManager = globalManager;
+            Party = new Party(globalManager);
             AcceptInviteList = new List<string>();
         }
 
@@ -53,48 +52,34 @@ namespace ZPBot.Common.Party
             }
         }
 
-        public void JoinParty(uint partyId, uint masterId, byte partyType, List<PartyMember> partyMembers)
+        public void JoinParty(uint partyId, uint masterId, byte partyType, [NotNull] List<PartyMember> partyMembers)
         {
-            CurrentParty = new Party(partyId, masterId, partyType, partyMembers);
-            _globalManager.FMain.UpdateParty(CurrentParty.PartyMembers);
+            Party.Create(partyId, masterId, partyType, partyMembers);
+
+            foreach (var partyMember in partyMembers.Where(partyMember => IsValidInvite(partyMember.Charname)))
+                Party.SetAdditional(partyMember.Charname, "Acpt/Inv");
         }
 
-        public void Dismiss()
-        {
-            CurrentParty = null;
-            _globalManager.FMain.UpdateParty(null);
-        }
+        public void Dismiss() => Party.Clear();
 
         public void Join(PartyMember partyMember)
         {
-            if (CurrentParty == null)
+            if (Party.Id == 0)
                 return;
 
-            CurrentParty.Add(partyMember);
-            _globalManager.FMain.UpdateParty(CurrentParty.PartyMembers);
+            Party.Add(partyMember);
+            if (IsValidInvite(partyMember.Charname)) Party.SetAdditional(partyMember.Charname, "Acpt/Inv");
         }
 
         public void Leave(uint accountId)
         {
             if (accountId == _globalManager.Player.AccountId)
-                Dismiss();
+                Party.Clear();
             else
-            {
-                if (CurrentParty != null)
-                {
-                    CurrentParty.Remove(accountId);
-                    _globalManager.FMain.UpdateParty(CurrentParty.PartyMembers);
-                }
-            }
+                Party.Remove(accountId);
         }
 
-        public void SetPartyMaster(uint worldId)
-        {
-            if (CurrentParty == null)
-                return;
-
-            CurrentParty.MasterId = worldId;
-        }
+        public void SetPartyMaster(uint worldId) => Party.MasterId = worldId;
 
         public bool ToggleInviteList(string charname)
         {
@@ -104,22 +89,18 @@ namespace ZPBot.Common.Party
             foreach (var player in AcceptInviteList.Where(player => player == charname))
             {
                 AcceptInviteList.Remove(player);
+                Party.SetAdditional(charname, "");
                 return false;
             }
 
             AcceptInviteList.Add(charname);
+            Party.SetAdditional(charname, "Acpt/Inv");
             return true;
         }
 
         public bool IsValidInvite(string charname) => AcceptInviteList.Any(player => player == charname);
 
-        public bool IsPickableItem(uint owner)
-        {
-            if (CurrentParty == null)
-                return false;
-
-            return CurrentParty.PlayerInParty(owner) && CurrentParty.IsAutoShare();
-        }
+        public bool IsPickableItem(uint owner) => Party.PlayerInParty(owner) && Party.IsAutoShare();
 
         protected override void MyThread()
         {

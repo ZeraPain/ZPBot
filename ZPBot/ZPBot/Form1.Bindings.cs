@@ -28,6 +28,10 @@ namespace ZPBot
             //Loop
             SetLoopBindings();
 
+            //Party
+            dataGridView_party.AutoGenerateColumns = false;
+            dataGridView_party.DataSource = _globalManager.PartyManager.Party.PartyMembers;
+
             //Spy
             listBox_players.DataSource = _globalManager.CharManager.PlayerList;
 

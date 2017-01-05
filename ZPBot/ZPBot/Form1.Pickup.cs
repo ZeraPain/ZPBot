@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Windows.Forms;
 using ZPBot.Annotations;
 using ZPBot.Common;
@@ -107,19 +107,6 @@ namespace ZPBot
             return true;
         }
 
-        [NotNull]
-        private ListViewItem GenerateItem([NotNull] Item item)
-        {
-            var listViewItem = new ListViewItem(item.Id.ToString());
-
-            listViewItem.SubItems.Add(item.Name);
-            listViewItem.SubItems.Add(item.Level.ToString());
-            listViewItem.SubItems.Add(item.Degree.ToString());
-            listViewItem.SubItems.Add(_globalManager.ItemDropManager.ExistsPickup(item) ? "X" : "");
-
-            return listViewItem;
-        }
-
         private void button_resetitemfilter_Click(object sender, EventArgs e)
         {
             textBox_searchitem.Clear();
@@ -133,15 +120,26 @@ namespace ZPBot
 
         private void button_searchitem_Click(object sender, EventArgs e)
         {
+            if (!_finishLoad)
+                return;
+
             var sw = new Stopwatch();
             sw.Start();
 
-            listView_items.Items.Clear();
-
             var itemPattern = textBox_searchitem.Text;
-            var items = (from item in Silkroad.RItemdata where FilterCheck(item.Value, itemPattern) select GenerateItem(item.Value)).ToList();
 
-            listView_items.Items.AddRange(items.ToArray());
+            var items = new List<Item>();
+            foreach (var item in Silkroad.RItemdata)
+            {
+                if (!FilterCheck(item.Value, itemPattern))
+                    continue;
+
+                var addItem = new Item(item.Value) {Additional = _globalManager.ItemDropManager.ExistsPickup(item.Value) ? "Pick" : ""};
+                items.Add(addItem);
+            }
+
+            dataGridView_items.AutoGenerateColumns = false;
+            dataGridView_items.DataSource = items;
 
             sw.Stop();
             Console.WriteLine(@"We found " + items.Count + @" Items in " + sw.Elapsed);
@@ -149,23 +147,29 @@ namespace ZPBot
 
         private void toolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            listView_items.BeginUpdate();
+            foreach (DataGridViewRow dgvRow in dataGridView_items.SelectedRows)
+            {
+                var item = (Item) dgvRow.DataBoundItem;
+                if (item == null)
+                    continue;
 
-            foreach (var lvItem in from ListViewItem lvItem in listView_items.SelectedItems let item = Silkroad.GetItemById(uint.Parse(lvItem.SubItems[0].Text)) where _globalManager.ItemDropManager.AddPickup(item) select lvItem)
-                lvItem.SubItems[4].Text = @"X";
+                if (_globalManager.ItemDropManager.AddPickup(item.Id)) item.Additional = "Pick";
+            }
 
-            listView_items.EndUpdate();
             UpdateItemCfg();
         }
 
         private void toolStripMenuItem2_Click(object sender, EventArgs e)
         {
-            listView_items.BeginUpdate();
+            foreach (DataGridViewRow dgvRow in dataGridView_items.SelectedRows)
+            {
+                var item = (Item)dgvRow.DataBoundItem;
+                if (item == null)
+                    continue;
 
-            foreach (var lvItem in from ListViewItem lvItem in listView_items.SelectedItems let item = Silkroad.GetItemById(uint.Parse(lvItem.SubItems[0].Text)) where _globalManager.ItemDropManager.RemovePickup(item) select lvItem)
-                lvItem.SubItems[4].Text = @"";
+                if (_globalManager.ItemDropManager.RemovePickup(item.Id)) item.Additional = "";
+            }
 
-            listView_items.EndUpdate();
             UpdateItemCfg();
         }
 
@@ -178,7 +182,7 @@ namespace ZPBot
                 try
                 {
                     var itemId = _iniSet.Read<uint>("Items", i.ToString());
-                    _globalManager.ItemDropManager.AddPickup(Silkroad.GetItemById(itemId));
+                    _globalManager.ItemDropManager.AddPickup(itemId);
                 }
                 catch (Exception ex)
                 {
@@ -197,9 +201,8 @@ namespace ZPBot
 
             _iniSet.Write("Items", "Count", itemList.Count.ToString());
 
-            var index = 0;
-            foreach (var item in itemList)
-                _iniSet.Write("Items", index++.ToString(), item.Value.Id.ToString());
+            for (var i = 0; i < itemList.Count; i++)
+                _iniSet.Write("Items", i.ToString(), itemList[i].ToString());
         }
     }
 }

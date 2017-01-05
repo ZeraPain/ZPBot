@@ -675,7 +675,7 @@ namespace ZPBot.Common
                     {
                         case 0x4: // HP MP
                             var hpMpInfo = packet.ReadUInt8();
-                            PartyManager.CurrentParty?.UpdateHpMp(accountId, hpMpInfo);
+                            PartyManager.Party?.UpdateHpMp(accountId, hpMpInfo);
                             break;
                         case 0x20: // Position
                             var inGamePosition = Game.PositionToGamePosition(new EPosition()
@@ -686,7 +686,7 @@ namespace ZPBot.Common
                                 ZPosition = packet.ReadUInt16(),
                                 YPosition = packet.ReadUInt16()
                             });
-                            PartyManager.CurrentParty?.UpdatePosition(accountId, inGamePosition);
+                            PartyManager.Party?.UpdatePosition(accountId, inGamePosition);
                             break;
                     }
                     break;

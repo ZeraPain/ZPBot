@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
@@ -12,11 +11,11 @@ namespace ZPBot.Common.Skills
     {
         private readonly GlobalManager _globalManager;
 
-        public BindingList<Skill> SkillList { get; protected set; }
-        public BindingList<Skill> AttackList { get; protected set; }
-        public BindingList<Skill> BuffList { get; protected set; }
+        public List<Skill> SkillList { get; protected set; }
+        public List<Skill> AttackList { get; protected set; }
+        public List<Skill> BuffList { get; protected set; }
+        public List<Skill> ImbueList { get; protected set; }
 
-        public BindingList<Skill> ImbueList { get; protected set; }
         private Skill _speedDrug;
         private readonly object _lock;
         public bool AllowCast { get; set; }
@@ -25,10 +24,10 @@ namespace ZPBot.Common.Skills
         {
             _globalManager = globalManager;
 
-            SkillList = new BindingList<Skill>();
-            AttackList = new BindingList<Skill>();
-            BuffList = new BindingList<Skill>();
-            ImbueList = new BindingList<Skill>();
+            SkillList = new List<Skill>();
+            AttackList = new List<Skill>();
+            BuffList = new List<Skill>();
+            ImbueList = new List<Skill>();
             _speedDrug = null;
 
             _lock = new object();

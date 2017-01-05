@@ -1,18 +1,32 @@
-﻿
+﻿using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using ZPBot.Annotations;
 using ZPBot.Common.Resources;
 
 namespace ZPBot.Common.Items
 {
-    public class Item
+    public class Item : INotifyPropertyChanged
     {
-        public uint Id;
-        public string Code;
-        public string Name;
-        public byte Level;
-        public byte Degree;
-        public bool IsRare;
-        public ushort MaxQuantity;
+        public uint Id { get; set; }
+        public string Code { get; set; }
+        public string Name { get; set; }
+        public byte Level { get; set; }
+        public byte Degree { get; set; }
+        public bool IsRare { get; set; }
+        public ushort MaxQuantity { get; set; }
+
+        private string _additional;
+        public string Additional
+        {
+            get { return _additional; }
+            set
+            {
+                if (_additional == value) return;
+                _additional = value;
+                OnPropertyChanged(nameof(Additional));
+
+            }
+        }
 
         public ERace Race;
         public EGender Gender;
@@ -41,7 +55,7 @@ namespace ZPBot.Common.Items
 
         public Item()
         {
-            
+
         }
 
         public Item([NotNull] Item item)
@@ -81,6 +95,10 @@ namespace ZPBot.Common.Items
         }
 
         public override string ToString() => Name ?? "Error";
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        [NotifyPropertyChangedInvocator]
+        protected void OnPropertyChanged([CanBeNull] [CallerMemberName] string propertyName = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
     public enum EItemType1

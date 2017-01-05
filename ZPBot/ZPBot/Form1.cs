@@ -219,19 +219,20 @@ namespace ZPBot
 
             _iniSet.Write("PartyInvite", "Count", acceptInviteList.Count.ToString());
 
-            var index = 0;
-            foreach (var player in acceptInviteList)
-                _iniSet.Write("PartyInvite", index++.ToString(), player);
+            for (var i = 0; i < acceptInviteList.Count; i++)
+                _iniSet.Write("PartyInvite", i.ToString(), acceptInviteList[i]);
         }
 
         private void toolStripMenuItem_add_Click(object sender, EventArgs e)
         {
-            listView_party.BeginUpdate();
+            foreach (DataGridViewRow dgvRow in dataGridView_party.SelectedRows)
+            {
+                var partyMember = (PartyMember)dgvRow.DataBoundItem;
+                if (partyMember == null)
+                    continue;
 
-            foreach (ListViewItem lvItem in listView_party.SelectedItems)
-                lvItem.SubItems[4].Text = _globalManager.PartyManager.ToggleInviteList(lvItem.SubItems[1].Text) ? @"X" : "";
-
-            listView_party.EndUpdate();
+                _globalManager.PartyManager.ToggleInviteList(partyMember.Charname);
+            }
 
             UpdatePartyCfg();
         }
@@ -307,29 +308,6 @@ namespace ZPBot
                     textBox_chat.ForeColor = Color.FromArgb(0xFF, 0xFF, 0xB5, 0x41);
                 else
                     textBox_chat.ForeColor = Color.White;
-            }
-        }
-
-        public void UpdateParty(List<PartyMember> partyMembers)
-        {
-            if (listView_party.InvokeRequired)
-                Invoke((MethodInvoker) (() => UpdateParty(partyMembers)));
-            else
-            {
-                listView_party.Items.Clear();
-
-                if (partyMembers == null)
-                    return;
-
-                foreach (var player in partyMembers)
-                {
-                    var listItem = new ListViewItem(player.AccountId.ToString());
-                    listItem.SubItems.Add(player.Charname);
-                    listItem.SubItems.Add(player.Guildname);
-                    listItem.SubItems.Add(player.Level.ToString());
-                    listItem.SubItems.Add(_globalManager.PartyManager.IsValidInvite(player.Charname) ? "X" : "");
-                    listView_party.Items.Add(listItem);
-                }
             }
         }
 

@@ -33,6 +33,7 @@
             this.richTextBox_events = new System.Windows.Forms.RichTextBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tab_main = new System.Windows.Forms.TabPage();
+            this.checkBox_userdata = new System.Windows.Forms.CheckBox();
             this.checkBox_logpackets = new System.Windows.Forms.CheckBox();
             this.comboBox_profile = new System.Windows.Forms.ComboBox();
             this.button_searchclient = new System.Windows.Forms.Button();
@@ -77,6 +78,15 @@
             this.tab_pickup = new System.Windows.Forms.TabPage();
             this.button_resetitemfilter = new System.Windows.Forms.Button();
             this.label30 = new System.Windows.Forms.Label();
+            this.dataGridView_items = new System.Windows.Forms.DataGridView();
+            this.dgv_id = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dgv_itemname = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dgv_level = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dgv_degree = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dgv_pick = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.contextMenuStrip_items = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.toolStripMenuItem_addpick = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem_removepick = new System.Windows.Forms.ToolStripMenuItem();
             this.comboBox_itemrace = new System.Windows.Forms.ComboBox();
             this.label28 = new System.Windows.Forms.Label();
             this.label26 = new System.Windows.Forms.Label();
@@ -89,15 +99,6 @@
             this.label15 = new System.Windows.Forms.Label();
             this.comboBox_itemdegree = new System.Windows.Forms.ComboBox();
             this.label14 = new System.Windows.Forms.Label();
-            this.listView_items = new System.Windows.Forms.ListView();
-            this.ID = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.ItemName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.Level = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.Deg = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.Pick = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.contextMenuStrip_items = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.toolStripMenuItem_addpick = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem_removepick = new System.Windows.Forms.ToolStripMenuItem();
             this.checkBox_pickfilter_myitems = new System.Windows.Forms.CheckBox();
             this.textBox_searchitem = new System.Windows.Forms.TextBox();
             this.button_searchitem = new System.Windows.Forms.Button();
@@ -176,15 +177,15 @@
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.checkBox_partyautoall = new System.Windows.Forms.CheckBox();
-            this.listView_party = new System.Windows.Forms.ListView();
-            this.c_id = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.c_charname = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.c_guild = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.c_level = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.c_autoacceptinvite = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.dataGridView_party = new System.Windows.Forms.DataGridView();
+            this.dgv2_id = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dgv2_charname = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dgv2_guild = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dgv2_level = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dgv2_accept = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.contextMenuStrip_party = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.toolStripMenuItem_add = new System.Windows.Forms.ToolStripMenuItem();
+            this.checkBox_partyautoall = new System.Windows.Forms.CheckBox();
             this.label32 = new System.Windows.Forms.Label();
             this.comboBox_partytype = new System.Windows.Forms.ComboBox();
             this.checkBox_partyautoinvite = new System.Windows.Forms.CheckBox();
@@ -220,10 +221,18 @@
             this.button_stopbot = new System.Windows.Forms.Button();
             this.label_pm = new System.Windows.Forms.Label();
             this.button_save = new System.Windows.Forms.Button();
-            this.checkBox_userdata = new System.Windows.Forms.CheckBox();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.textBox3 = new System.Windows.Forms.TextBox();
+            this.textBox4 = new System.Windows.Forms.TextBox();
+            this.label34 = new System.Windows.Forms.Label();
+            this.label35 = new System.Windows.Forms.Label();
+            this.comboBox2 = new System.Windows.Forms.ComboBox();
+            this.checkBox3 = new System.Windows.Forms.CheckBox();
+            this.button1 = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tab_main.SuspendLayout();
             this.tab_pickup.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView_items)).BeginInit();
             this.contextMenuStrip_items.SuspendLayout();
             this.tab_training.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -244,6 +253,7 @@
             this.tab_players.SuspendLayout();
             this.groupBox5.SuspendLayout();
             this.groupBox4.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView_party)).BeginInit();
             this.contextMenuStrip_party.SuspendLayout();
             this.tab_spy.SuspendLayout();
             this.tab_alchemy.SuspendLayout();
@@ -332,6 +342,16 @@
             this.tab_main.TabIndex = 4;
             this.tab_main.Text = "Main";
             this.tab_main.UseVisualStyleBackColor = true;
+            // 
+            // checkBox_userdata
+            // 
+            this.checkBox_userdata.AutoSize = true;
+            this.checkBox_userdata.Location = new System.Drawing.Point(386, 194);
+            this.checkBox_userdata.Name = "checkBox_userdata";
+            this.checkBox_userdata.Size = new System.Drawing.Size(113, 17);
+            this.checkBox_userdata.TabIndex = 62;
+            this.checkBox_userdata.Text = "Use following data";
+            this.checkBox_userdata.UseVisualStyleBackColor = true;
             // 
             // checkBox_logpackets
             // 
@@ -709,6 +729,7 @@
             // 
             this.tab_pickup.Controls.Add(this.button_resetitemfilter);
             this.tab_pickup.Controls.Add(this.label30);
+            this.tab_pickup.Controls.Add(this.dataGridView_items);
             this.tab_pickup.Controls.Add(this.comboBox_itemrace);
             this.tab_pickup.Controls.Add(this.label28);
             this.tab_pickup.Controls.Add(this.label26);
@@ -721,7 +742,6 @@
             this.tab_pickup.Controls.Add(this.label15);
             this.tab_pickup.Controls.Add(this.comboBox_itemdegree);
             this.tab_pickup.Controls.Add(this.label14);
-            this.tab_pickup.Controls.Add(this.listView_items);
             this.tab_pickup.Controls.Add(this.checkBox_pickfilter_myitems);
             this.tab_pickup.Controls.Add(this.textBox_searchitem);
             this.tab_pickup.Controls.Add(this.button_searchitem);
@@ -751,6 +771,92 @@
             this.label30.Size = new System.Drawing.Size(60, 13);
             this.label30.TabIndex = 74;
             this.label30.Text = "Name Filter";
+            // 
+            // dataGridView_items
+            // 
+            this.dataGridView_items.AllowUserToAddRows = false;
+            this.dataGridView_items.AllowUserToDeleteRows = false;
+            this.dataGridView_items.AllowUserToResizeColumns = false;
+            this.dataGridView_items.AllowUserToResizeRows = false;
+            this.dataGridView_items.BackgroundColor = System.Drawing.SystemColors.Window;
+            this.dataGridView_items.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView_items.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.dgv_id,
+            this.dgv_itemname,
+            this.dgv_level,
+            this.dgv_degree,
+            this.dgv_pick});
+            this.dataGridView_items.ContextMenuStrip = this.contextMenuStrip_items;
+            this.dataGridView_items.Location = new System.Drawing.Point(16, 96);
+            this.dataGridView_items.Name = "dataGridView_items";
+            this.dataGridView_items.ReadOnly = true;
+            this.dataGridView_items.RowTemplate.Height = 18;
+            this.dataGridView_items.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dataGridView_items.Size = new System.Drawing.Size(496, 179);
+            this.dataGridView_items.TabIndex = 76;
+            // 
+            // dgv_id
+            // 
+            this.dgv_id.DataPropertyName = "Id";
+            this.dgv_id.HeaderText = "ID";
+            this.dgv_id.Name = "dgv_id";
+            this.dgv_id.ReadOnly = true;
+            this.dgv_id.Width = 45;
+            // 
+            // dgv_itemname
+            // 
+            this.dgv_itemname.DataPropertyName = "Name";
+            this.dgv_itemname.HeaderText = "ItemName";
+            this.dgv_itemname.Name = "dgv_itemname";
+            this.dgv_itemname.ReadOnly = true;
+            this.dgv_itemname.Width = 250;
+            // 
+            // dgv_level
+            // 
+            this.dgv_level.DataPropertyName = "Level";
+            this.dgv_level.HeaderText = "Level";
+            this.dgv_level.Name = "dgv_level";
+            this.dgv_level.ReadOnly = true;
+            this.dgv_level.Width = 38;
+            // 
+            // dgv_degree
+            // 
+            this.dgv_degree.DataPropertyName = "Degree";
+            this.dgv_degree.HeaderText = "Deg";
+            this.dgv_degree.Name = "dgv_degree";
+            this.dgv_degree.ReadOnly = true;
+            this.dgv_degree.Width = 32;
+            // 
+            // dgv_pick
+            // 
+            this.dgv_pick.DataPropertyName = "Additional";
+            this.dgv_pick.HeaderText = "Pick";
+            this.dgv_pick.Name = "dgv_pick";
+            this.dgv_pick.ReadOnly = true;
+            this.dgv_pick.Width = 40;
+            // 
+            // contextMenuStrip_items
+            // 
+            this.contextMenuStrip_items.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripMenuItem_addpick,
+            this.toolStripMenuItem_removepick});
+            this.contextMenuStrip_items.Name = "contextMenuStrip1";
+            this.contextMenuStrip_items.Size = new System.Drawing.Size(129, 48);
+            this.contextMenuStrip_items.Tag = "";
+            // 
+            // toolStripMenuItem_addpick
+            // 
+            this.toolStripMenuItem_addpick.Name = "toolStripMenuItem_addpick";
+            this.toolStripMenuItem_addpick.Size = new System.Drawing.Size(128, 22);
+            this.toolStripMenuItem_addpick.Text = "Pick";
+            this.toolStripMenuItem_addpick.Click += new System.EventHandler(this.toolStripMenuItem1_Click);
+            // 
+            // toolStripMenuItem_removepick
+            // 
+            this.toolStripMenuItem_removepick.Name = "toolStripMenuItem_removepick";
+            this.toolStripMenuItem_removepick.Size = new System.Drawing.Size(128, 22);
+            this.toolStripMenuItem_removepick.Text = "Don\'t Pick";
+            this.toolStripMenuItem_removepick.Click += new System.EventHandler(this.toolStripMenuItem2_Click);
             // 
             // comboBox_itemrace
             // 
@@ -907,72 +1013,6 @@
             this.label14.Size = new System.Drawing.Size(42, 13);
             this.label14.TabIndex = 62;
             this.label14.Text = "Degree";
-            // 
-            // listView_items
-            // 
-            this.listView_items.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.ID,
-            this.ItemName,
-            this.Level,
-            this.Deg,
-            this.Pick});
-            this.listView_items.ContextMenuStrip = this.contextMenuStrip_items;
-            this.listView_items.FullRowSelect = true;
-            this.listView_items.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
-            this.listView_items.Location = new System.Drawing.Point(19, 90);
-            this.listView_items.Name = "listView_items";
-            this.listView_items.Size = new System.Drawing.Size(488, 190);
-            this.listView_items.TabIndex = 60;
-            this.listView_items.UseCompatibleStateImageBehavior = false;
-            this.listView_items.View = System.Windows.Forms.View.Details;
-            // 
-            // ID
-            // 
-            this.ID.Text = "ID";
-            this.ID.Width = 45;
-            // 
-            // ItemName
-            // 
-            this.ItemName.Text = "ItemName";
-            this.ItemName.Width = 250;
-            // 
-            // Level
-            // 
-            this.Level.Text = "Level";
-            this.Level.Width = 38;
-            // 
-            // Deg
-            // 
-            this.Deg.Text = "Deg";
-            this.Deg.Width = 32;
-            // 
-            // Pick
-            // 
-            this.Pick.Text = "Pick";
-            this.Pick.Width = 40;
-            // 
-            // contextMenuStrip_items
-            // 
-            this.contextMenuStrip_items.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripMenuItem_addpick,
-            this.toolStripMenuItem_removepick});
-            this.contextMenuStrip_items.Name = "contextMenuStrip1";
-            this.contextMenuStrip_items.Size = new System.Drawing.Size(129, 48);
-            this.contextMenuStrip_items.Tag = "";
-            // 
-            // toolStripMenuItem_addpick
-            // 
-            this.toolStripMenuItem_addpick.Name = "toolStripMenuItem_addpick";
-            this.toolStripMenuItem_addpick.Size = new System.Drawing.Size(128, 22);
-            this.toolStripMenuItem_addpick.Text = "Pick";
-            this.toolStripMenuItem_addpick.Click += new System.EventHandler(this.toolStripMenuItem1_Click);
-            // 
-            // toolStripMenuItem_removepick
-            // 
-            this.toolStripMenuItem_removepick.Name = "toolStripMenuItem_removepick";
-            this.toolStripMenuItem_removepick.Size = new System.Drawing.Size(128, 22);
-            this.toolStripMenuItem_removepick.Text = "Don\'t Pick";
-            this.toolStripMenuItem_removepick.Click += new System.EventHandler(this.toolStripMenuItem2_Click);
             // 
             // checkBox_pickfilter_myitems
             // 
@@ -1767,10 +1807,18 @@
             // 
             // groupBox5
             // 
+            this.groupBox5.Controls.Add(this.button1);
+            this.groupBox5.Controls.Add(this.checkBox3);
+            this.groupBox5.Controls.Add(this.comboBox2);
+            this.groupBox5.Controls.Add(this.label35);
+            this.groupBox5.Controls.Add(this.label34);
+            this.groupBox5.Controls.Add(this.textBox4);
+            this.groupBox5.Controls.Add(this.textBox3);
+            this.groupBox5.Controls.Add(this.textBox1);
             this.groupBox5.Controls.Add(this.checkBox1);
-            this.groupBox5.Location = new System.Drawing.Point(18, 159);
+            this.groupBox5.Location = new System.Drawing.Point(18, 177);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(499, 105);
+            this.groupBox5.Size = new System.Drawing.Size(499, 92);
             this.groupBox5.TabIndex = 6;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Party Matching";
@@ -1778,7 +1826,7 @@
             // checkBox1
             // 
             this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(14, 22);
+            this.checkBox1.Location = new System.Drawing.Point(13, 23);
             this.checkBox1.Name = "checkBox1";
             this.checkBox1.Size = new System.Drawing.Size(122, 17);
             this.checkBox1.TabIndex = 0;
@@ -1787,71 +1835,83 @@
             // 
             // groupBox4
             // 
+            this.groupBox4.Controls.Add(this.dataGridView_party);
             this.groupBox4.Controls.Add(this.checkBox_partyautoall);
-            this.groupBox4.Controls.Add(this.listView_party);
             this.groupBox4.Controls.Add(this.label32);
             this.groupBox4.Controls.Add(this.comboBox_partytype);
             this.groupBox4.Controls.Add(this.checkBox_partyautoinvite);
             this.groupBox4.Controls.Add(this.checkBox_partyautoaccept);
             this.groupBox4.Location = new System.Drawing.Point(18, 15);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(499, 138);
+            this.groupBox4.Size = new System.Drawing.Size(499, 145);
             this.groupBox4.TabIndex = 5;
             this.groupBox4.TabStop = false;
-            this.groupBox4.Text = "Party Invite";
+            this.groupBox4.Text = "Party Settings";
             // 
-            // checkBox_partyautoall
+            // dataGridView_party
             // 
-            this.checkBox_partyautoall.AutoSize = true;
-            this.checkBox_partyautoall.Location = new System.Drawing.Point(14, 63);
-            this.checkBox_partyautoall.Name = "checkBox_partyautoall";
-            this.checkBox_partyautoall.Size = new System.Drawing.Size(135, 17);
-            this.checkBox_partyautoall.TabIndex = 10;
-            this.checkBox_partyautoall.Text = "Auto Invite / Accept all";
-            this.checkBox_partyautoall.UseVisualStyleBackColor = true;
+            this.dataGridView_party.AllowUserToAddRows = false;
+            this.dataGridView_party.AllowUserToDeleteRows = false;
+            this.dataGridView_party.AllowUserToResizeColumns = false;
+            this.dataGridView_party.AllowUserToResizeRows = false;
+            this.dataGridView_party.BackgroundColor = System.Drawing.SystemColors.Window;
+            this.dataGridView_party.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView_party.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.dgv2_id,
+            this.dgv2_charname,
+            this.dgv2_guild,
+            this.dgv2_level,
+            this.dgv2_accept});
+            this.dataGridView_party.ContextMenuStrip = this.contextMenuStrip_party;
+            this.dataGridView_party.Location = new System.Drawing.Point(174, 19);
+            this.dataGridView_party.Name = "dataGridView_party";
+            this.dataGridView_party.ReadOnly = true;
+            this.dataGridView_party.RowHeadersVisible = false;
+            this.dataGridView_party.RowTemplate.Height = 15;
+            this.dataGridView_party.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.dataGridView_party.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dataGridView_party.Size = new System.Drawing.Size(305, 111);
+            this.dataGridView_party.TabIndex = 11;
             // 
-            // listView_party
+            // dgv2_id
             // 
-            this.listView_party.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.c_id,
-            this.c_charname,
-            this.c_guild,
-            this.c_level,
-            this.c_autoacceptinvite});
-            this.listView_party.ContextMenuStrip = this.contextMenuStrip_party;
-            this.listView_party.FullRowSelect = true;
-            this.listView_party.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
-            this.listView_party.Location = new System.Drawing.Point(174, 19);
-            this.listView_party.Name = "listView_party";
-            this.listView_party.Size = new System.Drawing.Size(305, 101);
-            this.listView_party.TabIndex = 9;
-            this.listView_party.UseCompatibleStateImageBehavior = false;
-            this.listView_party.View = System.Windows.Forms.View.Details;
+            this.dgv2_id.DataPropertyName = "AccountId";
+            this.dgv2_id.HeaderText = "ID";
+            this.dgv2_id.Name = "dgv2_id";
+            this.dgv2_id.ReadOnly = true;
+            this.dgv2_id.Width = 50;
             // 
-            // c_id
+            // dgv2_charname
             // 
-            this.c_id.Text = "ID";
-            this.c_id.Width = 50;
+            this.dgv2_charname.DataPropertyName = "Charname";
+            this.dgv2_charname.HeaderText = "Charname";
+            this.dgv2_charname.Name = "dgv2_charname";
+            this.dgv2_charname.ReadOnly = true;
+            this.dgv2_charname.Width = 75;
             // 
-            // c_charname
+            // dgv2_guild
             // 
-            this.c_charname.Text = "Charname";
-            this.c_charname.Width = 80;
+            this.dgv2_guild.DataPropertyName = "Guildname";
+            this.dgv2_guild.HeaderText = "Guild";
+            this.dgv2_guild.Name = "dgv2_guild";
+            this.dgv2_guild.ReadOnly = true;
+            this.dgv2_guild.Width = 70;
             // 
-            // c_guild
+            // dgv2_level
             // 
-            this.c_guild.Text = "Guild";
-            this.c_guild.Width = 80;
+            this.dgv2_level.DataPropertyName = "Level";
+            this.dgv2_level.HeaderText = "Level";
+            this.dgv2_level.Name = "dgv2_level";
+            this.dgv2_level.ReadOnly = true;
+            this.dgv2_level.Width = 38;
             // 
-            // c_level
+            // dgv2_accept
             // 
-            this.c_level.Text = "Lvl";
-            this.c_level.Width = 30;
-            // 
-            // c_autoacceptinvite
-            // 
-            this.c_autoacceptinvite.Text = "Inv";
-            this.c_autoacceptinvite.Width = 30;
+            this.dgv2_accept.DataPropertyName = "Additional";
+            this.dgv2_accept.HeaderText = "Accept";
+            this.dgv2_accept.Name = "dgv2_accept";
+            this.dgv2_accept.ReadOnly = true;
+            this.dgv2_accept.Width = 50;
             // 
             // contextMenuStrip_party
             // 
@@ -1867,10 +1927,20 @@
             this.toolStripMenuItem_add.Text = "Accept / Invite Player";
             this.toolStripMenuItem_add.Click += new System.EventHandler(this.toolStripMenuItem_add_Click);
             // 
+            // checkBox_partyautoall
+            // 
+            this.checkBox_partyautoall.AutoSize = true;
+            this.checkBox_partyautoall.Location = new System.Drawing.Point(13, 65);
+            this.checkBox_partyautoall.Name = "checkBox_partyautoall";
+            this.checkBox_partyautoall.Size = new System.Drawing.Size(135, 17);
+            this.checkBox_partyautoall.TabIndex = 10;
+            this.checkBox_partyautoall.Text = "Auto Invite / Accept all";
+            this.checkBox_partyautoall.UseVisualStyleBackColor = true;
+            // 
             // label32
             // 
             this.label32.AutoSize = true;
-            this.label32.Location = new System.Drawing.Point(11, 83);
+            this.label32.Location = new System.Drawing.Point(11, 90);
             this.label32.Name = "label32";
             this.label32.Size = new System.Drawing.Size(58, 13);
             this.label32.TabIndex = 8;
@@ -1885,7 +1955,7 @@
             "Exp Share / Item Dist.",
             "Exp Dist. / Item Share",
             "Exp Share / Item Share"});
-            this.comboBox_partytype.Location = new System.Drawing.Point(13, 99);
+            this.comboBox_partytype.Location = new System.Drawing.Point(13, 106);
             this.comboBox_partytype.Name = "comboBox_partytype";
             this.comboBox_partytype.Size = new System.Drawing.Size(140, 21);
             this.comboBox_partytype.TabIndex = 7;
@@ -1893,7 +1963,7 @@
             // checkBox_partyautoinvite
             // 
             this.checkBox_partyautoinvite.AutoSize = true;
-            this.checkBox_partyautoinvite.Location = new System.Drawing.Point(14, 43);
+            this.checkBox_partyautoinvite.Location = new System.Drawing.Point(13, 44);
             this.checkBox_partyautoinvite.Name = "checkBox_partyautoinvite";
             this.checkBox_partyautoinvite.Size = new System.Drawing.Size(116, 17);
             this.checkBox_partyautoinvite.TabIndex = 6;
@@ -1903,7 +1973,7 @@
             // checkBox_partyautoaccept
             // 
             this.checkBox_partyautoaccept.AutoSize = true;
-            this.checkBox_partyautoaccept.Location = new System.Drawing.Point(14, 24);
+            this.checkBox_partyautoaccept.Location = new System.Drawing.Point(13, 23);
             this.checkBox_partyautoaccept.Name = "checkBox_partyautoaccept";
             this.checkBox_partyautoaccept.Size = new System.Drawing.Size(141, 17);
             this.checkBox_partyautoaccept.TabIndex = 5;
@@ -2213,22 +2283,85 @@
             this.button_save.UseVisualStyleBackColor = true;
             this.button_save.Click += new System.EventHandler(this.button_save_Click);
             // 
-            // checkBox_userdata
+            // textBox1
             // 
-            this.checkBox_userdata.AutoSize = true;
-            this.checkBox_userdata.Location = new System.Drawing.Point(386, 194);
-            this.checkBox_userdata.Name = "checkBox_userdata";
-            this.checkBox_userdata.Size = new System.Drawing.Size(113, 17);
-            this.checkBox_userdata.TabIndex = 62;
-            this.checkBox_userdata.Text = "Use following data";
-            this.checkBox_userdata.UseVisualStyleBackColor = true;
+            this.textBox1.Location = new System.Drawing.Point(13, 55);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(304, 20);
+            this.textBox1.TabIndex = 1;
+            // 
+            // textBox3
+            // 
+            this.textBox3.Location = new System.Drawing.Point(452, 20);
+            this.textBox3.Name = "textBox3";
+            this.textBox3.Size = new System.Drawing.Size(26, 20);
+            this.textBox3.TabIndex = 3;
+            this.textBox3.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // textBox4
+            // 
+            this.textBox4.Location = new System.Drawing.Point(398, 20);
+            this.textBox4.Name = "textBox4";
+            this.textBox4.Size = new System.Drawing.Size(26, 20);
+            this.textBox4.TabIndex = 4;
+            this.textBox4.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // label34
+            // 
+            this.label34.AutoSize = true;
+            this.label34.Location = new System.Drawing.Point(320, 24);
+            this.label34.Name = "label34";
+            this.label34.Size = new System.Drawing.Size(71, 13);
+            this.label34.TabIndex = 5;
+            this.label34.Text = "Level Range:";
+            // 
+            // label35
+            // 
+            this.label35.AutoSize = true;
+            this.label35.Location = new System.Drawing.Point(430, 23);
+            this.label35.Name = "label35";
+            this.label35.Size = new System.Drawing.Size(16, 13);
+            this.label35.TabIndex = 6;
+            this.label35.Text = "to";
+            // 
+            // comboBox2
+            // 
+            this.comboBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBox2.FormattingEnabled = true;
+            this.comboBox2.Items.AddRange(new object[] {
+            "Hunting",
+            "Trading",
+            "Thiefing"});
+            this.comboBox2.Location = new System.Drawing.Point(323, 55);
+            this.comboBox2.Name = "comboBox2";
+            this.comboBox2.Size = new System.Drawing.Size(68, 21);
+            this.comboBox2.TabIndex = 7;
+            // 
+            // checkBox3
+            // 
+            this.checkBox3.AutoSize = true;
+            this.checkBox3.Location = new System.Drawing.Point(153, 23);
+            this.checkBox3.Name = "checkBox3";
+            this.checkBox3.Size = new System.Drawing.Size(116, 17);
+            this.checkBox3.TabIndex = 8;
+            this.checkBox3.Text = "Accept all requests";
+            this.checkBox3.UseVisualStyleBackColor = true;
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(398, 53);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(80, 23);
+            this.button1.TabIndex = 9;
+            this.button1.Text = "Form Party";
+            this.button1.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(561, 362);
+            this.ClientSize = new System.Drawing.Size(562, 362);
             this.Controls.Add(this.button_save);
             this.Controls.Add(this.label_pm);
             this.Controls.Add(this.button_stopbot);
@@ -2252,6 +2385,7 @@
             this.tab_main.PerformLayout();
             this.tab_pickup.ResumeLayout(false);
             this.tab_pickup.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView_items)).EndInit();
             this.contextMenuStrip_items.ResumeLayout(false);
             this.tab_training.ResumeLayout(false);
             this.tab_training.PerformLayout();
@@ -2281,6 +2415,7 @@
             this.groupBox5.PerformLayout();
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView_party)).EndInit();
             this.contextMenuStrip_party.ResumeLayout(false);
             this.tab_spy.ResumeLayout(false);
             this.tab_alchemy.ResumeLayout(false);
@@ -2436,15 +2571,9 @@
         private System.Windows.Forms.ColumnHeader c_plus;
         private System.Windows.Forms.Label label_clientless;
         private System.Windows.Forms.Label label16;
-        private System.Windows.Forms.ListView listView_items;
-        private System.Windows.Forms.ColumnHeader ID;
-        private System.Windows.Forms.ColumnHeader ItemName;
-        private System.Windows.Forms.ColumnHeader Level;
-        private System.Windows.Forms.ColumnHeader Pick;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip_items;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem_addpick;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem_removepick;
-        private System.Windows.Forms.ColumnHeader Deg;
         private System.Windows.Forms.ComboBox comboBox_itemdegree;
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.ComboBox comboBox_itemtype;
@@ -2470,19 +2599,33 @@
         private System.Windows.Forms.CheckBox checkBox_partyautoinvite;
         private System.Windows.Forms.CheckBox checkBox_partyautoaccept;
         private System.Windows.Forms.CheckBox checkBox_partyautoall;
-        private System.Windows.Forms.ListView listView_party;
         private System.Windows.Forms.Label label32;
-        private System.Windows.Forms.ColumnHeader c_id;
-        private System.Windows.Forms.ColumnHeader c_charname;
-        private System.Windows.Forms.ColumnHeader c_guild;
-        private System.Windows.Forms.ColumnHeader c_level;
-        private System.Windows.Forms.ColumnHeader c_autoacceptinvite;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip_party;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem_add;
         private System.Windows.Forms.GroupBox groupBox5;
         private System.Windows.Forms.CheckBox checkBox1;
         private System.Windows.Forms.ColumnHeader c_quantity;
         private System.Windows.Forms.CheckBox checkBox_userdata;
+        private System.Windows.Forms.DataGridView dataGridView_items;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dgv_id;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dgv_itemname;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dgv_level;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dgv_degree;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dgv_pick;
+        private System.Windows.Forms.DataGridView dataGridView_party;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dgv2_id;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dgv2_charname;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dgv2_guild;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dgv2_level;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dgv2_accept;
+        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.Label label35;
+        private System.Windows.Forms.Label label34;
+        private System.Windows.Forms.TextBox textBox4;
+        private System.Windows.Forms.TextBox textBox3;
+        private System.Windows.Forms.ComboBox comboBox2;
+        private System.Windows.Forms.CheckBox checkBox3;
+        private System.Windows.Forms.Button button1;
     }
 }
 

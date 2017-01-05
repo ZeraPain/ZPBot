@@ -9,7 +9,7 @@ namespace ZPBot.Common.Items
     internal class ItemDropManager : ThreadManager
     {
         private readonly GlobalManager _globalManager;
-        public Dictionary<uint, Item> ItemFilter { get; protected set; }
+        public List<uint> ItemFilter { get; protected set; }
         private readonly Dictionary<uint, ItemDrop> _itemList;
         public bool PickupMyItems { get; set; }
         public bool IsPicking { get; set; }
@@ -18,7 +18,7 @@ namespace ZPBot.Common.Items
         {
             _globalManager = globalManager;
 
-            ItemFilter = new Dictionary<uint, Item>();
+            ItemFilter = new List<uint>();
             _itemList = new Dictionary<uint, ItemDrop>();
         }
 
@@ -48,29 +48,26 @@ namespace ZPBot.Common.Items
             }
         }
 
-        public bool ExistsPickup([NotNull] Item item)
-        {
-            return ItemFilter.ContainsKey(item.Id);
-        }
+        public bool ExistsPickup([NotNull] Item item) => ItemFilter.Contains(item.Id);
 
-        public bool AddPickup([CanBeNull] Item item)
+        public bool AddPickup(uint itemId)
         {
-            if (item == null)
+            if (itemId == 0)
                 return false;
 
-            if (ItemFilter.ContainsKey(item.Id))
+            if (ItemFilter.Contains(itemId))
                 return false;
 
-            ItemFilter.Add(item.Id, item);
+            ItemFilter.Add(itemId);
             return true;
         }
 
-        public bool RemovePickup([NotNull] Item item)
+        public bool RemovePickup(uint itemId)
         {
-            if (!ItemFilter.ContainsKey(item.Id))
+            if (!ItemFilter.Contains(itemId))
                 return false;
 
-            ItemFilter.Remove(item.Id);
+            ItemFilter.Remove(itemId);
             return true;
         }
 
