@@ -165,6 +165,7 @@ namespace ZPBot.Common
             }
 
             byte[] patch = { 0xEB };
+
             for (var i = 0; i < 4; i++)
                 NativeMethods.WriteProcessMemory(_sroProcess.Handle, results[i] - 0x2, patch, patch.Length, 0);
         }

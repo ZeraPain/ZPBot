@@ -87,7 +87,11 @@ namespace ZPBot.Common.Items
             {
                 if (_itemList.ContainsKey(slot))
                 {
-                    _itemList[slot].Quantity = quantity;
+                    if (quantity == 0)
+                        _itemList.Remove(slot);
+                    else
+                        _itemList[slot].Quantity = quantity;
+
                     _globalManager.FMain.UpdateInventory(_itemList);
                 }
                 else

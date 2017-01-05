@@ -220,6 +220,7 @@
             this.button_stopbot = new System.Windows.Forms.Button();
             this.label_pm = new System.Windows.Forms.Label();
             this.button_save = new System.Windows.Forms.Button();
+            this.checkBox_userdata = new System.Windows.Forms.CheckBox();
             this.tabControl1.SuspendLayout();
             this.tab_main.SuspendLayout();
             this.tab_pickup.SuspendLayout();
@@ -281,6 +282,7 @@
             // 
             // tab_main
             // 
+            this.tab_main.Controls.Add(this.checkBox_userdata);
             this.tab_main.Controls.Add(this.checkBox_logpackets);
             this.tab_main.Controls.Add(this.comboBox_profile);
             this.tab_main.Controls.Add(this.richTextBox_events);
@@ -345,7 +347,7 @@
             // 
             this.comboBox_profile.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox_profile.FormattingEnabled = true;
-            this.comboBox_profile.Location = new System.Drawing.Point(382, 137);
+            this.comboBox_profile.Location = new System.Drawing.Point(386, 130);
             this.comboBox_profile.Name = "comboBox_profile";
             this.comboBox_profile.Size = new System.Drawing.Size(125, 21);
             this.comboBox_profile.TabIndex = 9;
@@ -389,7 +391,7 @@
             // 
             // textBox_loginpw
             // 
-            this.textBox_loginpw.Location = new System.Drawing.Point(410, 232);
+            this.textBox_loginpw.Location = new System.Drawing.Point(414, 234);
             this.textBox_loginpw.Name = "textBox_loginpw";
             this.textBox_loginpw.PasswordChar = '*';
             this.textBox_loginpw.Size = new System.Drawing.Size(97, 20);
@@ -397,7 +399,7 @@
             // 
             // textBox_loginchar
             // 
-            this.textBox_loginchar.Location = new System.Drawing.Point(410, 255);
+            this.textBox_loginchar.Location = new System.Drawing.Point(414, 256);
             this.textBox_loginchar.Name = "textBox_loginchar";
             this.textBox_loginchar.Size = new System.Drawing.Size(97, 20);
             this.textBox_loginchar.TabIndex = 14;
@@ -414,7 +416,7 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(379, 235);
+            this.label8.Location = new System.Drawing.Point(383, 237);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(25, 13);
             this.label8.TabIndex = 48;
@@ -423,7 +425,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(379, 258);
+            this.label4.Location = new System.Drawing.Point(383, 259);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(29, 13);
             this.label4.TabIndex = 60;
@@ -440,7 +442,7 @@
             // 
             // textBox_loginid
             // 
-            this.textBox_loginid.Location = new System.Drawing.Point(410, 209);
+            this.textBox_loginid.Location = new System.Drawing.Point(414, 212);
             this.textBox_loginid.Name = "textBox_loginid";
             this.textBox_loginid.Size = new System.Drawing.Size(97, 20);
             this.textBox_loginid.TabIndex = 12;
@@ -448,17 +450,17 @@
             // checkBox_autologin
             // 
             this.checkBox_autologin.AutoSize = true;
-            this.checkBox_autologin.Location = new System.Drawing.Point(382, 187);
+            this.checkBox_autologin.Location = new System.Drawing.Point(386, 175);
             this.checkBox_autologin.Name = "checkBox_autologin";
-            this.checkBox_autologin.Size = new System.Drawing.Size(92, 17);
+            this.checkBox_autologin.Size = new System.Drawing.Size(106, 17);
             this.checkBox_autologin.TabIndex = 11;
-            this.checkBox_autologin.Text = "Use Autologin";
+            this.checkBox_autologin.Text = "Enable Autologin";
             this.checkBox_autologin.UseVisualStyleBackColor = true;
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(379, 212);
+            this.label5.Location = new System.Drawing.Point(383, 215);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(18, 13);
             this.label5.TabIndex = 47;
@@ -620,7 +622,7 @@
             // button_launch
             // 
             this.button_launch.Enabled = false;
-            this.button_launch.Location = new System.Drawing.Point(382, 110);
+            this.button_launch.Location = new System.Drawing.Point(386, 103);
             this.button_launch.Name = "button_launch";
             this.button_launch.Size = new System.Drawing.Size(125, 23);
             this.button_launch.TabIndex = 8;
@@ -631,7 +633,7 @@
             // checkBox_launchclientless
             // 
             this.checkBox_launchclientless.AutoSize = true;
-            this.checkBox_launchclientless.Location = new System.Drawing.Point(382, 166);
+            this.checkBox_launchclientless.Location = new System.Drawing.Point(386, 157);
             this.checkBox_launchclientless.Name = "checkBox_launchclientless";
             this.checkBox_launchclientless.Size = new System.Drawing.Size(109, 17);
             this.checkBox_launchclientless.TabIndex = 10;
@@ -641,7 +643,7 @@
             // label_clientless
             // 
             this.label_clientless.AutoSize = true;
-            this.label_clientless.Location = new System.Drawing.Point(444, 61);
+            this.label_clientless.Location = new System.Drawing.Point(448, 56);
             this.label_clientless.Name = "label_clientless";
             this.label_clientless.Size = new System.Drawing.Size(43, 13);
             this.label_clientless.TabIndex = 42;
@@ -650,7 +652,7 @@
             // label16
             // 
             this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(379, 61);
+            this.label16.Location = new System.Drawing.Point(383, 56);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(54, 13);
             this.label16.TabIndex = 41;
@@ -659,7 +661,7 @@
             // button_clientless
             // 
             this.button_clientless.Enabled = false;
-            this.button_clientless.Location = new System.Drawing.Point(382, 84);
+            this.button_clientless.Location = new System.Drawing.Point(386, 77);
             this.button_clientless.Name = "button_clientless";
             this.button_clientless.Size = new System.Drawing.Size(125, 23);
             this.button_clientless.TabIndex = 7;
@@ -670,7 +672,7 @@
             // label_version
             // 
             this.label_version.AutoSize = true;
-            this.label_version.Location = new System.Drawing.Point(444, 40);
+            this.label_version.Location = new System.Drawing.Point(448, 37);
             this.label_version.Name = "label_version";
             this.label_version.Size = new System.Drawing.Size(43, 13);
             this.label_version.TabIndex = 40;
@@ -679,7 +681,7 @@
             // label_botstate
             // 
             this.label_botstate.AutoSize = true;
-            this.label_botstate.Location = new System.Drawing.Point(444, 20);
+            this.label_botstate.Location = new System.Drawing.Point(448, 19);
             this.label_botstate.Name = "label_botstate";
             this.label_botstate.Size = new System.Drawing.Size(43, 13);
             this.label_botstate.TabIndex = 38;
@@ -688,7 +690,7 @@
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(379, 40);
+            this.label10.Location = new System.Drawing.Point(383, 37);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(45, 13);
             this.label10.TabIndex = 39;
@@ -697,7 +699,7 @@
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(379, 20);
+            this.label9.Location = new System.Drawing.Point(383, 19);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(51, 13);
             this.label9.TabIndex = 37;
@@ -2211,6 +2213,16 @@
             this.button_save.UseVisualStyleBackColor = true;
             this.button_save.Click += new System.EventHandler(this.button_save_Click);
             // 
+            // checkBox_userdata
+            // 
+            this.checkBox_userdata.AutoSize = true;
+            this.checkBox_userdata.Location = new System.Drawing.Point(386, 194);
+            this.checkBox_userdata.Name = "checkBox_userdata";
+            this.checkBox_userdata.Size = new System.Drawing.Size(113, 17);
+            this.checkBox_userdata.TabIndex = 62;
+            this.checkBox_userdata.Text = "Use following data";
+            this.checkBox_userdata.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -2470,6 +2482,7 @@
         private System.Windows.Forms.GroupBox groupBox5;
         private System.Windows.Forms.CheckBox checkBox1;
         private System.Windows.Forms.ColumnHeader c_quantity;
+        private System.Windows.Forms.CheckBox checkBox_userdata;
     }
 }
 

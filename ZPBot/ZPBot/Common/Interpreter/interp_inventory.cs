@@ -13,10 +13,10 @@ namespace ZPBot.Common
             try
             {
                 var newItem = packet.ReadUInt8();
-                var type = packet.ReadUInt8();
-
-                if (newItem == 1)
+                while (newItem == 1)
                 {
+                    var type = packet.ReadUInt8();
+
                     switch (type)
                     {
                         case 0: //Move Item in Inventory
@@ -24,7 +24,6 @@ namespace ZPBot.Common
                                 var fromSlot = packet.ReadUInt8();
                                 var toSlot = packet.ReadUInt8();
                                 var amount = packet.ReadUInt16();
-                                packet.SkipBytes(1);
                                 InventoryManager.MoveItem(fromSlot, toSlot, amount);
 
                                 Game.AllowStack = true;
@@ -65,7 +64,6 @@ namespace ZPBot.Common
                             break;
                         case 6: //Pickup
                             {
-                                PrintPacket("UpdateInventory", packet);
                                 var invItem = ReadInventoryItem(ref packet);
                                 InventoryManager.AddOrUpdate(invItem);
                             }
@@ -189,11 +187,16 @@ namespace ZPBot.Common
                             PrintPacket("UpdateInventory", packet);
                             break;
                     }
+
+                    if (packet.RemainingRead() > 0)
+                        newItem = packet.ReadUInt8();
+                    else
+                        break;
                 }
-                else
-                {
+
+                /*{
                     packet.ReadUInt8(); //errorCode 3 = Cannot find target
-                }
+                }*/
             }
             catch (Exception ex)
             {
@@ -275,6 +278,12 @@ namespace ZPBot.Common
                 var storageItem = ReadInventoryItem(ref packet);
                 if (storageItem != null) StorageManager.Add(storageItem);
             }
+        }
+
+        private void DecreaseAmmo([NotNull] Packet packet)
+        {
+            var quantity = packet.ReadUInt16();
+            InventoryManager.UpdateQuantity(7, quantity);
         }
     }
 }

@@ -486,6 +486,7 @@ namespace ZPBot
         {
             //Main
             _globalManager.Autologin = _iniSet.Read<bool>("Settings", "Autologin");
+            _globalManager.Userdata = _iniSet.Read<bool>("Settings", "Userdata");
             _globalManager.Clientless = _iniSet.Read<bool>("Settings", "Clientless");
             _globalManager.LoginId = _iniSet.Read<string>("Settings", "LoginID", "");
             _globalManager.LoginPw = _iniSet.Read<string>("Settings", "LoginPW", "");
@@ -542,6 +543,7 @@ namespace ZPBot
             //Main
             _iniSet.Write("Settings", "Clientless", _globalManager.Clientless.ToString());
             _iniSet.Write("Settings", "Autologin", _globalManager.Autologin.ToString());
+            _iniSet.Write("Settings", "Userdata", _globalManager.Userdata.ToString());
             _iniSet.Write("Settings", "LoginID", _globalManager.LoginId);
             _iniSet.Write("Settings", "LoginPW", _globalManager.LoginPw);
             _iniSet.Write("Settings", "LoginChar", _globalManager.LoginChar);

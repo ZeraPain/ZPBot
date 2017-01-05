@@ -52,6 +52,7 @@ namespace ZPBot
         private void SetMainBindings()
         {
             checkBox_autologin.DataBindings.Add("Checked", _globalManager, "Autologin", false, DataSourceUpdateMode.OnPropertyChanged);
+            checkBox_userdata.DataBindings.Add("Checked", _globalManager, "Userdata", false, DataSourceUpdateMode.OnPropertyChanged);
             checkBox_launchclientless.DataBindings.Add("Checked", _globalManager, "Clientless", false, DataSourceUpdateMode.OnPropertyChanged);
 
             var binding = new Binding("ForeColor", _globalManager, "Botstate", false, DataSourceUpdateMode.OnPropertyChanged);

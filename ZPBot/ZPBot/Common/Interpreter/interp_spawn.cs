@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using ZPBot.Annotations;
 using ZPBot.Common.Items;
 using ZPBot.Common.Loop;
@@ -453,6 +454,47 @@ namespace ZPBot.Common
             GetPosition(ref packet);
 
             return true;
+        }
+
+        private void CharListing([NotNull] Packet packet)
+        {
+            packet.SkipBytes(2);
+            var charCount = packet.ReadUInt8();
+
+            for (var i = 0; i < charCount; i++)
+            {
+                packet.ReadUInt32(); // Model
+                var charName = packet.ReadAscii();
+                packet.ReadUInt8(); // Scale
+                packet.ReadUInt8(); // Level
+                packet.ReadUInt64(); // Exp
+                packet.ReadUInt16(); // Base Str
+                packet.ReadUInt16(); // Base Int
+                packet.ReadUInt16(); // Free Stat
+                packet.ReadUInt32(); // Health
+                packet.ReadUInt32(); // Mana
+                packet.SkipBytes(4);
+
+                var itemCount = packet.ReadUInt8();
+                for (var k = 0; k < itemCount; k++)
+                {
+                    var itemId = packet.ReadUInt32();
+                    var item = Silkroad.GetItemById(itemId);
+                    if (item != null && item.ItemType1 == EItemType1.Equipable)
+                    {
+                        packet.ReadUInt8(); // optLevel
+                    }
+                }
+
+                packet.SkipBytes(1);
+
+                if (Autologin && charName == LoginChar)
+                {
+                    var newPacket = new Packet(0x7001, false);
+                    newPacket.WriteAscii(charName);
+                    Task.Delay(1000).ContinueWith(t => Silkroadproxy.Send(newPacket, Proxy.EPacketdestination.AgentRemote));
+                }
+            }
         }
     }
 }

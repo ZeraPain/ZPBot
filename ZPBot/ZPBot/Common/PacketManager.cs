@@ -1,6 +1,5 @@
 ﻿using ZPBot.Annotations;
 using ZPBot.Common.Items;
-using ZPBot.Common.Loop;
 using ZPBot.Common.Resources;
 using ZPBot.SilkroadSecurityApi;
 
@@ -15,12 +14,12 @@ namespace ZPBot.Common
             _globalManager = globalManager;
         }
 
-        public void SendLoginRequest()
+        public void SendLoginRequest(string loginId, string loginPw)
         {
             var packet = new Packet(0x6102, true);
             packet.WriteUInt8(Client.ClientLocale);
-            packet.WriteAscii(_globalManager.LoginId);
-            packet.WriteAscii(_globalManager.LoginPw);
+            packet.WriteAscii(loginId);
+            packet.WriteAscii(loginPw);
             packet.WriteUInt16(Client.ServerId);
             _globalManager.Silkroadproxy.Send(packet, Proxy.EPacketdestination.GatewayRemote);
         }

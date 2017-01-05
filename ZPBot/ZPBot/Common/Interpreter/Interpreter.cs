@@ -53,6 +53,29 @@ namespace ZPBot.Common
             }
         }
 
+        private bool _userdata;
+        public bool Userdata
+        {
+            get { return _userdata; }
+            set
+            {
+                _userdata = value;
+                OnPropertyChanged(nameof(Userdata));
+            }
+        }
+
+        public bool ClientToAgentServer(ref Packet packet)
+        {
+            switch (packet.Opcode)
+            {
+                case 0x7025:
+                    OutgoingMessage(packet);
+                    return false;
+            }
+
+            return true;
+        }
+
         public bool AgentServerToClient(ref Packet packet)
         {
             try
@@ -156,6 +179,9 @@ namespace ZPBot.Common
                     case 0x30D2:
                         CureStatus(packet);
                         break;
+                    case 0x3201:
+                        DecreaseAmmo(packet);
+                        break;
                     case 0x34B5:
                         LoopManager.IsTeleporting = true;
                         if (Clientless)
@@ -169,14 +195,14 @@ namespace ZPBot.Common
                     case 0x3864:
                         PartyUpdate(packet);
                         break;
-                    case 0x7025:
-                        OutgoingMessage(packet);
-                        return false;
                     case 0x7045:
                         Select(packet);
                         break;
                     case 0x705A:
                         Teleport(packet);
+                        break;
+                    case 0xB007:
+                        CharListing(packet);
                         break;
                     case 0xB021:
                         Movement(packet);

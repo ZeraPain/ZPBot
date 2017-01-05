@@ -48,6 +48,8 @@ namespace ZPBot.SilkroadSecurityApi
 
         private string _xferRemoteIp;
         private int _xferRemotePort;
+        public string XferLoginId { get; protected set; }
+        public string XferLoginPw { get; protected set; }
 
         private readonly object _exitLock;
         private bool _shouldExit;
@@ -109,7 +111,7 @@ namespace ZPBot.SilkroadSecurityApi
                                     break;
                                 case 0xA101:
                                     _globalManager.ServerStats(packet);
-                                    AllowLoginRequest = true;
+                                    if (_globalManager.Userdata) AllowLoginRequest = true;
                                     break;
                                 case 0xA102:
                                     var result = packet.ReadUInt8();
@@ -215,6 +217,16 @@ namespace ZPBot.SilkroadSecurityApi
                                 case 0x9000:
                                 case 0x2001:
                                     continue;
+                                case 0x6102:
+                                    if (!_globalManager.Userdata)
+                                    {
+                                        packet.ReadUInt8(); // ClientLocale
+                                        XferLoginId = packet.ReadAscii();
+                                        XferLoginPw = packet.ReadAscii();
+                                        packet.ReadUInt16(); // ServerID
+                                        AllowLoginRequest = true;
+                                    }
+                                    break;
                             }
 
                             _gwRemoteSecurity.Send(packet);
@@ -365,33 +377,26 @@ namespace ZPBot.SilkroadSecurityApi
                                     _agLocalSecurity.Send(packet);
                                     _globalManager.ClientManager.SetLocalConnection(Client.LocalGatewayPort);
 
+                                    Packet newPacket;
                                     var result = packet.ReadUInt8();
-                                    if (result == 1) // successfully logged on
+                                    switch (result)
                                     {
-                                        if (_globalManager.Clientless)
-                                        {
-                                            var newPacket = new Packet(0x7007, false);
-                                            newPacket.WriteUInt8(2);
-                                            Send(newPacket, EPacketdestination.AgentRemote);
-                                        }
+                                        case 1:
+                                            if (_globalManager.Clientless)
+                                            {
+                                                newPacket = new Packet(0x7007, false);
+                                                newPacket.WriteUInt8(2);
+                                                Send(newPacket, EPacketdestination.AgentRemote);
+                                            }
+                                            break;
+                                        case 2:
+                                            newPacket = new Packet(0xA103, true);
+                                            newPacket.WriteUInt8(1);
+                                            _agLocalSecurity.Send(newPacket);
+                                            break;
                                     }
-                                    else if (result == 2)
-                                    {
-                                        
-                                        var newPacket = new Packet(0xA103, true);
-                                        newPacket.WriteUInt8(1);
-                                        _agLocalSecurity.Send(newPacket);
-                                    }
+
                                     continue;
-                                case 0xB007:
-                                    if (_globalManager.Autologin)
-                                    {
-                                        var newPacket = new Packet(0x7001, false);
-                                        newPacket.WriteAscii(_globalManager.LoginChar);
-                                        Send(newPacket, EPacketdestination.AgentRemote);
-                                        Thread.Sleep(500);
-                                    }
-                                    break;
                             }
 
                             var packetToSend = packet;
@@ -492,7 +497,7 @@ namespace ZPBot.SilkroadSecurityApi
                                 case 0x2001:
                                     continue;
                                 case 0x6103:
-                                    if (_globalManager.Autologin)
+                                    if (_globalManager.Autologin && _globalManager.Userdata)
                                     {
                                         var newPacket = new Packet(0x6103, true);
                                         newPacket.WriteUInt32(Client.ServerLoginid);
@@ -509,7 +514,9 @@ namespace ZPBot.SilkroadSecurityApi
                                     break;
                             }
 
-                            _agRemoteSecurity.Send(packet);
+                            var packetToSend = packet;
+                            if (_globalManager.ClientToAgentServer(ref packetToSend))
+                                _agRemoteSecurity.Send(packetToSend);
                         }
 
                         timeout.Restart();

@@ -30,18 +30,17 @@ namespace ZPBot.Common
         public PartyManager PartyManager { get; protected set; }
 
         private bool _clientless;
+
         public bool Clientless
         {
-            get
-            {
-                return _clientless;
-            }
+            get { return _clientless; }
             set
             {
                 _clientless = value;
                 OnPropertyChanged(nameof(Clientless));
             }
         }
+
         public bool ReturntownDied { get; set; }
         public bool Botstate { get; set; }
 
@@ -186,12 +185,20 @@ namespace ZPBot.Common
                 {
                     if (Autologin && Silkroadproxy.AllowLoginRequest)
                     {
-                        Silkroadproxy.AllowLoginRequest = false;
-                        PacketManager.SendLoginRequest();
+                        if (Userdata && !string.IsNullOrEmpty(LoginId) && !string.IsNullOrEmpty(LoginPw))
+                        {
+                            Silkroadproxy.AllowLoginRequest = false;
+                            PacketManager.SendLoginRequest(LoginId, LoginPw);
+                        }
+
+                        if (!Userdata && !string.IsNullOrEmpty(Silkroadproxy.XferLoginId) &&
+                            !string.IsNullOrEmpty(Silkroadproxy.XferLoginPw))
+                        {
+                            Silkroadproxy.AllowLoginRequest = false;
+                            PacketManager.SendLoginRequest(Silkroadproxy.XferLoginId, Silkroadproxy.XferLoginPw);
+                        }
                     }
                 }
-
-                //if (Clientless) PacketManager.KeepAlive();
 
                 Thread.Sleep(2000);
             }
