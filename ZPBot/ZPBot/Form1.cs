@@ -77,9 +77,17 @@ namespace ZPBot
 
             if (dialog == DialogResult.OK && input != null)
             {
-                _profilNames.Add(input);
-                _profilIndex = _profilNames.Count - 1;
-                SaveProfile();
+                if (input == "ZPBot" || _profilNames.Contains(input))
+                {
+                    MessageBox.Show(@"Invalid Profilename!", @"Profile Editor");
+                }
+                else
+                {
+                    _profilNames.Add(input);
+                    _profilIndex = _profilNames.Count - 1;
+                    SaveProfile();
+                    comboBox_profile.SelectedIndex = _profilIndex;
+                }
             }
         }
 
@@ -98,7 +106,8 @@ namespace ZPBot
                 }
             }
 
-            comboBox_profile.SelectedIndex = Parse<int>(zpbot.Element("Profil")?.Value);
+            var profilIndex = Parse<int>(zpbot.Element("Profil")?.Value);
+            if (profilIndex > 0 && profilIndex < _profilNames.Count) comboBox_profile.SelectedIndex = profilIndex;
             SroPath = Parse<string>(zpbot.Element("SroPath")?.Value);
             LoadSettings();
         }
@@ -165,6 +174,7 @@ namespace ZPBot
             form.CancelButton = buttonCancel;
 
             var dialogResult = form.ShowDialog();
+
             value = textBox.Text;
             return dialogResult;
         }
@@ -442,7 +452,6 @@ namespace ZPBot
 
         private void comboBox_profile_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (_profilIndex == comboBox_profile.SelectedIndex) return;
             _profilIndex = comboBox_profile.SelectedIndex;
 
             LoadSettings();
