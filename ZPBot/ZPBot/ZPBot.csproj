@@ -117,7 +117,6 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="Common\GlobalManager.cs" />
-    <Compile Include="Common\Resources\IniFile.cs" />
     <Compile Include="Pk2Reader\Blowfish.cs" />
     <Compile Include="Pk2Reader\Reader.cs" />
     <Compile Include="Pk2Reader\SRODecrypt.cs" />

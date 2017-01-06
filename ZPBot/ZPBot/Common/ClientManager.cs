@@ -7,12 +7,19 @@ using ZPBot.Annotations;
 
 namespace ZPBot.Common
 {
-    public class ClientManager : ExtendedProcess
+    internal class ClientManager : ExtendedProcess
     {
         private Process _sroProcess;
         private byte[] _fileArray;
         private const byte Push = 0x68;
         private uint _connectionStackAddr;
+        private readonly GlobalManager _globalManager;
+
+        public ClientManager(GlobalManager globalManager)
+        {
+            _globalManager = globalManager;
+        }
+
 
         public byte ReadByte(uint address)
         {
@@ -40,7 +47,7 @@ namespace ZPBot.Common
 
         public void Start(int localPort)
         {
-            _fileArray = File.ReadAllBytes(Config.SroPath + "\\sro_client.exe");
+            _fileArray = File.ReadAllBytes(_globalManager.FMain.SroPath + "\\sro_client.exe");
             if (_fileArray.Length == 0)
             {
                 Console.WriteLine(@"Could not read sro_client.exe");
@@ -52,7 +59,7 @@ namespace ZPBot.Common
 
             ProcessInformation pi;
             var si = new Startupinfo();
-            var success = NativeMethods.CreateProcess(null, Config.SroPath + "\\sro_client.exe 0 /" + Client.ClientLocale + " 0 0", //Arguments = "0 /22 0 0"
+            var success = NativeMethods.CreateProcess(null, _globalManager.FMain.SroPath + "\\sro_client.exe 0 /" + Client.ClientLocale + " 0 0", //Arguments = "0 /22 0 0"
                 IntPtr.Zero, IntPtr.Zero, false,
                 ProcessCreationFlags.CreateSuspended,
                 IntPtr.Zero, null, ref si, out pi);

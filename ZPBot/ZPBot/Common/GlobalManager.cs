@@ -55,7 +55,7 @@ namespace ZPBot.Common
         {
             FMain = fMain;
 
-            ClientManager = new ClientManager();
+            ClientManager = new ClientManager(this);
             Silkroadproxy = new Proxy(this);
             Player = new Player(this);
 
@@ -107,7 +107,7 @@ namespace ZPBot.Common
         private void LoadSrData()
         {
             FMain.AddEvent("Loading silkroad data...", "System");
-            FMain.FinishLoad(Silkroad.DumpObjects(Config.SroPath + "\\media.pk2"));
+            FMain.FinishLoad(Silkroad.DumpObjects(FMain.SroPath + "\\media.pk2"));
         }
 
         public void StartBot(bool forceArea)

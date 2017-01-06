@@ -71,6 +71,8 @@ namespace ZPBot.Common.Items
             return true;
         }
 
+        public void ClearPickup() => ItemFilter.Clear();
+
         [CanBeNull]
         private ItemDrop GetNextItem(GamePosition sourcePosition)
         {

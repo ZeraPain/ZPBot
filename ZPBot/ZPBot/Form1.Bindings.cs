@@ -1,14 +1,34 @@
-﻿using System.Drawing;
+﻿using System.ComponentModel;
+using System.Drawing;
+using System.Runtime.CompilerServices;
 using System.Windows.Forms;
 using ZPBot.Annotations;
 using ZPBot.Common.Resources;
 
 namespace ZPBot
 {
-    internal partial class Form1
+    internal partial class Form1 : INotifyPropertyChanged
     {
+        public event PropertyChangedEventHandler PropertyChanged;
+        [NotifyPropertyChangedInvocator]
+        protected void OnPropertyChanged([CanBeNull] [CallerMemberName] string propertyName = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
+        private string _sroPath = "";
+        public string SroPath
+        {
+            get { return _sroPath; }
+            set
+            {
+                _sroPath = value;
+                OnPropertyChanged(nameof(SroPath));
+            }
+        }
+
         private void SetBindings()
         {
+            comboBox_profile.DataSource = _profilNames;
+            textBox_sropath.DataBindings.Add("Text", this, "SroPath", false, DataSourceUpdateMode.OnPropertyChanged);
+
             //Main
             SetPlayerStatsBindings();
             SetMainBindings();

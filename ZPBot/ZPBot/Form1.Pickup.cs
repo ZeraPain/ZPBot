@@ -1,7 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Windows.Forms;
+using System.Xml.Linq;
 using ZPBot.Annotations;
 using ZPBot.Common;
 using ZPBot.Common.Items;
@@ -128,7 +130,7 @@ namespace ZPBot
 
             var itemPattern = textBox_searchitem.Text;
 
-            var items = new List<Item>();
+            var items = new BindingList<Item>();
             foreach (var item in Silkroad.RItemdata)
             {
                 if (!FilterCheck(item.Value, itemPattern))
@@ -156,7 +158,7 @@ namespace ZPBot
                 if (_globalManager.ItemDropManager.AddPickup(item.Id)) item.Additional = "Pick";
             }
 
-            UpdateItemCfg();
+            SaveItemSettings();
         }
 
         private void toolStripMenuItem2_Click(object sender, EventArgs e)
@@ -170,39 +172,40 @@ namespace ZPBot
                 if (_globalManager.ItemDropManager.RemovePickup(item.Id)) item.Additional = "";
             }
 
-            UpdateItemCfg();
+            SaveItemSettings();
         }
 
-        private void PickupSettings() => Invoke((MethodInvoker)delegate
+        private void LoadItemSettings()
         {
-            if (_iniSet == null) return;
+            _globalManager.ItemDropManager.ClearPickup();
 
-            for (var i = 0; i < _iniSet.Read<int>("Items", "Count"); i++)
+            var settingsFile = XElement.Load(ConfigPath);
+            var items = settingsFile.Element(GetProfilName())?.Element("Items");
+            if (items != null)
             {
-                try
+                foreach (var item in items.Descendants("Item"))
                 {
-                    var itemId = _iniSet.Read<uint>("Items", i.ToString());
-                    _globalManager.ItemDropManager.AddPickup(itemId);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(@"PickupSettings - " + ex.Message);
+                    _globalManager.ItemDropManager.AddPickup(Parse<uint>(item.Attribute("Id")?.Value));
                 }
             }
-        });
+        }
 
-        private void UpdateItemCfg()
+        private void SaveItemSettings()
         {
-            _iniSet.RemoveSection("Items");
+            var settingsFile = XElement.Load(ConfigPath);
+            var items = settingsFile.Element(GetProfilName())?.Element("Items");
+            if (items != null)
+            {
+                items.ReplaceNodes(_globalManager.ItemDropManager.ItemFilter.Select(
+                    x => new XElement("Item", new XAttribute("Id", x.ToString()))));
+            }
+            else
+            {
+                settingsFile.Element(GetProfilName())?.Add(
+                    new XElement("Items", _globalManager.ItemDropManager.ItemFilter.Select(x => new XElement("Item", new XAttribute("Id", x.ToString())))));
+            }
 
-            var itemList = _globalManager.ItemDropManager.ItemFilter;
-            if (itemList.Count == 0)
-                return;
-
-            _iniSet.Write("Items", "Count", itemList.Count.ToString());
-
-            for (var i = 0; i < itemList.Count; i++)
-                _iniSet.Write("Items", i.ToString(), itemList[i].ToString());
+            settingsFile.Save(ConfigPath);
         }
     }
 }

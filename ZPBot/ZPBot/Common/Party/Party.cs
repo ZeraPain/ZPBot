@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Windows.Forms;
 using ZPBot.Annotations;
@@ -11,7 +12,7 @@ namespace ZPBot.Common.Party
         public uint Id { get; protected set; }
         public uint MasterId { get; set; }
         public byte PartyType { get; protected set; }
-        public List<PartyMember> PartyMembers { get; protected set; }
+        public BindingList<PartyMember> PartyMembers { get; protected set; }
 
         private readonly GlobalManager _globalManager;
 
@@ -21,7 +22,7 @@ namespace ZPBot.Common.Party
             Id = 0;
             MasterId = 0;
             PartyType = 0;
-            PartyMembers = new List<PartyMember>();
+            PartyMembers = new BindingList<PartyMember>();
         }
 
         public void Clear()

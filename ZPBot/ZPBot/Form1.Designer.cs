@@ -175,6 +175,14 @@
             this.richTextBox_chat_academy = new System.Windows.Forms.RichTextBox();
             this.tab_players = new System.Windows.Forms.TabPage();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.button1 = new System.Windows.Forms.Button();
+            this.checkBox3 = new System.Windows.Forms.CheckBox();
+            this.comboBox2 = new System.Windows.Forms.ComboBox();
+            this.label35 = new System.Windows.Forms.Label();
+            this.label34 = new System.Windows.Forms.Label();
+            this.textBox4 = new System.Windows.Forms.TextBox();
+            this.textBox3 = new System.Windows.Forms.TextBox();
+            this.textBox1 = new System.Windows.Forms.TextBox();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.dataGridView_party = new System.Windows.Forms.DataGridView();
@@ -221,14 +229,7 @@
             this.button_stopbot = new System.Windows.Forms.Button();
             this.label_pm = new System.Windows.Forms.Label();
             this.button_save = new System.Windows.Forms.Button();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.textBox3 = new System.Windows.Forms.TextBox();
-            this.textBox4 = new System.Windows.Forms.TextBox();
-            this.label34 = new System.Windows.Forms.Label();
-            this.label35 = new System.Windows.Forms.Label();
-            this.comboBox2 = new System.Windows.Forms.ComboBox();
-            this.checkBox3 = new System.Windows.Forms.CheckBox();
-            this.button1 = new System.Windows.Forms.Button();
+            this.button_newprofile = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tab_main.SuspendLayout();
             this.tab_pickup.SuspendLayout();
@@ -292,6 +293,7 @@
             // 
             // tab_main
             // 
+            this.tab_main.Controls.Add(this.button_newprofile);
             this.tab_main.Controls.Add(this.checkBox_userdata);
             this.tab_main.Controls.Add(this.checkBox_logpackets);
             this.tab_main.Controls.Add(this.comboBox_profile);
@@ -369,7 +371,7 @@
             this.comboBox_profile.FormattingEnabled = true;
             this.comboBox_profile.Location = new System.Drawing.Point(386, 130);
             this.comboBox_profile.Name = "comboBox_profile";
-            this.comboBox_profile.Size = new System.Drawing.Size(125, 21);
+            this.comboBox_profile.Size = new System.Drawing.Size(82, 21);
             this.comboBox_profile.TabIndex = 9;
             this.comboBox_profile.SelectedIndexChanged += new System.EventHandler(this.comboBox_profile_SelectedIndexChanged);
             // 
@@ -1823,6 +1825,79 @@
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Party Matching";
             // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(398, 53);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(80, 23);
+            this.button1.TabIndex = 9;
+            this.button1.Text = "Form Party";
+            this.button1.UseVisualStyleBackColor = true;
+            // 
+            // checkBox3
+            // 
+            this.checkBox3.AutoSize = true;
+            this.checkBox3.Location = new System.Drawing.Point(153, 23);
+            this.checkBox3.Name = "checkBox3";
+            this.checkBox3.Size = new System.Drawing.Size(116, 17);
+            this.checkBox3.TabIndex = 8;
+            this.checkBox3.Text = "Accept all requests";
+            this.checkBox3.UseVisualStyleBackColor = true;
+            // 
+            // comboBox2
+            // 
+            this.comboBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBox2.FormattingEnabled = true;
+            this.comboBox2.Items.AddRange(new object[] {
+            "Hunting",
+            "Trading",
+            "Thiefing"});
+            this.comboBox2.Location = new System.Drawing.Point(323, 55);
+            this.comboBox2.Name = "comboBox2";
+            this.comboBox2.Size = new System.Drawing.Size(68, 21);
+            this.comboBox2.TabIndex = 7;
+            // 
+            // label35
+            // 
+            this.label35.AutoSize = true;
+            this.label35.Location = new System.Drawing.Point(430, 23);
+            this.label35.Name = "label35";
+            this.label35.Size = new System.Drawing.Size(16, 13);
+            this.label35.TabIndex = 6;
+            this.label35.Text = "to";
+            // 
+            // label34
+            // 
+            this.label34.AutoSize = true;
+            this.label34.Location = new System.Drawing.Point(320, 24);
+            this.label34.Name = "label34";
+            this.label34.Size = new System.Drawing.Size(71, 13);
+            this.label34.TabIndex = 5;
+            this.label34.Text = "Level Range:";
+            // 
+            // textBox4
+            // 
+            this.textBox4.Location = new System.Drawing.Point(398, 20);
+            this.textBox4.Name = "textBox4";
+            this.textBox4.Size = new System.Drawing.Size(26, 20);
+            this.textBox4.TabIndex = 4;
+            this.textBox4.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // textBox3
+            // 
+            this.textBox3.Location = new System.Drawing.Point(452, 20);
+            this.textBox3.Name = "textBox3";
+            this.textBox3.Size = new System.Drawing.Size(26, 20);
+            this.textBox3.TabIndex = 3;
+            this.textBox3.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(13, 55);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(304, 20);
+            this.textBox1.TabIndex = 1;
+            // 
             // checkBox1
             // 
             this.checkBox1.AutoSize = true;
@@ -2283,78 +2358,15 @@
             this.button_save.UseVisualStyleBackColor = true;
             this.button_save.Click += new System.EventHandler(this.button_save_Click);
             // 
-            // textBox1
+            // button_newprofile
             // 
-            this.textBox1.Location = new System.Drawing.Point(13, 55);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(304, 20);
-            this.textBox1.TabIndex = 1;
-            // 
-            // textBox3
-            // 
-            this.textBox3.Location = new System.Drawing.Point(452, 20);
-            this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(26, 20);
-            this.textBox3.TabIndex = 3;
-            this.textBox3.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // textBox4
-            // 
-            this.textBox4.Location = new System.Drawing.Point(398, 20);
-            this.textBox4.Name = "textBox4";
-            this.textBox4.Size = new System.Drawing.Size(26, 20);
-            this.textBox4.TabIndex = 4;
-            this.textBox4.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // label34
-            // 
-            this.label34.AutoSize = true;
-            this.label34.Location = new System.Drawing.Point(320, 24);
-            this.label34.Name = "label34";
-            this.label34.Size = new System.Drawing.Size(71, 13);
-            this.label34.TabIndex = 5;
-            this.label34.Text = "Level Range:";
-            // 
-            // label35
-            // 
-            this.label35.AutoSize = true;
-            this.label35.Location = new System.Drawing.Point(430, 23);
-            this.label35.Name = "label35";
-            this.label35.Size = new System.Drawing.Size(16, 13);
-            this.label35.TabIndex = 6;
-            this.label35.Text = "to";
-            // 
-            // comboBox2
-            // 
-            this.comboBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBox2.FormattingEnabled = true;
-            this.comboBox2.Items.AddRange(new object[] {
-            "Hunting",
-            "Trading",
-            "Thiefing"});
-            this.comboBox2.Location = new System.Drawing.Point(323, 55);
-            this.comboBox2.Name = "comboBox2";
-            this.comboBox2.Size = new System.Drawing.Size(68, 21);
-            this.comboBox2.TabIndex = 7;
-            // 
-            // checkBox3
-            // 
-            this.checkBox3.AutoSize = true;
-            this.checkBox3.Location = new System.Drawing.Point(153, 23);
-            this.checkBox3.Name = "checkBox3";
-            this.checkBox3.Size = new System.Drawing.Size(116, 17);
-            this.checkBox3.TabIndex = 8;
-            this.checkBox3.Text = "Accept all requests";
-            this.checkBox3.UseVisualStyleBackColor = true;
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(398, 53);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(80, 23);
-            this.button1.TabIndex = 9;
-            this.button1.Text = "Form Party";
-            this.button1.UseVisualStyleBackColor = true;
+            this.button_newprofile.Location = new System.Drawing.Point(474, 128);
+            this.button_newprofile.Name = "button_newprofile";
+            this.button_newprofile.Size = new System.Drawing.Size(37, 23);
+            this.button_newprofile.TabIndex = 63;
+            this.button_newprofile.Text = "New";
+            this.button_newprofile.UseVisualStyleBackColor = true;
+            this.button_newprofile.Click += new System.EventHandler(this.button_newprofile_Click);
             // 
             // Form1
             // 
@@ -2626,6 +2638,7 @@
         private System.Windows.Forms.ComboBox comboBox2;
         private System.Windows.Forms.CheckBox checkBox3;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button button_newprofile;
     }
 }
 

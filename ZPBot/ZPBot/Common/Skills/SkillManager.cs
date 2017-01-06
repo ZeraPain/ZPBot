@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
@@ -11,10 +12,10 @@ namespace ZPBot.Common.Skills
     {
         private readonly GlobalManager _globalManager;
 
-        public List<Skill> SkillList { get; protected set; }
-        public List<Skill> AttackList { get; protected set; }
-        public List<Skill> BuffList { get; protected set; }
-        public List<Skill> ImbueList { get; protected set; }
+        public BindingList<Skill> SkillList { get; protected set; }
+        public BindingList<Skill> AttackList { get; protected set; }
+        public BindingList<Skill> BuffList { get; protected set; }
+        public BindingList<Skill> ImbueList { get; protected set; }
 
         private Skill _speedDrug;
         private readonly object _lock;
@@ -24,10 +25,10 @@ namespace ZPBot.Common.Skills
         {
             _globalManager = globalManager;
 
-            SkillList = new List<Skill>();
-            AttackList = new List<Skill>();
-            BuffList = new List<Skill>();
-            ImbueList = new List<Skill>();
+            SkillList = new BindingList<Skill>();
+            AttackList = new BindingList<Skill>();
+            BuffList = new BindingList<Skill>();
+            ImbueList = new BindingList<Skill>();
             _speedDrug = null;
 
             _lock = new object();
@@ -110,6 +111,16 @@ namespace ZPBot.Common.Skills
             lock (_lock)
             {
                 _globalManager.FMain.Invoke((MethodInvoker)(() => SkillList.Clear()));
+            }
+        }
+
+        public void ClearSkills()
+        {
+            lock (_lock)
+            {
+                AttackList.Clear();
+                BuffList.Clear();
+                ImbueList.Clear();
             }
         }
 

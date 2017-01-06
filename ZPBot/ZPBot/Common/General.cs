@@ -23,8 +23,6 @@ namespace ZPBot.Common
     {
         public static string Version = "1.1.2";
         public static bool Debug = false;
-        public static string IniPath;
-        public static string SroPath;
     }
 
     internal class Game

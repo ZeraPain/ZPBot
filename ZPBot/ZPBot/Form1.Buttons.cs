@@ -38,11 +38,8 @@ namespace ZPBot
 
             if (folder.ShowDialog() == DialogResult.OK)
             {
-                Config.SroPath = folder.SelectedPath;
-                textBox_sropath.Text = Config.SroPath;
-
-                _iniDef.Write("Settings", "SRFolder", textBox_sropath.Text);
-
+                SroPath = folder.SelectedPath;
+                SaveProfile();
                 _globalManager.Load();
             }
         }
@@ -75,6 +72,11 @@ namespace ZPBot
                 button_looprecord.Text = @"Stop Record";
                 _globalManager.LoopManager.StartRecord();
             }
+        }
+
+        private void button_newprofile_Click(object sender, EventArgs e)
+        {
+            CreateProfile();
         }
     }
 }

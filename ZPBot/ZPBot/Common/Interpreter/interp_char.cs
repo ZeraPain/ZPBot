@@ -95,7 +95,7 @@ namespace ZPBot.Common
                 newSkill = packet.ReadUInt8();
             }
 
-            if (Player.AccountId == 0) FMain.SkillSettings(); // Fire only once!
+            if (Player.AccountId == 0) FMain.LoadSkillSettings(); // Fire only once!
 
             if (Config.Debug) Console.WriteLine(@"CharUpdate - Parsed Skills");
 
