@@ -520,6 +520,9 @@ namespace ZPBot
 
         private void LoadSettings()
         {
+            var sw = new Stopwatch();
+            sw.Start();
+
             var settingsFile = XElement.Load(ConfigPath).Element(GetProfilName());
 
             var settings = settingsFile?.Element("Settings");
@@ -579,6 +582,9 @@ namespace ZPBot
                     _globalManager.PartyManager.AcceptInviteList.Add(Parse<string>(partyMember.Attribute("Name")?.Value));
                 }
             }
+
+            sw.Stop();
+            Console.WriteLine(@"Loading took " + sw.Elapsed);
         }
 
         [CanBeNull]

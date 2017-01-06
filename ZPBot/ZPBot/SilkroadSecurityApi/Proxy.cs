@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Threading;
+using System.Xml;
 using ZPBot.Annotations;
 using ZPBot.Common;
 
@@ -58,6 +60,8 @@ namespace ZPBot.SilkroadSecurityApi
 
         private readonly GlobalManager _globalManager;
 
+        private readonly XmlWriter _xmlWriter;
+        private int _xmlIndex;
         public bool LogPackets { get; set; }
         public bool AllowLoginRequest { get; set; }
 
@@ -65,6 +69,29 @@ namespace ZPBot.SilkroadSecurityApi
         {
             _globalManager = globalManager;
             _exitLock = new object();
+
+            TextWriter textWriter = new StreamWriter($"log_{DateTime.Now.Ticks}.xml");
+            _xmlWriter = XmlWriter.Create(textWriter);
+            _xmlWriter.WriteStartElement("packets");
+        }
+
+        private void WritePacket([NotNull] Packet packet, [NotNull] byte[] packetBytes, [NotNull] string direction)
+        {
+            lock (_xmlWriter)
+            {
+                _xmlWriter.WriteStartElement("packet");
+                _xmlWriter.WriteAttributeString("Index", _xmlIndex.ToString());
+                _xmlIndex++;
+                _xmlWriter.WriteAttributeString("Time", DateTime.Now.Ticks.ToString());
+                _xmlWriter.WriteAttributeString("Direction", direction);
+                _xmlWriter.WriteAttributeString("Opcode", packet.Opcode.ToString());
+                _xmlWriter.WriteAttributeString("Encrypted", packet.Encrypted.ToString());
+                _xmlWriter.WriteAttributeString("Massive", packet.Massive.ToString());
+                _xmlWriter.WriteAttributeString("Length", packetBytes.Length.ToString());
+                _xmlWriter.WriteAttributeString("Payload", Convert.ToBase64String(packetBytes, 0, packetBytes.Length));
+                _xmlWriter.WriteEndElement();
+                _xmlWriter.Flush();
+            }
         }
 
         private void GatewayRemoteThread()
@@ -164,7 +191,12 @@ namespace ZPBot.SilkroadSecurityApi
                             var buffer = kvp.Key;
                             var packetBytes = packet.GetBytes();
 
-                            if (LogPackets) Console.WriteLine(@"[Gateway P->S][{0:X4}][{1} bytes]{2}{3}{4}{5}{6}", packet.Opcode, packetBytes.Length, packet.Encrypted ? "[Encrypted]" : "", packet.Massive ? "[Massive]" : "", Environment.NewLine, Utility.HexDump(packetBytes), Environment.NewLine);
+                            if (LogPackets)
+                            {
+                                Console.WriteLine(@"[Gateway P->S][{0:X4}][{1} bytes]{2}{3}{4}{5}{6}", packet.Opcode, packetBytes.Length, packet.Encrypted ? "[Encrypted]" : "", packet.Massive ? "[Massive]" : "", Environment.NewLine, Utility.HexDump(packetBytes), Environment.NewLine);
+                                WritePacket(packet, packet.GetBytes(), "[Gateway P->S]");
+                            }
+
                             _gwRemoteStream.Write(buffer.Buffer, 0, buffer.Size);
                         }
                     }
@@ -258,7 +290,12 @@ namespace ZPBot.SilkroadSecurityApi
                             var buffer = kvp.Key;
                             var packetBytes = packet.GetBytes();
 
-                            if (LogPackets) Console.WriteLine(@"[Gateway P->C][{0:X4}][{1} bytes]{2}{3}{4}{5}{6}", packet.Opcode, packetBytes.Length, packet.Encrypted ? "[Encrypted]" : "", packet.Massive ? "[Massive]" : "", Environment.NewLine, Utility.HexDump(packetBytes), Environment.NewLine);
+                            if (LogPackets)
+                            {
+                                Console.WriteLine(@"[Gateway P->C][{0:X4}][{1} bytes]{2}{3}{4}{5}{6}", packet.Opcode, packetBytes.Length, packet.Encrypted ? "[Encrypted]" : "", packet.Massive ? "[Massive]" : "", Environment.NewLine, Utility.HexDump(packetBytes), Environment.NewLine);
+                                WritePacket(packet, packet.GetBytes(), "[Gateway P->C]");
+                            }
+
                             _gwLocalStream.Write(buffer.Buffer, 0, buffer.Size);
                         }
                     }
@@ -422,7 +459,12 @@ namespace ZPBot.SilkroadSecurityApi
                             var buffer = kvp.Key;
                             var packetBytes = packet.GetBytes();
 
-                            if (LogPackets) Console.WriteLine(@"[Agent P->S][{0:X4}][{1} bytes]{2}{3}{4}{5}{6}", packet.Opcode, packetBytes.Length, packet.Encrypted ? "[Encrypted]" : "", packet.Massive ? "[Massive]" : "", Environment.NewLine, Utility.HexDump(packetBytes), Environment.NewLine);
+                            if (LogPackets)
+                            {
+                                Console.WriteLine(@"[Agent P->S][{0:X4}][{1} bytes]{2}{3}{4}{5}{6}", packet.Opcode, packetBytes.Length, packet.Encrypted ? "[Encrypted]" : "", packet.Massive ? "[Massive]" : "", Environment.NewLine, Utility.HexDump(packetBytes), Environment.NewLine);
+                                WritePacket(packet, packet.GetBytes(), "[Agent P->S]");
+                            }
+
                             _agRemoteStream.Write(buffer.Buffer, 0, buffer.Size);
                         }
 
@@ -545,7 +587,12 @@ namespace ZPBot.SilkroadSecurityApi
                             var buffer = kvp.Key;
                             var packetBytes = packet.GetBytes();
 
-                            if (LogPackets) Console.WriteLine(@"[Agent P->C][{0:X4}][{1} bytes]{2}{3}{4}{5}{6}", packet.Opcode, packetBytes.Length, packet.Encrypted ? "[Encrypted]" : "", packet.Massive ? "[Massive]" : "", Environment.NewLine, Utility.HexDump(packetBytes), Environment.NewLine);
+                            if (LogPackets)
+                            {
+                                Console.WriteLine(@"[Agent P->C][{0:X4}][{1} bytes]{2}{3}{4}{5}{6}", packet.Opcode, packetBytes.Length, packet.Encrypted ? "[Encrypted]" : "", packet.Massive ? "[Massive]" : "", Environment.NewLine, Utility.HexDump(packetBytes), Environment.NewLine);
+                                WritePacket(packet, packet.GetBytes(), "[Agent P->C]");
+                            }
+
                             _agLocalStream.Write(buffer.Buffer, 0, buffer.Size);
                         }
                     }
